@@ -89,7 +89,7 @@ export default function AdminPage() {
   const router = useRouter();
   
   // Состояние для календаря
-  const [viewMode, setViewMode] = useState<'day' | 'week'>('day');
+  const [viewMode, setViewMode] = useState<'day' | 'week' | 'month'>('day');
   const [currentDate, setCurrentDate] = useState(() => {
     const now = new Date();
     // Создаем дату в полдень, чтобы избежать проблем с часовыми поясами
@@ -129,13 +129,27 @@ export default function AdminPage() {
     return `${startStr} - ${endStr}`;
   };
   
+  // Функция для получения начала и конца месяца
+  const getMonthRange = (date: Date): { start: Date; end: Date } => {
+    const start = new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 0, 0);
+    const end = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59, 999);
+    return { start, end };
+  };
+  
+  // Функция для форматирования месяца
+  const formatMonth = (date: Date): string => {
+    return date.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' });
+  };
+  
   // Навигация по календарю
   const navigatePrevious = () => {
     const newDate = new Date(currentDate);
     if (viewMode === 'day') {
       newDate.setDate(newDate.getDate() - 1);
-    } else {
+    } else if (viewMode === 'week') {
       newDate.setDate(newDate.getDate() - 7);
+    } else {
+      newDate.setMonth(newDate.getMonth() - 1);
     }
     setCurrentDate(newDate);
   };
@@ -144,8 +158,10 @@ export default function AdminPage() {
     const newDate = new Date(currentDate);
     if (viewMode === 'day') {
       newDate.setDate(newDate.getDate() + 1);
-    } else {
+    } else if (viewMode === 'week') {
       newDate.setDate(newDate.getDate() + 7);
+    } else {
+      newDate.setMonth(newDate.getMonth() + 1);
     }
     setCurrentDate(newDate);
   };
@@ -157,7 +173,7 @@ export default function AdminPage() {
     setCurrentDate(today);
   };
   
-  // Фильтрация записей по текущей дате/неделе
+  // Фильтрация записей по текущей дате/неделе/месяцу
   const getFilteredBookings = () => {
     if (viewMode === 'day') {
       // Форматируем дату вручную, избегая проблем с часовыми поясами
@@ -166,8 +182,22 @@ export default function AdminPage() {
       const day = String(currentDate.getDate()).padStart(2, '0');
       const dateStr = `${year}-${month}-${day}`;
       return bookings.filter(b => b.date === dateStr);
-    } else {
+    } else if (viewMode === 'week') {
       const { start, end } = getWeekRange(currentDate);
+      return bookings.filter(b => {
+        // Парсим дату как локальную
+        const [year, month, day] = b.date.split('-').map(Number);
+        const bookingDate = new Date(year, month - 1, day);
+        return bookingDate >= start && bookingDate <= end;
+      }).sort((a, b) => {
+        // Сортировка по дате, затем по времени
+        if (a.date !== b.date) {
+          return a.date.localeCompare(b.date);
+        }
+        return a.time.localeCompare(b.time);
+      });
+    } else {
+      const { start, end } = getMonthRange(currentDate);
       return bookings.filter(b => {
         // Парсим дату как локальную
         const [year, month, day] = b.date.split('-').map(Number);
@@ -1093,7 +1123,7 @@ export default function AdminPage() {
             <div className="service-card-glass rounded-3xl p-8 max-[480px]:p-6 max-[320px]:p-5">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
                 <h2 className="text-2xl max-[480px]:text-xl font-black tracking-tight">Календарь записей</h2>
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-wrap">
                   <button 
                     onClick={() => {
                       setViewMode('day');
@@ -1107,7 +1137,7 @@ export default function AdminPage() {
                         : 'border border-slate-200 hover:border-primary'
                     }`}
                   >
-                    Сегодня
+                    День
                   </button>
                   <button 
                     onClick={() => setViewMode('week')}
@@ -1118,6 +1148,16 @@ export default function AdminPage() {
                     }`}
                   >
                     Неделя
+                  </button>
+                  <button 
+                    onClick={() => setViewMode('month')}
+                    className={`px-4 py-2 max-[480px]:px-3 max-[480px]:py-1.5 rounded-xl text-sm max-[480px]:text-xs font-semibold transition-colors ${
+                      viewMode === 'month'
+                        ? 'bg-gradient-to-r from-accent-pink to-accent-purple text-white'
+                        : 'border border-slate-200 hover:border-primary'
+                    }`}
+                  >
+                    Месяц
                   </button>
                 </div>
               </div>
@@ -1131,7 +1171,7 @@ export default function AdminPage() {
                     <span className="material-symbols-outlined max-[480px]:text-lg">chevron_left</span>
                   </button>
                   <h3 className="text-lg max-[480px]:text-sm font-bold min-w-[200px] max-[480px]:min-w-[150px] text-center">
-                    {viewMode === 'day' ? formatDate(currentDate) : formatWeekRange(currentDate)}
+                    {viewMode === 'day' ? formatDate(currentDate) : viewMode === 'week' ? formatWeekRange(currentDate) : formatMonth(currentDate)}
                   </h3>
                   <button 
                     onClick={navigateNext}
@@ -1153,7 +1193,7 @@ export default function AdminPage() {
               <div className="space-y-3">
                 {getFilteredBookings().length === 0 ? (
                   <p className="text-slate-500 text-center py-8">
-                    {viewMode === 'day' ? 'Записей на этот день нет' : 'Записей на эту неделю нет'}
+                    {viewMode === 'day' ? 'Записей на этот день нет' : viewMode === 'week' ? 'Записей на эту неделю нет' : 'Записей на этот месяц нет'}
                   </p>
                 ) : (
                   getFilteredBookings().map((booking) => (
