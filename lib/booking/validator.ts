@@ -54,7 +54,7 @@ function isValidPhone(phone: string): boolean {
  * @example
  * const result = validateBooking({
  *   service: 'Маникюр',
- *   master: 'Мастер А',
+ *   master: 'Лиза',
  *   date: '2024-01-15',
  *   time: '14:00',
  *   clientName: 'Иван Иванов',
@@ -143,7 +143,7 @@ export function validateBooking(data: BookingData): ValidationResult {
  * @example
  * const available = await checkSlotAvailability({
  *   service: 'Маникюр',
- *   master: 'Мастер А',
+ *   master: 'Лиза',
  *   date: '2024-01-15',
  *   time: '14:00',
  *   clientName: 'Иван Иванов',

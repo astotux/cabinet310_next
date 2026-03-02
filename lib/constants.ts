@@ -1,9 +1,9 @@
 import { Service } from "@/types";
 
 export const SERVICES: Service[] = [
-  { id: "Маникюр", name: "Маникюр", master: "Мастер А" },
-  { id: "Перманент", name: "Перманентный макияж", master: "Мастер Б" },
-  { id: "Ламинирование", name: "Ламинирование ресниц", master: "Мастер Б" },
+  { id: "Маникюр", name: "Маникюр", master: "Лиза" },
+  { id: "Перманент", name: "Перманентный макияж", master: "Женя" },
+  { id: "Ламинирование", name: "Ламинирование ресниц", master: "Женя" },
 ];
 
 export const TIME_SLOTS = [

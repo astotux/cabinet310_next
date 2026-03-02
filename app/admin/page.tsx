@@ -436,8 +436,9 @@ export default function AdminPage() {
     return `${months[currentMonth.getMonth()]} ${currentMonth.getFullYear()}`;
   };
 
-  const loadAvailableSlots = async (date: string) => {
-    if (!date || !blockTimeForm.master) return;
+  const loadAvailableSlots = async (date: string, master?: string) => {
+    const currentMaster = master || blockTimeForm.master;
+    if (!date || !currentMaster) return;
     
     setLoadingSlots(true);
     try {
@@ -453,7 +454,7 @@ export default function AdminPage() {
       
       // Фильтруем заблокированные слоты для текущего мастера и даты
       const blockedForDate = blockedData
-        .filter((slot: any) => slot.master === blockTimeForm.master && slot.date === date)
+        .filter((slot: any) => slot.master === currentMaster && slot.date === date)
         .map((slot: any) => slot.time);
       
       // Автоматически выбираем уже заблокированные слоты
@@ -603,7 +604,7 @@ export default function AdminPage() {
       );
 
       // Удаляем снятые блокировки
-      const removePromises = timesToRemove.map(slot =>
+      const removePromises = timesToRemove.map((slot: any) =>
         fetch(`/api/blocked-slots?id=${slot.id}`, {
           method: 'DELETE',
         })
@@ -1000,16 +1001,6 @@ export default function AdminPage() {
                 <h2 className="text-xl font-black tracking-tight">Быстрые действия</h2>
               </div>
               <div className="space-y-3">
-                <button className="w-full p-4 rounded-2xl bg-white/60 border border-slate-200/60 hover:border-primary transition-colors flex items-center gap-3">
-                  <div className="size-10 rounded-xl bg-accent-pink/20 text-accent-pink flex items-center justify-center">
-                    <span className="material-symbols-outlined">event_available</span>
-                  </div>
-                  <div className="text-left flex-1">
-                    <p className="font-bold text-sm">Разблокировать слоты</p>
-                    <p className="text-xs text-slate-500">Отменить блокировку времени</p>
-                  </div>
-                </button>
-
                 <button 
                   onClick={handleExportPDF}
                   className="w-full p-4 rounded-2xl bg-white/60 border border-slate-200/60 hover:border-primary transition-colors flex items-center gap-3"
@@ -1219,8 +1210,8 @@ export default function AdminPage() {
                     className="w-full p-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
                   >
                     <option value="">Выберите мастера</option>
-                    <option value="Мастер А">Мастер А</option>
-                    <option value="Мастер Б">Мастер Б</option>
+                    <option value="Лиза">Лиза</option>
+                    <option value="Женя">Женя</option>
                   </select>
                 </div>
 
@@ -1454,39 +1445,39 @@ export default function AdminPage() {
                   <button
                     type="button"
                     onClick={() => {
-                      setBlockTimeForm({ ...blockTimeForm, master: "Мастер А" });
+                      setBlockTimeForm(prev => ({ ...prev, master: "Лиза" }));
                       if (blockTimeForm.date) {
-                        loadAvailableSlots(blockTimeForm.date);
+                        loadAvailableSlots(blockTimeForm.date, "Лиза");
                       }
                     }}
                     className={`flex-1 p-4 rounded-2xl font-bold transition-all ${
-                      blockTimeForm.master === "Мастер А"
+                      blockTimeForm.master === "Лиза"
                         ? "gradient-bg text-white shadow-lg shadow-primary/20"
                         : "bg-white border-2 border-slate-200 hover:border-primary"
                     }`}
                   >
                     <div className="flex items-center justify-center gap-2">
                       <span className="material-symbols-outlined">face_3</span>
-                      <span>Мастер А</span>
+                      <span>Лиза</span>
                     </div>
                   </button>
                   <button
                     type="button"
                     onClick={() => {
-                      setBlockTimeForm({ ...blockTimeForm, master: "Мастер Б" });
+                      setBlockTimeForm(prev => ({ ...prev, master: "Женя" }));
                       if (blockTimeForm.date) {
-                        loadAvailableSlots(blockTimeForm.date);
+                        loadAvailableSlots(blockTimeForm.date, "Женя");
                       }
                     }}
                     className={`flex-1 p-4 rounded-2xl font-bold transition-all ${
-                      blockTimeForm.master === "Мастер Б"
+                      blockTimeForm.master === "Женя"
                         ? "gradient-bg text-white shadow-lg shadow-primary/20"
                         : "bg-white border-2 border-slate-200 hover:border-primary"
                     }`}
                   >
                     <div className="flex items-center justify-center gap-2">
                       <span className="material-symbols-outlined">face_3</span>
-                      <span>Мастер Б</span>
+                      <span>Женя</span>
                     </div>
                   </button>
                 </div>
