@@ -21,6 +21,15 @@ model Booking {
   createdAt   DateTime @default(now())
 }
 
+model BlockedSlot {
+  id        Int      @id @default(autoincrement())
+  master    String
+  date      String
+  time      String
+  reason    String?
+  createdAt DateTime @default(now())
+}
+
 model Review {
   id        Int      @id @default(autoincrement())
   name      String

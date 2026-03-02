@@ -34,6 +34,17 @@ export default function AdminPage() {
     comment: "",
   });
   
+  // Состояние для модального окна блокировки времени
+  const [showBlockTimeModal, setShowBlockTimeModal] = useState(false);
+  const [blockTimeForm, setBlockTimeForm] = useState({
+    master: "",
+    date: "",
+    selectedTimes: [] as string[],
+    reason: "",
+  });
+  const [availableSlots, setAvailableSlots] = useState<string[]>([]);
+  const [loadingSlots, setLoadingSlots] = useState(false);
+  
   const router = useRouter();
   
   // Состояние для календаря
@@ -315,6 +326,128 @@ export default function AdminPage() {
       fetchData();
     } catch (error) {
       alert("Ошибка сохранения записи");
+    }
+  };
+
+  // Функции для блокировки времени
+  const openBlockTimeModal = () => {
+    setBlockTimeForm({
+      master: "",
+      date: "",
+      selectedTimes: [],
+      reason: "",
+    });
+    setAvailableSlots([]);
+    setShowBlockTimeModal(true);
+  };
+
+  const loadAvailableSlots = async (date: string) => {
+    if (!date || !blockTimeForm.master) return;
+    
+    setLoadingSlots(true);
+    try {
+      // Генерируем все возможные слоты (09:00 - 20:00 с шагом 60 минут)
+      const slots: string[] = [];
+      for (let hour = 9; hour < 20; hour++) {
+        slots.push(`${hour.toString().padStart(2, '0')}:00`);
+      }
+      
+      // Загружаем заблокированные слоты для выбранного мастера и даты
+      const blockedRes = await fetch('/api/blocked-slots');
+      const blockedData = await blockedRes.json();
+      
+      // Фильтруем заблокированные слоты для текущего мастера и даты
+      const blockedForDate = blockedData
+        .filter((slot: any) => slot.master === blockTimeForm.master && slot.date === date)
+        .map((slot: any) => slot.time);
+      
+      // Автоматически выбираем уже заблокированные слоты
+      setBlockTimeForm(prev => ({
+        ...prev,
+        selectedTimes: blockedForDate
+      }));
+      
+      setAvailableSlots(slots);
+    } catch (error) {
+      console.error('Ошибка загрузки слотов:', error);
+    } finally {
+      setLoadingSlots(false);
+    }
+  };
+
+  const toggleTimeSlot = (time: string) => {
+    setBlockTimeForm(prev => ({
+      ...prev,
+      selectedTimes: prev.selectedTimes.includes(time)
+        ? prev.selectedTimes.filter(t => t !== time)
+        : [...prev.selectedTimes, time]
+    }));
+  };
+
+  const handleBlockTimeSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (blockTimeForm.selectedTimes.length === 0) {
+      alert('Выберите хотя бы один временной слот');
+      return;
+    }
+
+    try {
+      // Загружаем текущие заблокированные слоты
+      const blockedRes = await fetch('/api/blocked-slots');
+      const blockedData = await blockedRes.json();
+      
+      // Находим существующие блокировки для этого мастера и даты
+      const existingBlocks = blockedData.filter(
+        (slot: any) => slot.master === blockTimeForm.master && slot.date === blockTimeForm.date
+      );
+      
+      const existingTimes = existingBlocks.map((slot: any) => slot.time);
+      
+      // Определяем, какие слоты нужно добавить, а какие удалить
+      const timesToAdd = blockTimeForm.selectedTimes.filter(time => !existingTimes.includes(time));
+      const timesToRemove = existingBlocks.filter(
+        (slot: any) => !blockTimeForm.selectedTimes.includes(slot.time)
+      );
+
+      // Создаем новые блокировки
+      const addPromises = timesToAdd.map(time =>
+        fetch('/api/blocked-slots', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            master: blockTimeForm.master,
+            date: blockTimeForm.date,
+            time,
+            reason: blockTimeForm.reason || null,
+          }),
+        })
+      );
+
+      // Удаляем снятые блокировки
+      const removePromises = timesToRemove.map(slot =>
+        fetch(`/api/blocked-slots?id=${slot.id}`, {
+          method: 'DELETE',
+        })
+      );
+
+      const responses = await Promise.all([...addPromises, ...removePromises]);
+      const allSuccessful = responses.every(r => r.ok);
+
+      if (!allSuccessful) {
+        throw new Error('Ошибка обновления блокировок');
+      }
+
+      const message = [];
+      if (timesToAdd.length > 0) message.push(`добавлено ${timesToAdd.length}`);
+      if (timesToRemove.length > 0) message.push(`удалено ${timesToRemove.length}`);
+      
+      alert(`Успешно обновлено: ${message.join(', ')} слотов`);
+      setShowBlockTimeModal(false);
+      fetchData();
+    } catch (error) {
+      console.error('Ошибка блокировки времени:', error);
+      alert('Ошибка при блокировке времени');
     }
   };
 
@@ -616,7 +749,10 @@ export default function AdminPage() {
                     <span className="material-symbols-outlined">chevron_right</span>
                   </button>
                 </div>
-                <button className="px-4 py-2 rounded-xl gradient-bg text-white text-sm font-bold shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity flex items-center justify-center">
+                <button 
+                  onClick={openBlockTimeModal}
+                  className="px-4 py-2 rounded-xl gradient-bg text-white text-sm font-bold shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity flex items-center justify-center"
+                >
                   <div className="size-1 text-white flex items-center justify-center mr-4">
                     <span className="material-symbols-outlined">block</span>
                   </div>
@@ -1112,6 +1248,179 @@ export default function AdminPage() {
                   className="flex-1 gradient-bg px-6 py-3 rounded-xl text-white font-bold hover:opacity-90 transition-opacity"
                 >
                   {editingBooking ? "Сохранить" : "Добавить"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {showBlockTimeModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-background-light rounded-3xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-black">Заблокировать время</h2>
+              <button
+                onClick={() => setShowBlockTimeModal(false)}
+                className="size-10 rounded-xl hover:bg-slate-100 flex items-center justify-center transition-colors"
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+
+            <form onSubmit={handleBlockTimeSubmit} className="space-y-6">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-bold mb-2">Мастер *</label>
+                  <select
+                    value={blockTimeForm.master}
+                    onChange={(e) => {
+                      setBlockTimeForm({ ...blockTimeForm, master: e.target.value });
+                      if (blockTimeForm.date) {
+                        loadAvailableSlots(blockTimeForm.date);
+                      }
+                    }}
+                    required
+                    className="w-full p-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                  >
+                    <option value="">Выберите мастера</option>
+                    <option value="Мастер А">Мастер А</option>
+                    <option value="Мастер Б">Мастер Б</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-bold mb-2">Дата *</label>
+                  <input
+                    type="date"
+                    value={blockTimeForm.date}
+                    onChange={(e) => {
+                      setBlockTimeForm({ ...blockTimeForm, date: e.target.value });
+                      if (blockTimeForm.master) {
+                        loadAvailableSlots(e.target.value);
+                      }
+                    }}
+                    min={new Date().toISOString().split('T')[0]}
+                    required
+                    className="w-full p-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                  />
+                </div>
+              </div>
+
+              {blockTimeForm.date && (
+                <div>
+                  <label className="block text-sm font-bold mb-3">Выберите время для блокировки *</label>
+                  {loadingSlots ? (
+                    <p className="text-slate-500 text-center py-4">Загрузка слотов...</p>
+                  ) : (
+                    <div className="space-y-4">
+                      {/* Утро */}
+                      <div>
+                        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Утро</h3>
+                        <div className="grid grid-cols-4 gap-2">
+                          {availableSlots.filter(slot => {
+                            const hour = parseInt(slot.split(':')[0]);
+                            return hour >= 9 && hour < 12;
+                          }).map(slot => (
+                            <button
+                              key={slot}
+                              type="button"
+                              onClick={() => toggleTimeSlot(slot)}
+                              className={`p-3 rounded-xl text-sm font-semibold transition-all ${
+                                blockTimeForm.selectedTimes.includes(slot)
+                                  ? 'gradient-bg text-white shadow-lg shadow-primary/20'
+                                  : 'bg-white border border-slate-200 hover:border-primary'
+                              }`}
+                            >
+                              {slot}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* День */}
+                      <div>
+                        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">День</h3>
+                        <div className="grid grid-cols-4 gap-2">
+                          {availableSlots.filter(slot => {
+                            const hour = parseInt(slot.split(':')[0]);
+                            return hour >= 12 && hour < 17;
+                          }).map(slot => (
+                            <button
+                              key={slot}
+                              type="button"
+                              onClick={() => toggleTimeSlot(slot)}
+                              className={`p-3 rounded-xl text-sm font-semibold transition-all ${
+                                blockTimeForm.selectedTimes.includes(slot)
+                                  ? 'gradient-bg text-white shadow-lg shadow-primary/20'
+                                  : 'bg-white border border-slate-200 hover:border-primary'
+                              }`}
+                            >
+                              {slot}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Вечер */}
+                      <div>
+                        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Вечер</h3>
+                        <div className="grid grid-cols-4 gap-2">
+                          {availableSlots.filter(slot => {
+                            const hour = parseInt(slot.split(':')[0]);
+                            return hour >= 17 && hour < 20;
+                          }).map(slot => (
+                            <button
+                              key={slot}
+                              type="button"
+                              onClick={() => toggleTimeSlot(slot)}
+                              className={`p-3 rounded-xl text-sm font-semibold transition-all ${
+                                blockTimeForm.selectedTimes.includes(slot)
+                                  ? 'gradient-bg text-white shadow-lg shadow-primary/20'
+                                  : 'bg-white border border-slate-200 hover:border-primary'
+                              }`}
+                            >
+                              {slot}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {blockTimeForm.selectedTimes.length > 0 && (
+                    <p className="text-sm text-slate-500 mt-3">
+                      Выбрано слотов: {blockTimeForm.selectedTimes.length}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              <div>
+                <label className="block text-sm font-bold mb-2">Причина (необязательно)</label>
+                <textarea
+                  value={blockTimeForm.reason}
+                  onChange={(e) => setBlockTimeForm({ ...blockTimeForm, reason: e.target.value })}
+                  className="w-full p-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all min-h-[80px]"
+                  placeholder="Например: Обеденный перерыв, Выходной"
+                />
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowBlockTimeModal(false)}
+                  className="flex-1 px-6 py-3 rounded-xl border border-slate-200 font-bold hover:bg-slate-50 transition-colors"
+                >
+                  Отмена
+                </button>
+                <button
+                  type="submit"
+                  disabled={blockTimeForm.selectedTimes.length === 0}
+                  className={`flex-1 gradient-bg px-6 py-3 rounded-xl text-white font-bold transition-opacity ${
+                    blockTimeForm.selectedTimes.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'
+                  }`}
+                >
+                  Заблокировать ({blockTimeForm.selectedTimes.length})
                 </button>
               </div>
             </form>

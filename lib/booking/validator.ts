@@ -155,6 +155,19 @@ export async function checkSlotAvailability(
   data: BookingData,
   serviceDuration: number
 ): Promise<boolean> {
+  // Проверяем, не заблокирован ли этот слот
+  const blockedSlot = await prisma.blockedSlot.findFirst({
+    where: {
+      master: data.master,
+      date: data.date,
+      time: data.time
+    }
+  });
+
+  if (blockedSlot) {
+    return false; // Слот заблокирован
+  }
+
   // Получаем все существующие бронирования на эту дату
   const existingBookings = await prisma.booking.findMany({
     where: { date: data.date }

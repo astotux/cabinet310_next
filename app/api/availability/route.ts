@@ -65,6 +65,17 @@ export async function GET(request: NextRequest) {
       where: { date: dateStr }
     });
 
+    // Получаем все заблокированные слоты для этого мастера на эту дату
+    const blockedSlots = await prisma.blockedSlot.findMany({
+      where: {
+        master: master,
+        date: dateStr
+      }
+    });
+
+    // Создаем Set заблокированных времен для быстрой проверки
+    const blockedTimes = new Set(blockedSlots.map(slot => slot.time));
+
     // Получаем информацию о длительности всех услуг
     const serviceIds = [...new Set(existingBookings.map(b => b.service))];
     const services = await prisma.price.findMany({
@@ -83,6 +94,14 @@ export async function GET(request: NextRequest) {
 
     // Проверяем каждый слот на конфликты
     const slotsWithAvailability = allSlots.map(timeSlot => {
+      // Проверяем, заблокирован ли этот слот
+      if (blockedTimes.has(timeSlot)) {
+        return {
+          time: timeSlot,
+          available: false
+        };
+      }
+
       // Создаем интервал для нового бронирования
       const slotStart = parse(`${dateStr} ${timeSlot}`, 'yyyy-MM-dd HH:mm', new Date());
       const slotEnd = new Date(slotStart.getTime() + service.duration * 60000);
