@@ -318,6 +318,180 @@ export default function AdminPage() {
     }
   };
 
+  // Функция экспорта записей в PDF
+  const handleExportPDF = async () => {
+    try {
+      // Проверяем, есть ли записи
+      if (!bookings || bookings.length === 0) {
+        alert('Нет записей для экспорта');
+        return;
+      }
+
+      // Получаем текущий месяц и год
+      const now = new Date();
+      const currentMonth = now.getMonth();
+      const currentYear = now.getFullYear();
+
+      // Фильтруем записи за текущий месяц
+      const monthBookings = bookings.filter(booking => {
+        const bookingDate = new Date(booking.date);
+        return bookingDate.getMonth() === currentMonth && bookingDate.getFullYear() === currentYear;
+      });
+
+      if (monthBookings.length === 0) {
+        alert('Нет записей за текущий месяц');
+        return;
+      }
+
+      // Динамический импорт pdfmake
+      const pdfMakeModule = await import('pdfmake/build/pdfmake');
+      const pdfFontsModule: any = await import('pdfmake/build/vfs_fonts');
+      const pdfMake = pdfMakeModule.default || pdfMakeModule;
+      const vfs = pdfFontsModule.default?.pdfMake?.vfs || pdfFontsModule.pdfMake?.vfs;
+      
+      if (pdfMake && vfs) {
+        (pdfMake as any).vfs = vfs;
+      }
+
+      // Названия месяцев на русском
+      const monthNames = [
+        'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+        'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
+      ];
+
+      // Сортируем записи
+      const sortedBookings = monthBookings.sort((a, b) => {
+        if (a.date !== b.date) return a.date.localeCompare(b.date);
+        return a.time.localeCompare(b.time);
+      });
+
+      // Подготавливаем данные для таблицы
+      const tableBody = [
+        // Заголовок таблицы
+        [
+          { text: 'Дата', style: 'tableHeader' },
+          { text: 'Время', style: 'tableHeader' },
+          { text: 'Услуга', style: 'tableHeader' },
+          { text: 'Мастер', style: 'tableHeader' },
+          { text: 'Клиент', style: 'tableHeader' },
+          { text: 'Телефон', style: 'tableHeader' },
+          { text: 'Комментарий', style: 'tableHeader' }
+        ],
+        // Данные
+        ...sortedBookings.map(booking => {
+          const date = new Date(booking.date);
+          const formattedDate = date.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' });
+          
+          return [
+            { text: formattedDate, alignment: 'center' },
+            { text: booking.time, alignment: 'center' },
+            booking.service,
+            { text: booking.master, alignment: 'center' },
+            booking.clientName,
+            booking.clientPhone,
+            booking.comment || '-'
+          ];
+        })
+      ];
+
+      // Определяем документ
+      const docDefinition: any = {
+        pageSize: 'A4',
+        pageOrientation: 'landscape',
+        pageMargins: [40, 60, 40, 60],
+        content: [
+          {
+            text: `Записи за ${monthNames[currentMonth]} ${currentYear}`,
+            style: 'header',
+            alignment: 'center',
+            margin: [0, 0, 0, 10]
+          },
+          {
+            text: `Всего записей: ${sortedBookings.length}`,
+            style: 'subheader',
+            alignment: 'center',
+            margin: [0, 0, 0, 5]
+          },
+          {
+            text: 'Кабинет 310 - Студия эстетики',
+            style: 'subheader',
+            alignment: 'center',
+            margin: [0, 0, 0, 20]
+          },
+          {
+            table: {
+              headerRows: 1,
+              widths: [50, 45, '*', 60, 80, 75, 80],
+              body: tableBody
+            },
+            layout: {
+              fillColor: function (rowIndex: number) {
+                return rowIndex === 0 ? '#9333ea' : (rowIndex % 2 === 0 ? '#f9fafb' : null);
+              },
+              hLineWidth: function () { return 0.5; },
+              vLineWidth: function () { return 0.5; },
+              hLineColor: function () { return '#e5e7eb'; },
+              vLineColor: function () { return '#e5e7eb'; }
+            }
+          }
+        ],
+        styles: {
+          header: {
+            fontSize: 18,
+            bold: true,
+            color: '#1f2937'
+          },
+          subheader: {
+            fontSize: 10,
+            color: '#6b7280'
+          },
+          tableHeader: {
+            bold: true,
+            fontSize: 9,
+            color: 'white',
+            alignment: 'center'
+          }
+        },
+        defaultStyle: {
+          fontSize: 8,
+          font: 'Roboto'
+        },
+        footer: function(currentPage: number, pageCount: number) {
+          return {
+            columns: [
+              {
+                text: `Создано: ${now.toLocaleDateString('ru-RU')}`,
+                alignment: 'left',
+                fontSize: 8,
+                color: '#6b7280',
+                margin: [40, 0]
+              },
+              {
+                text: `Страница ${currentPage} из ${pageCount}`,
+                alignment: 'center',
+                fontSize: 8,
+                color: '#6b7280'
+              },
+              {
+                text: '',
+                alignment: 'right',
+                margin: [0, 0, 40, 0]
+              }
+            ]
+          };
+        }
+      };
+
+      // Создаем и скачиваем PDF
+      const fileName = `записи_${monthNames[currentMonth]}_${currentYear}.pdf`;
+      (pdfMake as any).createPdf(docDefinition).download(fileName);
+
+    } catch (error) {
+      console.error('Ошибка экспорта PDF:', error);
+      alert(`Ошибка при создании PDF файла: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`);
+    }
+  };
+
   // Функция для форматирования даты в читаемый формат
   const formatReadableDate = (dateStr: string): string => {
     const date = new Date(dateStr);
@@ -522,7 +696,10 @@ export default function AdminPage() {
                   </div>
                 </button>
 
-                <button className="w-full p-4 rounded-2xl bg-white/60 border border-slate-200/60 hover:border-primary transition-colors flex items-center gap-3">
+                <button 
+                  onClick={handleExportPDF}
+                  className="w-full p-4 rounded-2xl bg-white/60 border border-slate-200/60 hover:border-primary transition-colors flex items-center gap-3"
+                >
                   <div className="size-10 rounded-xl bg-accent-purple/20 text-accent-purple flex items-center justify-center">
                     <span className="material-symbols-outlined">download</span>
                   </div>
