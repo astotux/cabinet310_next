@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#7a1ff9",
+            "accent-pink": "#FEB9E5",
+            "accent-purple": "#9F6DFC",
+            "background-light": "#f7f5f8",
+            "background-dark": "#170f23",
+          },
+          fontFamily: {
+            "display": ["Inter", "sans-serif"]
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "2xl": "1.5rem",
+            "3xl": "2rem",
+            "full": "9999px"
+          },
+        },
+      },
+    }
+  </script>
+  <style type="text/tailwindcss">
+    .glass {
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+    }
+    .gradient-bg {
+      background: linear-gradient(135deg, #FEB9E5 0%, #9F6DFC 100%);
+    }
+    .text-gradient {
+      background: linear-gradient(135deg, #FEB9E5 0%, #9F6DFC 100%);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .service-card-glass {
+      background: rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      transition: all 0.3s ease;
+    }
+    .service-card-glass:hover {
+      background: rgba(255, 255, 255, 0.7);
+      transform: translateY(-4px);
+    }
+  </style>
+  <title>Cabinet 310 — Контакты</title>
+</head>
+
+<body
+  class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen overflow-x-hidden relative">
+  <div class="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+    <div class="absolute top-[250px] right-[5%] size-[420px] bg-accent-purple/13 blur-[105px] rounded-full"></div>
+    <div class="absolute top-[750px] left-[8%] size-[380px] bg-accent-pink/10 blur-[100px] rounded-full"></div>
+    <div class="absolute top-[1300px] left-[10%] size-[350px] bg-accent-purple/10 blur-[95px] rounded-full"></div>
+    <div class="absolute top-[1850px] right-[10%] size-[440px] bg-accent-purple/12 blur-[110px] rounded-full"></div>
+    <div class="absolute top-[2100px] right-[12%] size-[460px] bg-accent-purple/14 blur-[112px] rounded-full"></div>
+    <div class="absolute top-[2700px] left-[7%] size-[400px] bg-accent-pink/11 blur-[108px] rounded-full"></div>
+  </div>
+  <header class="sticky top-0 z-50 w-full">
+        <!-- Десктоп версия -->
+        <div class="hidden md:block glass border-b border-primary/10">
+            <div class="max-w-7xl mx-auto px-4 md:px-6 lg:px-6 h-16 md:h-20 flex items-center justify-between">
+                <div class="flex items-center gap-2 md:gap-3">
+                    <a href="#">
+                        <img src="./logo.svg" class="w-20 md:w-24 lg:w-28" alt="Logo">
+                    </a>
+                </div>
+                <nav class="flex items-center gap-6 lg:gap-10">
+                    <a class="text-xs lg:text-sm font-semibold hover:text-primary transition-colors" href="./index.html">Главная</a>
+                    <a class="text-xs lg:text-sm font-semibold hover:text-primary transition-colors" href="./reviews.html">Отзывы</a>
+                    <a class="text-xs lg:text-sm font-semibold hover:text-primary transition-colors" href="./contacts.html">Контакты</a>
+                </nav>
+                <div class="flex items-center gap-3 md:gap-4">
+                    <button
+                        class="gradient-bg px-4 md:px-6 py-2 md:py-2.5 rounded-lg md:rounded-xl text-white text-xs md:text-sm font-bold shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity">
+                        Записаться
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Мобильная версия - логотип сверху -->
+        <div class="md:hidden p-3 w-100 flex justify-center">
+            <div class="glass rounded-2xl px-4 py-3 inline-flex items-center justify-center">
+                <a href="#">
+                    <img src="./logo.svg" class="w-24" alt="Logo">
+                </a>
+            </div>
+        </div>
+
+        <!-- Мобильная версия - навигация и кнопка внизу -->
+        <div class="md:hidden fixed bottom-0 left-0 right-0 z-50 flex flex-col gap-3 p-3">
+            <!-- Кнопка записаться -->
+            <button class="gradient-bg rounded-2xl px-6 py-3 text-sm font-bold text-white shadow-lg hover:opacity-90 transition-opacity w-full">
+                Записаться
+            </button>
+
+            <!-- Навигация -->
+            <nav class="glass rounded-2xl px-4 py-3 flex items-center justify-around">
+                <a class="flex flex-col items-center gap-1 text-xs font-semibold hover:text-primary transition-colors" href="./reviews.html">
+                    <span class="material-symbols-outlined text-xl">star</span>
+                    <span>Отзывы</span>
+                </a>
+                <a class="flex flex-col items-center gap-1 text-xs font-semibold hover:text-primary transition-colors" href="./index.html">
+                    <span class="material-symbols-outlined text-xl">home</span>
+                    <span>Главная</span>
+                </a>
+                <a class="flex flex-col items-center gap-1 text-xs font-semibold hover:text-primary transition-colors" href="./contacts.html">
+                    <span class="material-symbols-outlined text-xl">account_box</span>
+                    <span>Контакты</span>
+                </a>
+            </nav>
+        </div>
+    </header>    
+
+  <main class="max-w-7xl mx-auto px-6 max-[480px]:px-4 max-[320px]:px-3 py-12 max-[480px]:py-8 max-[320px]:py-6">
+    <section
+      class="mb-16 max-[480px]:mb-12 max-[320px]:mb-10 relative rounded-3xl overflow-hidden min-h-[320px] flex items-center p-10 max-[480px]:p-6 max-[320px]:p-5 bg-slate-900">
+      <div class="absolute inset-0 opacity-35 bg-center bg-cover"
+        style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB5o8dJxHaU2afrjR1saDcd58EmcGKvCRm3rYCwoCj6t5n-XPM9DJyTozPbuvLnde9I0M67EUlxxTx9loPtnuUjvG3ZSNqRLfit5p5ir8X4gfJaA47kdDEEylwqEXsJ7QQzuj4mAwoISCVv9IoD3MpF0gSE9rK3607pEQekTts3nRCwPYxWWhPPpN3UjXwEKFVd8ayko_qT73AMdOlmHG_XHawcwjRThozQb7uSYLJz-Sw5LddB-3cyVyn-X4NKz8wicVGne1dMQXs');">
+      </div>
+      <div class="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/50 to-transparent"></div>
+
+      <div class="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+        <img src="./star.svg" alt=""
+          class="absolute left-6 top-10 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 opacity-25 mix-blend-screen">
+        <img src="./star.svg" alt=""
+          class="absolute right-8 top-16 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 opacity-20 mix-blend-screen">
+        <img src="./star.svg" alt=""
+          class="absolute right-12 bottom-10 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 opacity-20 mix-blend-screen">
+      </div>
+
+      <div class="relative z-10 max-w-2xl text-white">
+        <div
+          class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass bg-white/15 border border-white/30 text-xs font-bold uppercase tracking-widest mb-6">
+          <span class="material-symbols-outlined text-sm">location_on</span>
+          Как нас найти
+        </div>
+        <h1 class="text-5xl max-[480px]:text-3xl max-[320px]:text-2xl font-black leading-[1.1] tracking-tight mb-5">
+          Контакты <span class="text-gradient">Кабинет 310</span>
+        </h1>
+        <p class="text-slate-100/90 text-lg max-[480px]:text-base leading-relaxed max-w-xl">
+          Адрес, телефон, соцсети и карта — все в одном месте. Если не дозвонились, напишите нам в мессенджер.
+        </p>
+      </div>
+    </section>
+
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
+      <div class="lg:col-span-5 space-y-6">
+        <div class="service-card-glass rounded-3xl p-8 max-[480px]:p-6 max-[320px]:p-5">
+          <h2 class="text-2xl font-black tracking-tight mb-6 dark:text-white">Наши контакты</h2>
+
+          <div class="space-y-5">
+            <div class="flex items-start gap-4">
+              <div class="size-12 rounded-2xl bg-primary/15 text-primary flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined">location_on</span>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Адрес</p>
+                <p class="font-bold dark:text-white">Ваш город, адрес студии</p>
+                <p class="text-sm text-slate-500 dark:text-slate-400">Ориентир: ТЦ/метро/улица (по желанию)</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4">
+              <div class="size-12 rounded-2xl bg-accent-purple/15 text-accent-purple flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined">call</span>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Телефон</p>
+                <a class="font-bold hover:text-primary transition-colors" href="tel:+70000000000">+7 (___) ___-__-__</a>
+                <p class="text-sm text-slate-500 dark:text-slate-400">Можно писать в мессенджеры</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4">
+              <div class="size-12 rounded-2xl bg-accent-pink/20 text-accent-pink flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined">schedule</span>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">График</p>
+                <p class="font-bold dark:text-white">Ежедневно: 10:00 — 21:00</p>
+                <p class="text-sm text-slate-500 dark:text-slate-400">По предварительной записи</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-8 pt-6 border-t border-slate-200/70 dark:border-slate-800/60">
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Соцсети</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <a href="#"
+                class="flex items-center justify-between gap-3 px-5 py-4 rounded-2xl bg-white/60 dark:bg-slate-900/40 border border-slate-200/60 dark:border-slate-800/60 hover:border-primary/30 transition-colors">
+                <div class="flex items-center gap-3">
+                  <span class="material-symbols-outlined text-primary">send</span>
+                  <div>
+                    <p class="font-bold dark:text-white leading-tight">Telegram</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 leading-tight">@cabinet310</p>
+                  </div>
+                </div>
+                <span class="material-symbols-outlined text-slate-400">arrow_forward</span>
+              </a>
+              <a href="#"
+                class="flex items-center justify-between gap-3 px-5 py-4 rounded-2xl bg-white/60 dark:bg-slate-900/40 border border-slate-200/60 dark:border-slate-800/60 hover:border-primary/30 transition-colors">
+                <div class="flex items-center gap-3">
+                  <span class="material-symbols-outlined text-primary">camera_alt</span>
+                  <div>
+                    <p class="font-bold dark:text-white leading-tight">Instagram</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 leading-tight">@cabinet310</p>
+                  </div>
+                </div>
+                <span class="material-symbols-outlined text-slate-400">arrow_forward</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="service-card-glass rounded-3xl p-8 max-[480px]:p-6 max-[320px]:p-5">
+          <div class="flex items-start justify-between gap-6">
+            <div>
+              <h3 class="text-xl font-black mb-2 dark:text-white">Как добраться</h3>
+              <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+                Добавь сюда пару подсказок: подъезд/этаж, где парковка, как пройти от метро.
+              </p>
+            </div>
+            <div class="size-12 rounded-2xl gradient-bg text-white flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined">directions</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lg:col-span-7">
+        <div class="service-card-glass rounded-3xl p-8 max-[480px]:p-6 max-[320px]:p-5">
+          <div class="flex items-center justify-between gap-4 mb-6">
+              <h2 class="text-2xl font-black tracking-tight dark:text-white">Мы на карте</h2>
+            <div class="hidden sm:flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-slate-400">
+              <span class="material-symbols-outlined text-primary text-base">map</span>
+              Локация
+            </div>
+          </div>
+
+          <div id="yandex-map"
+            class="w-full h-[420px] max-[480px]:h-[360px] max-[320px]:h-[320px] rounded-2xl bg-slate-100 dark:bg-slate-900/40 border border-slate-200/70 dark:border-slate-800/60 overflow-hidden">
+            <iframe src="https://yandex.ru/map-widget/v1/?um=constructor%3A69911730ccf7e45514f1b020950366a4dd45c223b3b597d3cf70ba7937401471&amp;source=constructor" width="100%" height="100%" frameborder="0"></iframe>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="bg-slate-900 text-white py-16 ">
+    <div class="max-w-7xl mx-auto px-6 max-[480px]:px-4 max-[320px]:px-3 grid grid-cols-1 md:grid-cols-4 gap-12">
+      <div class="space-y-6">
+        <div class="flex items-center gap-3">
+          <a href="./index.html">
+            <img src="./logo.svg" style="width: 100px;" alt="Cabinet 310" />
+          </a>
+        </div>
+        <p class="text-slate-400 text-sm leading-relaxed">
+          Студия эстетики в городе Сыктывкар. Мы создаем безупречные образы, подчеркивая вашу индивидуальность
+          через искусство перманента и нейл-сервиса.
+        </p>
+      </div>
+      <div>
+        <h6 class="font-bold mb-6 text-slate-200">Навигация</h6>
+        <ul class="space-y-4 text-sm text-slate-400">
+          <li><a class="hover:text-white transition-colors" href="./index.html#about">О студии</a></li>
+          <li><a class="hover:text-white transition-colors" href="./index.html#services">Услуги</a></li>
+          <li><a class="hover:text-white transition-colors" href="./reviews.html">Отзывы</a></li>
+          <li><a class="hover:text-white transition-colors" href="./contacts.html">Контакты</a></li>
+          <li><a class="hover:text-white transition-colors" href="./index.html#faq">Вопрос-ответ</a></li>
+        </ul>
+      </div>
+      <div>
+        <h6 class="font-bold mb-6 text-slate-200">Контакты</h6>
+        <div class="space-y-4 text-sm text-slate-400">
+          <p class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-sm text-primary">location_on</span>
+            г. Сыктывкар, ул. Куратова, д. 4
+          </p>
+          <p class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-sm text-primary">call</span>
+            +7 (908) 695-49-04
+          </p>
+          <p class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-sm text-primary">schedule</span>
+            Ежедневно: 10:00 — 18:00
+          </p>
+        </div>
+      </div>
+      <div>
+        <h6 class="font-bold mb-6 text-slate-200">Мы в соцсетях</h6>
+        <div class="flex gap-4 pt-1">
+          <a title="Мы в ВК"
+            class="size-10 rounded-xl bg-slate-800 flex items-center justify-center hover:bg-primary transition-colors cursor-pointer" href="https://vk.com/cabinet_310">
+            <span class="text-lg">ВК</span>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div
+      class="max-w-7xl mx-auto px-6 max-[480px]:px-4 max-[320px]:px-3 border-t border-slate-800 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500">
+      <p>© 2026 Кабинет 310. Все права защищены.</p>
+      <p>С любовью к вашей красоте ✨</p>
+    </div>
+  </footer>
+</body>
+
+</html>

@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#7a1ff9",
+                        "accent-pink": "#FEB9E5",
+                        "accent-purple": "#9F6DFC",
+                        "background-light": "#f7f5f8",
+                        "background-dark": "#170f23",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1.5rem",
+                        "3xl": "2rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style type="text/tailwindcss">
+        .glass {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #FEB9E5 0%, #9F6DFC 100%);
+        }
+        .text-gradient {
+            background: linear-gradient(135deg, #FEB9E5 0%, #9F6DFC 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .service-card-glass {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+        .service-card-glass:hover {
+            background: rgba(255, 255, 255, 0.7);
+        }
+    </style>
+    <title>Cabinet 310 — Админ-панель</title>
+</head>
+
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen overflow-x-hidden">
+    <header class="sticky top-0 z-50 w-full glass border-b border-primary/10">
+        <div class="max-w-7xl mx-auto px-6 max-[480px]:px-4 max-[320px]:px-3 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <a href="./index.html">
+                    <img src="./logo.svg" style="width: 100px;" alt="Cabinet 310">
+                </a>
+                <span class="text-xs font-bold uppercase tracking-widest text-primary">Админ</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="hidden md:flex items-center gap-3">
+                    <span class="material-symbols-outlined text-slate-400">account_circle</span>
+                    <span class="text-sm font-semibold">Мастер А</span>
+                </div>
+                <button class="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-semibold hover:border-primary transition-colors">
+                    Выйти
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 max-[480px]:px-4 max-[320px]:px-3 py-12 max-[480px]:py-8 max-[320px]:py-6">
+        <div class="mb-8">
+            <h1 class="text-4xl max-[480px]:text-3xl max-[320px]:text-2xl font-black tracking-tight mb-2">
+                Панель управления
+            </h1>
+            <p class="text-slate-500 dark:text-slate-400">Управление записями и ценами</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <div class="service-card-glass rounded-3xl p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="size-12 rounded-2xl gradient-bg text-white flex items-center justify-center">
+                        <span class="material-symbols-outlined">event</span>
+                    </div>
+                    <span class="text-2xl font-black text-gradient">24</span>
+                </div>
+                <h3 class="font-bold mb-1 dark:text-white">Записей сегодня</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400">+3 к вчерашнему дню</p>
+            </div>
+
+            <div class="service-card-glass rounded-3xl p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="size-12 rounded-2xl bg-accent-pink/20 text-accent-pink flex items-center justify-center">
+                        <span class="material-symbols-outlined">schedule</span>
+                    </div>
+                    <span class="text-2xl font-black text-gradient">8</span>
+                </div>
+                <h3 class="font-bold mb-1 dark:text-white">Свободных слотов</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400">На ближайшие 3 дня</p>
+            </div>
+
+            <div class="service-card-glass rounded-3xl p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="size-12 rounded-2xl bg-accent-purple/20 text-accent-purple flex items-center justify-center">
+                        <span class="material-symbols-outlined">payments</span>
+                    </div>
+                    <span class="text-2xl font-black text-gradient">12</span>
+                </div>
+                <h3 class="font-bold mb-1 dark:text-white">Услуг в прайсе</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Активных позиций</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div class="lg:col-span-8 space-y-6">
+                <div class="service-card-glass rounded-3xl p-8 max-[480px]:p-6 max-[320px]:p-5">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-black tracking-tight dark:text-white">Календарь записей</h2>
+                        <div class="flex gap-2">
+                            <button class="px-4 py-2 rounded-xl bg-primary text-white text-sm font-semibold">
+                                Сегодня
+                            </button>
+                            <button class="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-semibold hover:border-primary transition-colors">
+                                Неделя
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mb-6 flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <button class="size-10 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-center hover:border-primary transition-colors">
+                                <span class="material-symbols-outlined">chevron_left</span>
+                            </button>
+                            <h3 class="text-lg font-bold dark:text-white">27 февраля 2026</h3>
+                            <button class="size-10 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-center hover:border-primary transition-colors">
+                                <span class="material-symbols-outlined">chevron_right</span>
+                            </button>
+                        </div>
+                        <button class="px-4 py-2 rounded-xl gradient-bg text-white text-sm font-bold shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity">
+                            + Добавить запись
+                        </button>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-4 p-4 rounded-2xl bg-white/60 dark:bg-slate-900/40 border border-slate-200/60 dark:border-slate-800/60">
+                            <div class="text-center min-w-[60px]">
+                                <p class="text-xs font-bold text-slate-400 uppercase">Время</p>
+                                <p class="text-lg font-black text-primary">10:00</p>
+                            </div>
+                            <div class="h-12 w-px bg-slate-200 dark:bg-slate-700"></div>
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="material-symbols-outlined text-sm text-accent-pink">face_3</span>
+                                    <h4 class="font-bold dark:text-white">Перманент бровей</h4>
+                                </div>
+                                <p class="text-sm text-slate-500 dark:text-slate-400">Анна Иванова • +7 (999) 123-45-67</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button class="size-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center hover:bg-primary/20 transition-colors">
+                                    <span class="material-symbols-outlined text-lg">edit</span>
+                                </button>
+                                <button class="size-9 rounded-xl bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 transition-colors">
+                                    <span class="material-symbols-outlined text-lg">close</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-4 p-4 rounded-2xl bg-white/60 dark:bg-slate-900/40 border border-slate-200/60 dark:border-slate-800/60">
+                            <div class="text-center min-w-[60px]">
+                                <p class="text-xs font-bold text-slate-400 uppercase">Время</p>
+                                <p class="text-lg font-black text-primary">12:30</p>
+                            </div>
+                            <div class="h-12 w-px bg-slate-200 dark:bg-slate-700"></div>
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="material-symbols-outlined text-sm text-accent-purple">back_hand</span>
+                                    <h4 class="font-bold dark:text-white">Маникюр + наращивание</h4>
+                                </div>
+                                <p class="text-sm text-slate-500 dark:text-slate-400">Мария Петрова • +7 (999) 234-56-78</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button class="size-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center hover:bg-primary/20 transition-colors">
+                                    <span class="material-symbols-outlined text-lg">edit</span>
+                                </button>
+                                <button class="size-9 rounded-xl bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 transition-colors">
+                                    <span class="material-symbols-outlined text-lg">close</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-4 p-4 rounded-2xl bg-slate-100/60 dark:bg-slate-800/40 border border-dashed border-slate-300 dark:border-slate-700">
+                            <div class="text-center min-w-[60px]">
+                                <p class="text-xs font-bold text-slate-400 uppercase">Время</p>
+                                <p class="text-lg font-black text-slate-400">14:00</p>
+                            </div>
+                            <div class="h-12 w-px bg-slate-200 dark:bg-slate-700"></div>
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="material-symbols-outlined text-sm text-slate-400">block</span>
+                                    <h4 class="font-bold text-slate-400">Заблокировано</h4>
+                                </div>
+                                <p class="text-sm text-slate-400">Технический перерыв</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button class="size-9 rounded-xl bg-slate-200/60 text-slate-500 flex items-center justify-center hover:bg-slate-300/60 transition-colors">
+                                    <span class="material-symbols-outlined text-lg">lock_open</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-4 p-4 rounded-2xl bg-white/60 dark:bg-slate-900/40 border border-slate-200/60 dark:border-slate-800/60">
+                            <div class="text-center min-w-[60px]">
+                                <p class="text-xs font-bold text-slate-400 uppercase">Время</p>
+                                <p class="text-lg font-black text-primary">16:00</p>
+                            </div>
+                            <div class="h-12 w-px bg-slate-200 dark:bg-slate-700"></div>
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="material-symbols-outlined text-sm text-accent-pink">visibility</span>
+                                    <h4 class="font-bold dark:text-white">Ламинирование ресниц</h4>
+                                </div>
+                                <p class="text-sm text-slate-500 dark:text-slate-400">Елена Сидорова • +7 (999) 345-67-89</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button class="size-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center hover:bg-primary/20 transition-colors">
+                                    <span class="material-symbols-outlined text-lg">edit</span>
+                                </button>
+                                <button class="size-9 rounded-xl bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 transition-colors">
+                                    <span class="material-symbols-outlined text-lg">close</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <button class="w-full p-4 rounded-2xl border-2 border-dashed border-slate-300 dark:border-slate-700 text-slate-400 hover:border-primary hover:text-primary transition-colors flex items-center justify-center gap-2">
+                            <span class="material-symbols-outlined">add</span>
+                            <span class="font-semibold">Добавить слот или блокировку</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-4 space-y-6">
+                <div class="service-card-glass rounded-3xl p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-xl font-black tracking-tight dark:text-white">Быстрые действия</h2>
+                    </div>
+                    <div class="space-y-3">
+                        <button class="w-full p-4 rounded-2xl bg-white/60 dark:bg-slate-900/40 border border-slate-200/60 dark:border-slate-800/60 hover:border-primary transition-colors flex items-center gap-3">
+                            <div class="size-10 rounded-xl gradient-bg text-white flex items-center justify-center">
+                                <span class="material-symbols-outlined">block</span>
+                            </div>
+                            <div class="text-left flex-1">
+                                <p class="font-bold text-sm dark:text-white">Заблокировать время</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Технический перерыв</p>
+                            </div>
+                        </button>
+
+                        <button class="w-full p-4 rounded-2xl bg-white/60 dark:bg-slate-900/40 border border-slate-200/60 dark:border-slate-800/60 hover:border-primary transition-colors flex items-center gap-3">
+                            <div class="size-10 rounded-xl bg-accent-pink/20 text-accent-pink flex items-center justify-center">
+                                <span class="material-symbols-outlined">event_available</span>
+                            </div>
+                            <div class="text-left flex-1">
+                                <p class="font-bold text-sm dark:text-white">Открыть слоты</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">На следующую неделю</p>
+                            </div>
+                        </button>
+
+                        <button class="w-full p-4 rounded-2xl bg-white/60 dark:bg-slate-900/40 border border-slate-200/60 dark:border-slate-800/60 hover:border-primary transition-colors flex items-center gap-3">
+                            <div class="size-10 rounded-xl bg-accent-purple/20 text-accent-purple flex items-center justify-center">
+                                <span class="material-symbols-outlined">download</span>
+                            </div>
+                            <div class="text-left flex-1">
+                                <p class="font-bold text-sm dark:text-white">Экспорт записей</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">За текущий месяц</p>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="service-card-glass rounded-3xl p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-xl font-black tracking-tight dark:text-white">Ближайшие записи</h2>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="p-3 rounded-xl bg-white/60 dark:bg-slate-900/40 border border-slate-200/60 dark:border-slate-800/60">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="material-symbols-outlined text-sm text-primary">schedule</span>
+                                <span class="text-xs font-bold text-slate-400">Завтра, 10:00</span>
+                            </div>
+                            <p class="font-bold text-sm dark:text-white mb-1">Перманент губ</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Ольга К.</p>
+                        </div>
+
+                        <div class="p-3 rounded-xl bg-white/60 dark:bg-slate-900/40 border border-slate-200/60 dark:border-slate-800/60">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="material-symbols-outlined text-sm text-primary">schedule</span>
+                                <span class="text-xs font-bold text-slate-400">Завтра, 14:30</span>
+                            </div>
+                            <p class="font-bold text-sm dark:text-white mb-1">Маникюр</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Светлана Д.</p>
+                        </div>
+
+                        <div class="p-3 rounded-xl bg-white/60 dark:bg-slate-900/40 border border-slate-200/60 dark:border-slate-800/60">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="material-symbols-outlined text-sm text-primary">schedule</span>
+                                <span class="text-xs font-bold text-slate-400">28 фев, 11:00</span>
+                            </div>
+                            <p class="font-bold text-sm dark:text-white mb-1">Ламинирование</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Наталья В.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-6 service-card-glass rounded-3xl p-8 max-[480px]:p-6 max-[320px]:p-5">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-black tracking-tight dark:text-white">Управление ценами</h2>
+                <button class="px-4 py-2 rounded-xl gradient-bg text-white text-sm font-bold shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity">
+                    + Добавить услугу
+                </button>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b border-slate-200 dark:border-slate-700">
+                            <th class="text-left py-4 px-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Услуга</th>
+                            <th class="text-left py-4 px-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Мастер</th>
+                            <th class="text-left py-4 px-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Длительность</th>
+                            <th class="text-left py-4 px-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Цена</th>
+                            <th class="text-right py-4 px-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b border-slate-100 dark:border-slate-800 hover:bg-white/40 dark:hover:bg-slate-900/20 transition-colors">
+                            <td class="py-4 px-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="size-10 rounded-xl bg-accent-pink/20 text-accent-pink flex items-center justify-center">
+                                        <span class="material-symbols-outlined text-lg">face_3</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-bold dark:text-white">Перманент бровей</p>
+                                        <p class="text-xs text-slate-500 dark:text-slate-400">Пудровое напыление</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="py-4 px-4">
+                                <span class="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold">Мастер Б</span>
+                            </td>
+                            <td class="py-4 px-4">
+                                <span class="text-sm font-semibold dark:text-white">2 часа</span>
+                            </td>
+                            <td class="py-4 px-4">
+                                <span class="text-lg font-black text-gradient">5 000 ₽</span>
+                            </td>
+                            <td class="py-4 px-4">
+                                <div class="flex gap-2 justify-end">
+                                    <button class="size-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center hover:bg-primary/20 transition-colors">
+                                        <span class="material-symbols-outlined text-lg">edit</span>
+                                    </button>
+                                    <button class="size-9 rounded-xl bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 transition-colors">
+                                        <span class="material-symbols-outlined text-lg">delete</span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr class="border-b border-slate-100 dark:border-slate-800 hover:bg-white/40 dark:hover:bg-slate-900/20 transition-colors">
+                            <td class="py-4 px-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="size-10 rounded-xl bg-accent-pink/20 text-accent-pink flex items-center justify-center">
+                                        <span class="material-symbols-outlined text-lg">face_3</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-bold dark:text-white">Перманент губ</p>
+                                        <p class="text-xs text-slate-500 dark:text-slate-400">Акварельная техника</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="py-4 px-4">
+                                <span class="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold">Мастер Б</span>
+                            </td>
+                            <td class="py-4 px-4">
+                                <span class="text-sm font-semibold dark:text-white">2.5 часа</span>
+                            </td>
+                            <td class="py-4 px-4">
+                                <span class="text-lg font-black text-gradient">6 500 ₽</span>
+                            </td>
+                            <td class="py-4 px-4">
+                                <div class="flex gap-2 justify-end">
+                                    <button class="size-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center hover:bg-primary/20 transition-colors">
+                                        <span class="material-symbols-outlined text-lg">edit</span>
+                                    </button>
+                                    <button class="size-9 rounded-xl bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 transition-colors">
+                                        <span class="material-symbols-outlined text-lg">delete</span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr class="border-b border-slate-100 dark:border-slate-800 hover:bg-white/40 dark:hover:bg-slate-900/20 transition-colors">
+                            <td class="py-4 px-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="size-10 rounded-xl bg-accent-purple/20 text-accent-purple flex items-center justify-center">
+                                        <span class="material-symbols-outlined text-lg">back_hand</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-bold dark:text-white">Маникюр</p>
+                                        <p class="text-xs text-slate-500 dark:text-slate-400">Покрытие гель-лак</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="py-4 px-4">
+                                <span class="px-3 py-1 rounded-full bg-accent-purple/10 text-accent-purple text-xs font-bold">Мастер А</span>
+                            </td>
+                            <td class="py-4 px-4">
+                                <span class="text-sm font-semibold dark:text-white">1.5 часа</span>
+                            </td>
+                            <td class="py-4 px-4">
+                                <span class="text-lg font-black text-gradient">2 500 ₽</span>
+                            </td>
+                            <td class="py-4 px-4">
+                                <div class="flex gap-2 justify-end">
+                                    <button class="size-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center hover:bg-primary/20 transition-colors">
+                                        <span class="material-symbols-outlined text-lg">edit</span>
+                                    </button>
+                                    <button class="size-9 rounded-xl bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 transition-colors">
+                                        <span class="material-symbols-outlined text-lg">delete</span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr class="border-b border-slate-100 dark:border-slate-800 hover:bg-white/40 dark:hover:bg-slate-900/20 transition-colors">
+                            <td class="py-4 px-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="size-10 rounded-xl bg-accent-purple/20 text-accent-purple flex items-center justify-center">
+                                        <span class="material-symbols-outlined text-lg">back_hand</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-bold dark:text-white">Наращивание ногтей</p>
+                                        <p class="text-xs text-slate-500 dark:text-slate-400">Гелевое наращивание</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="py-4 px-4">
+                                <span class="px-3 py-1 rounded-full bg-accent-purple/10 text-accent-purple text-xs font-bold">Мастер А</span>
+                            </td>
+                            <td class="py-4 px-4">
+                                <span class="text-sm font-semibold dark:text-white">2 часа</span>
+                            </td>
+                            <td class="py-4 px-4">
+                                <span class="text-lg font-black text-gradient">3 500 ₽</span>
+                            </td>
+                            <td class="py-4 px-4">
+                                <div class="flex gap-2 justify-end">
+                                    <button class="size-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center hover:bg-primary/20 transition-colors">
+                                        <span class="material-symbols-outlined text-lg">edit</span>
+                                    </button>
+                                    <button class="size-9 rounded-xl bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 transition-colors">
+                                        <span class="material-symbols-outlined text-lg">delete</span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr class="hover:bg-white/40 dark:hover:bg-slate-900/20 transition-colors">
+                            <td class="py-4 px-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="size-10 rounded-xl bg-accent-pink/20 text-accent-pink flex items-center justify-center">
+                                        <span class="material-symbols-outlined text-lg">visibility</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-bold dark:text-white">Ламинирование ресниц</p>
+                                        <p class="text-xs text-slate-500 dark:text-slate-400">С ботоксом</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="py-4 px-4">
+                                <span class="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold">Мастер Б</span>
+                            </td>
+                            <td class="py-4 px-4">
+                                <span class="text-sm font-semibold dark:text-white">1 час</span>
+                            </td>
+                            <td class="py-4 px-4">
+                                <span class="text-lg font-black text-gradient">2 000 ₽</span>
+                            </td>
+                            <td class="py-4 px-4">
+                                <div class="flex gap-2 justify-end">
+                                    <button class="size-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center hover:bg-primary/20 transition-colors">
+                                        <span class="material-symbols-outlined text-lg">edit</span>
+                                    </button>
+                                    <button class="size-9 rounded-xl bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 transition-colors">
+                                        <span class="material-symbols-outlined text-lg">delete</span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-slate-900 text-white py-16 ">
+    <div class="max-w-7xl mx-auto px-6 max-[480px]:px-4 max-[320px]:px-3 grid grid-cols-1 md:grid-cols-4 gap-12">
+      <div class="space-y-6">
+        <div class="flex items-center gap-3">
+          <a href="./index.html">
+            <img src="./logo.svg" style="width: 100px;" alt="Cabinet 310" />
+          </a>
+        </div>
+        <p class="text-slate-400 text-sm leading-relaxed">
+          Студия эстетики в городе Сыктывкар. Мы создаем безупречные образы, подчеркивая вашу индивидуальность
+          через искусство перманента и нейл-сервиса.
+        </p>
+      </div>
+      <div>
+        <h6 class="font-bold mb-6 text-slate-200">Навигация</h6>
+        <ul class="space-y-4 text-sm text-slate-400">
+          <li><a class="hover:text-white transition-colors" href="./index.html#about">О студии</a></li>
+          <li><a class="hover:text-white transition-colors" href="./index.html#services">Услуги</a></li>
+          <li><a class="hover:text-white transition-colors" href="./reviews.html">Отзывы</a></li>
+          <li><a class="hover:text-white transition-colors" href="./contacts.html">Контакты</a></li>
+          <li><a class="hover:text-white transition-colors" href="./index.html#faq">Вопрос-ответ</a></li>
+        </ul>
+      </div>
+      <div>
+        <h6 class="font-bold mb-6 text-slate-200">Контакты</h6>
+        <div class="space-y-4 text-sm text-slate-400">
+          <p class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-sm text-primary">location_on</span>
+            г. Сыктывкар, ул. Куратова, д. 4
+          </p>
+          <p class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-sm text-primary">call</span>
+            +7 (908) 695-49-04
+          </p>
+          <p class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-sm text-primary">schedule</span>
+            Ежедневно: 10:00 — 18:00
+          </p>
+        </div>
+      </div>
+      <div>
+        <h6 class="font-bold mb-6 text-slate-200">Мы в соцсетях</h6>
+        <div class="flex gap-4 pt-1">
+          <a title="Мы в ВК"
+            class="size-10 rounded-xl bg-slate-800 flex items-center justify-center hover:bg-primary transition-colors cursor-pointer" href="https://vk.com/cabinet_310">
+            <span class="text-lg">ВК</span>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div
+      class="max-w-7xl mx-auto px-6 max-[480px]:px-4 max-[320px]:px-3 border-t border-slate-800 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500">
+      <p>© 2026 Кабинет 310. Все права защищены.</p>
+      <p>С любовью к вашей красоте ✨</p>
+    </div>
+  </footer>
+
+</body>
+
+</html>

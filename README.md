@@ -1,36 +1,46 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Кабинет 310 — Система записи и управления студией
 
-## Getting Started
+Техническая документация проекта на Next.js 14+ (App Router). Проект объединяет готовую верстку с логикой бронирования, админ-панелью и системой отзывов.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 📂 Структура и Роутинг
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Все файлы верстки из корня проекта распределяются по следующим маршрутам:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Публичные страницы
+* `/` — **Главная страница**.
+* `/reviews` — **Отзывы**. Включает компонент `form` как всплывающее окно (Pop-up) для отправки новых отзывов.
+* `/contacts` — **Контакты**. Контактная информация и карта.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Процесс бронирования (`/booking`)
+Страница записи реализуется как единый Stepper, объединяющий логику трех файлов:
+1.  `slide1` — Выбор услуги.
+2.  `slide2` — Выбор даты и времени (интеграция с API проверки конфликтов).
+3.  `slide3` — Форма данных клиента (Имя, Телефон) и финализация.
 
-## Learn More
+### Панель управления
+* `/admin/login` — Авторизация администратора.
+* `/admin` — Админ-панель (управление записями, ценами и модерация отзывов).
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## ⚙️ Логика бронирования (Conflict Matrix)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Система учитывает пересечение услуг двух мастеров (Мастер А и Мастер Б) и занятость кабинета:
 
-## Deploy on Vercel
+| Услуга (Выбор) | Мастер | Конфликтует с... | Результат |
+| :--- | :--- | :--- | :--- |
+| **Маникюр** | А | **Перманент** (Мастер Б) | ❌ КОНФЛИКТ (Общая зона) |
+| **Маникюр** | А | **Ламинирование** (Мастер Б) | ✅ ОК (Параллельно) |
+| **Перманент** | Б | **Любая услуга** | ❌ КОНФЛИКТ (Мастер занят) |
+| **Ламинирование** | Б | **Перманент** (Мастер Б) | ❌ КОНФЛИКТ (Мастер занят) |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**Техническая реализация:** При рендеринге `slide2` фронтенд делает запрос к `/api/availability`, который на уровне Prisma (SQLite) проверяет не только занятость конкретного мастера, но и наличие конфликтующих процедур в это же время.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 🛠 Технологический стек
+
+* **Framework:** Next.js 14 (App Router)
+* **Database:** SQLite + Prisma ORM

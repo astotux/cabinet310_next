@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#7a1ff9",
+                        "background-light": "#f7f5f8",
+                        "background-dark": "#170f23",
+                        "accent-pink": "#FEB9E5",
+                        "accent-purple": "#9F6DFC",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        .glass-morphism {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .gradient-button {
+            background: linear-gradient(135deg, #FEB9E5 0%, #9F6DFC 100%);
+        }
+
+        .star-glow:hover {
+            text-shadow: 0 0 10px rgba(122, 31, 249, 0.5);
+        }
+    </style>
+</head>
+
+<body class="font-display bg-background-light dark:bg-background-dark min-h-screen relative overflow-x-hidden">
+    <div class="relative flex flex-col min-h-screen">
+        <!-- Main Content -->
+        <main
+            class="flex-1 flex items-center justify-center p-6 max-[480px]:p-4 max-[320px]:p-3 py-12 max-[480px]:py-8 max-[320px]:py-6">
+            <div
+                class="w-full max-w-2xl glass-morphism rounded-[2rem] shadow-2xl p-8 max-[480px]:p-6 max-[320px]:p-5 md:p-12 relative overflow-visible">
+                <div class="pointer-events-none absolute inset-0 overflow-visible z-20" aria-hidden="true">
+                    <img src="./star.svg" alt=""
+                        class="absolute -left-12 top-14 w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 opacity-18" />
+                    <img src="./star.svg" alt=""
+                        class="absolute -right-12 top-10 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 opacity-18" />
+                    <img src="./star.svg" alt=""
+                        class="hidden sm:block absolute -left-12 bottom-10 w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 opacity-12" />
+                    <img src="./star.svg" alt=""
+                        class="absolute -right-12 bottom-8 w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 opacity-12" />
+                </div>
+                <div class="relative z-10">
+                    <div class="text-center mb-10">
+                        <h2
+                            class="text-4xl max-[480px]:text-3xl max-[320px]:text-2xl font-black text-slate-900 tracking-tight mb-3">
+                            Поделитесь впечатлениями</h2>
+                        <p class="text-slate-500 max-w-md mx-auto max-[480px]:text-sm">Ваше мнение помогает нам
+                            становиться лучше и радовать вас качественным сервисом</p>
+                    </div>
+                    <form class="space-y-8">
+                        <!-- Service Selection -->
+                        <div class="space-y-4">
+                            <label class="text-sm font-bold text-slate-700 ml-1">Выберите услугу</label>
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-3 max-[320px]:gap-2">
+                                <button
+                                    class="flex flex-col items-center justify-center p-4 rounded-2xl bg-white border border-slate-100 hover:border-primary hover:text-primary transition-all group shadow-sm"
+                                    type="button">
+                                    <span
+                                        class="material-symbols-outlined mb-2 text-slate-400 group-hover:text-primary">face_3</span>
+                                    <span class="text-xs font-semibold">Перманент губ</span>
+                                </button>
+                                <button
+                                    class="flex flex-col items-center justify-center p-4 rounded-2xl bg-primary/5 border border-primary text-primary transition-all group shadow-sm"
+                                    type="button">
+                                    <span class="material-symbols-outlined mb-2">eye_tracking</span>
+                                    <span class="text-xs font-semibold">Перманент бровей</span>
+                                </button>
+                                <button
+                                    class="flex flex-col items-center justify-center p-4 rounded-2xl bg-white border border-slate-100 hover:border-primary hover:text-primary transition-all group shadow-sm"
+                                    type="button">
+                                    <span
+                                        class="material-symbols-outlined mb-2 text-slate-400 group-hover:text-primary">visibility</span>
+                                    <span class="text-xs font-semibold">Межресничка</span>
+                                </button>
+                                <button
+                                    class="flex flex-col items-center justify-center p-4 rounded-2xl bg-white border border-slate-100 hover:border-primary hover:text-primary transition-all group shadow-sm"
+                                    type="button">
+                                    <span
+                                        class="material-symbols-outlined mb-2 text-slate-400 group-hover:text-primary">content_cut</span>
+                                    <span class="text-xs font-semibold">Лами ресниц</span>
+                                </button>
+                                <button
+                                    class="flex flex-col items-center justify-center p-4 rounded-2xl bg-white border border-slate-100 hover:border-primary hover:text-primary transition-all group shadow-sm"
+                                    type="button">
+                                    <span
+                                        class="material-symbols-outlined mb-2 text-slate-400 group-hover:text-primary">back_hand</span>
+                                    <span class="text-xs font-semibold">Маникюр</span>
+                                </button>
+                                <button
+                                    class="flex flex-col items-center justify-center p-4 rounded-2xl bg-white border border-dashed border-slate-300 hover:border-primary hover:text-primary transition-all group"
+                                    type="button">
+                                    <span
+                                        class="material-symbols-outlined mb-2 text-slate-400 group-hover:text-primary">more_horiz</span>
+                                    <span class="text-xs font-semibold">Другое</span>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Rating -->
+                        <div class="flex flex-col items-center space-y-3">
+                            <label class="text-sm font-bold text-slate-700">Ваша оценка</label>
+                            <div class="flex gap-2">
+                                <button class="star-glow text-primary transition-all scale-110" type="button">
+                                    <span class="material-symbols-outlined text-4xl"
+                                        style="font-variation-settings: 'FILL' 1">star</span>
+                                </button>
+                                <button class="star-glow text-primary transition-all scale-110" type="button">
+                                    <span class="material-symbols-outlined text-4xl"
+                                        style="font-variation-settings: 'FILL' 1">star</span>
+                                </button>
+                                <button class="star-glow text-primary transition-all scale-110" type="button">
+                                    <span class="material-symbols-outlined text-4xl"
+                                        style="font-variation-settings: 'FILL' 1">star</span>
+                                </button>
+                                <button class="star-glow text-primary transition-all scale-110" type="button">
+                                    <span class="material-symbols-outlined text-4xl"
+                                        style="font-variation-settings: 'FILL' 1">star</span>
+                                </button>
+                                <button
+                                    class="star-glow text-slate-300 hover:text-primary transition-all hover:scale-110"
+                                    type="button">
+                                    <span class="material-symbols-outlined text-4xl">star</span>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Feedback Area -->
+                        <div class="space-y-4">
+                            <div class="relative">
+                                <label class="text-sm font-bold text-slate-700 ml-1 block mb-2">Ваш отзыв</label>
+                                <textarea
+                                    class="w-full rounded-2xl border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all p-4 text-slate-700 placeholder:text-slate-400"
+                                    placeholder="Расскажите, как все прошло..." rows="4"></textarea>
+                            </div>
+                            <div class="flex flex-wrap gap-3">
+                                <button
+                                    class="flex items-center gap-2 px-4 py-3 rounded-xl border border-dashed border-slate-300 text-slate-500 hover:border-primary hover:text-primary transition-all bg-white/50"
+                                    type="button">
+                                    <span class="material-symbols-outlined">add_a_photo</span>
+                                    <span class="text-xs font-bold uppercase tracking-wider">Прикрепить фото</span>
+                                </button>
+                                <div class="relative group">
+                                    <div class="w-14 h-14 rounded-xl overflow-hidden border border-slate-200">
+                                        <img class="w-full h-full object-cover"
+                                            data-alt="Close up of beautiful manicured nails with soft pink polish"
+                                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAl2OyEIj8AS1-oDCde4NctkJv5YGmuQqzfgLCKauhkSzgVGvaAPSJQMo3nnxmID-gc77wzMVHJExbn7F-2DqXDJGsUdsADbYK1Q359I0GVD5rP36okppZvlVyZx1C2dmVCVXTaLBouShXSvOuPKI7-BiXSP5y-eYjh0AeLxxn1cUw7G26gOgUHlk4TZ-TGhiVAv7g1xCpYhsaPHZNIqOT9ELo7gT9flmEDfI7lMliJOisKQz-l1YaeS8Am4bNVsYQtQyUK4OKZY9A" />
+                                    </div>
+                                    <button
+                                        class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full size-5 flex items-center justify-center shadow-md"
+                                        type="button">
+                                        <span class="material-symbols-outlined text-[12px]">close</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Name Input -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <label class="text-sm font-bold text-slate-700 ml-1">Ваше имя</label>
+                                <input
+                                    class="w-full rounded-xl border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all p-3.5"
+                                    placeholder="Введите имя" type="text" />
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-sm font-bold text-slate-700 ml-1">Телефон (для связи)</label>
+                                <input
+                                    class="w-full rounded-xl border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all p-3.5"
+                                    placeholder="+7 (___) ___-__-__" type="tel" />
+                            </div>
+                        </div>
+                        <!-- Submit Button -->
+                        <button
+                            class="gradient-button w-full py-5 max-[480px]:py-4 max-[320px]:py-3.5 rounded-2xl text-white font-black text-lg max-[480px]:text-base tracking-wide shadow-xl shadow-accent-purple/30 hover:shadow-2xl hover:shadow-accent-purple/40 hover:-translate-y-1 transition-all"
+                            type="submit">
+                            ОТПРАВИТЬ ОТЗЫВ
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>
