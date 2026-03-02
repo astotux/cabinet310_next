@@ -47,6 +47,15 @@ export default function AdminPage() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedCalendarDate, setSelectedCalendarDate] = useState<Date | null>(null);
   
+  // Статистика
+  const [todayBookingsLiza, setTodayBookingsLiza] = useState(0);
+  const [todayBookingsZhenya, setTodayBookingsZhenya] = useState(0);
+  const [selectedMasterForBookings, setSelectedMasterForBookings] = useState<'Лиза' | 'Женя'>('Лиза');
+  const [monthRevenueLiza, setMonthRevenueLiza] = useState(0);
+  const [monthRevenueZhenya, setMonthRevenueZhenya] = useState(0);
+  const [selectedMasterForRevenue, setSelectedMasterForRevenue] = useState<'Лиза' | 'Женя'>('Лиза');
+  const [pendingReviewsCount, setPendingReviewsCount] = useState(0);
+  
   const router = useRouter();
   
   // Состояние для календаря
@@ -167,12 +176,59 @@ export default function AdminPage() {
       const servicesRes = await fetch("/api/services");
       const servicesData = await servicesRes.json();
       setServices(Array.isArray(servicesData) ? servicesData : []);
+      
+      // Подсчет статистики
+      calculateStats(bookingsData, reviewsData, servicesData);
     } catch (error) {
       console.error("Ошибка загрузки данных:", error);
       setBookings([]);
       setReviews([]);
       setServices([]);
     }
+  };
+
+  const calculateStats = (bookingsData: any[], reviewsData: any[], servicesData: any[]) => {
+    // Записей сегодня для каждого мастера
+    const today = new Date().toISOString().split('T')[0];
+    const todayBookings = bookingsData.filter((b: any) => b.date === today);
+    
+    const lizaTodayBookings = todayBookings.filter((b: any) => b.master === 'Лиза');
+    setTodayBookingsLiza(lizaTodayBookings.length);
+    
+    const zhenyaTodayBookings = todayBookings.filter((b: any) => b.master === 'Женя');
+    setTodayBookingsZhenya(zhenyaTodayBookings.length);
+
+    // Доход за текущий месяц для каждого мастера
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    
+    const monthBookings = bookingsData.filter((booking: any) => {
+      const bookingDate = new Date(booking.date);
+      return bookingDate.getMonth() === currentMonth && bookingDate.getFullYear() === currentYear;
+    });
+
+    // Доход Лизы
+    const lizaRevenue = monthBookings
+      .filter((booking: any) => booking.master === 'Лиза')
+      .reduce((sum: number, booking: any) => {
+        const service = servicesData.find((s: any) => s.service === booking.service);
+        return sum + (service?.price || 0);
+      }, 0);
+    setMonthRevenueLiza(lizaRevenue);
+
+    // Доход Жени
+    const zhenyaRevenue = monthBookings
+      .filter((booking: any) => booking.master === 'Женя')
+      .reduce((sum: number, booking: any) => {
+        const service = servicesData.find((s: any) => s.service === booking.service);
+        return sum + (service?.price || 0);
+      }, 0);
+    setMonthRevenueZhenya(zhenyaRevenue);
+
+    // Отзывов на модерации
+    const pendingReviews = reviewsData.filter((r: any) => !r.approved);
+    setPendingReviewsCount(pendingReviews.length);
   };
 
   const approveReview = async (id: number) => {
@@ -849,29 +905,81 @@ export default function AdminPage() {
               <div className="size-12 rounded-2xl gradient-bg text-white flex items-center justify-center">
                 <span className="material-symbols-outlined">event</span>
               </div>
-              <span className="text-2xl font-black text-gradient">{bookings.length}</span>
+              <span className="text-2xl font-black text-gradient">
+                {selectedMasterForBookings === 'Лиза' ? todayBookingsLiza : todayBookingsZhenya}
+              </span>
             </div>
-            <h3 className="font-bold mb-1">Записей сегодня</h3>
-            <p className="text-xs text-slate-500">Всего записей</p>
+            <div className="flex items-center justify-between">
+              <h3 className="font-bold">Записей сегодня</h3>
+              <div className="flex gap-1 bg-white rounded-lg p-1">
+                <button
+                  onClick={() => setSelectedMasterForBookings('Лиза')}
+                  className={`px-3 py-1 rounded text-xs font-semibold transition-all ${
+                    selectedMasterForBookings === 'Лиза'
+                      ? 'bg-gradient-to-r from-accent-pink to-accent-purple text-white'
+                      : 'text-slate-400 hover:text-slate-600'
+                  }`}
+                >
+                  Лиза
+                </button>
+                <button
+                  onClick={() => setSelectedMasterForBookings('Женя')}
+                  className={`px-3 py-1 rounded text-xs font-semibold transition-all ${
+                    selectedMasterForBookings === 'Женя'
+                      ? 'bg-gradient-to-r from-accent-pink to-accent-purple text-white'
+                      : 'text-slate-400 hover:text-slate-600'
+                  }`}
+                >
+                  Женя
+                </button>
+              </div>
+            </div>
+            <p className="text-xs text-slate-500">На {new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })}</p>
           </div>
 
           <div className="service-card-glass rounded-3xl p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="size-12 rounded-2xl bg-accent-pink/20 text-accent-pink flex items-center justify-center">
-                <span className="material-symbols-outlined">schedule</span>
+                <span className="material-symbols-outlined">payments</span>
               </div>
-              <span className="text-2xl font-black text-gradient">8</span>
+              <span className="text-2xl font-black text-gradient">
+                {selectedMasterForRevenue === 'Лиза' ? monthRevenueLiza.toLocaleString() : monthRevenueZhenya.toLocaleString()} ₽
+              </span>
             </div>
-            <h3 className="font-bold mb-1">Свободных слотов</h3>
-            <p className="text-xs text-slate-500">На ближайшие 3 дня</p>
+            <div className="flex items-center justify-between">
+              <h3 className="font-bold">Доход за месяц</h3>
+              <div className="flex gap-1 bg-white rounded-lg p-1">
+                <button
+                  onClick={() => setSelectedMasterForRevenue('Лиза')}
+                  className={`px-3 py-1 rounded text-xs font-semibold transition-all ${
+                    selectedMasterForRevenue === 'Лиза'
+                      ? 'bg-gradient-to-r from-accent-pink to-accent-purple text-white'
+                      : 'text-slate-400 hover:text-slate-600'
+                  }`}
+                >
+                  Лиза
+                </button>
+                <button
+                  onClick={() => setSelectedMasterForRevenue('Женя')}
+                  className={`px-3 py-1 rounded text-xs font-semibold transition-all ${
+                    selectedMasterForRevenue === 'Женя'
+                      ? 'bg-gradient-to-r from-accent-pink to-accent-purple text-white'
+                      : 'text-slate-400 hover:text-slate-600'
+                  }`}
+                >
+                  Женя
+                </button>
+              </div>
+            </div>
+            <p className="text-xs text-slate-500">{new Date().toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' })}</p>
           </div>
 
           <div className="service-card-glass rounded-3xl p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="size-12 rounded-2xl bg-accent-purple/20 text-accent-purple flex items-center justify-center">
-                <span className="material-symbols-outlined">payments</span>
+                <span className="material-symbols-outlined">rate_review</span>
               </div>
-              <span className="text-2xl font-black text-gradient">{reviews.filter(r => !r.approved).length}</span>
+              <span className="text-2xl font-black text-gradient">{pendingReviewsCount}</span>
             </div>
             <h3 className="font-bold mb-1">Отзывов на модерации</h3>
             <p className="text-xs text-slate-500">Требуют одобрения</p>
