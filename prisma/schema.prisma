@@ -17,6 +17,7 @@ model Booking {
   time        String
   clientName  String
   clientPhone String
+  comment     String?
   createdAt   DateTime @default(now())
 }
 

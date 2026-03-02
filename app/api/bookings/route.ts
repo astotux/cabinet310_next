@@ -20,7 +20,7 @@ import { validateBookingWithAvailability, BookingData } from "@/lib/booking/vali
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { service, master, date, time, clientName, clientPhone } = body;
+    const { service, master, date, time, clientName, clientPhone, comment } = body;
 
     const bookingData: BookingData = {
       service,
@@ -81,6 +81,7 @@ export async function POST(request: NextRequest) {
           time,
           clientName,
           clientPhone,
+          comment: comment || null,
         },
       });
     }, {

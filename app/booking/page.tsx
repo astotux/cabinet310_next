@@ -29,6 +29,7 @@ export default function BookingPage() {
   const [selectedTime, setSelectedTime] = useState<string>("");
   const [clientName, setClientName] = useState("");
   const [clientPhone, setClientPhone] = useState("");
+  const [clientComment, setClientComment] = useState("");
   const [bookingError, setBookingError] = useState<string>("");
   const [bookingSuccess, setBookingSuccess] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -102,6 +103,7 @@ export default function BookingPage() {
             time: selectedTime,
             clientName,
             clientPhone,
+            comment: clientComment,
           }),
         })
       );
@@ -127,6 +129,7 @@ export default function BookingPage() {
         setSelectedTime("");
         setClientName("");
         setClientPhone("");
+        setClientComment("");
         setBookingSuccess(false);
       }, 3000);
 
@@ -495,6 +498,8 @@ export default function BookingPage() {
                         className="w-full px-5 py-4 max-[480px]:py-3.5 max-[320px]:py-3 rounded-xl bg-white border border-slate-200 focus:border-transparent focus:ring-4 focus:ring-primary/10 transition-all outline-none placeholder:text-slate-400 min-h-[100px]"
                         id="comment"
                         placeholder="Дополнительные пожелания"
+                        value={clientComment}
+                        onChange={(e) => setClientComment(e.target.value)}
                       ></textarea>
                     </div>
 

@@ -31,6 +31,7 @@ export default function AdminPage() {
     time: "",
     clientName: "",
     clientPhone: "",
+    comment: "",
   });
   
   const router = useRouter();
@@ -274,6 +275,7 @@ export default function AdminPage() {
       time: "",
       clientName: "",
       clientPhone: "",
+      comment: "",
     });
     setShowBookingModal(true);
   };
@@ -287,6 +289,7 @@ export default function AdminPage() {
       time: booking.time,
       clientName: booking.clientName,
       clientPhone: booking.clientPhone,
+      comment: booking.comment || "",
     });
     setShowBookingModal(true);
   };
@@ -470,9 +473,15 @@ export default function AdminPage() {
                           </span>
                         </div>
                         <p className="text-sm text-slate-500">{booking.clientName} • {booking.clientPhone}</p>
+                        {booking.comment && (
+                          <p className="text-sm text-slate-500 italic mt-1">💬 {booking.comment}</p>
+                        )}
                       </div>
                       <div className="flex gap-2">
-                        <button className="size-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center hover:bg-primary/20 transition-colors">
+                        <button 
+                          onClick={() => openEditBookingModal(booking)}
+                          className="size-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center hover:bg-primary/20 transition-colors"
+                        >
                           <span className="material-symbols-outlined text-lg">edit</span>
                         </button>
                         <button 
@@ -486,7 +495,10 @@ export default function AdminPage() {
                   ))
                 )}
 
-                <button className="w-full p-4 rounded-2xl border-2 border-dashed border-slate-300 text-slate-400 hover:border-primary hover:text-primary transition-colors flex items-center justify-center gap-2">
+                <button 
+                  onClick={openAddBookingModal}
+                  className="w-full p-4 rounded-2xl border-2 border-dashed border-slate-300 text-slate-400 hover:border-primary hover:text-primary transition-colors flex items-center justify-center gap-2"
+                >
                   <span className="material-symbols-outlined">add</span>
                   <span className="font-semibold">Добавить запись</span>
                 </button>
@@ -792,6 +804,137 @@ export default function AdminPage() {
                   className="flex-1 gradient-bg px-6 py-3 rounded-xl text-white font-bold hover:opacity-90 transition-opacity"
                 >
                   {editingService ? "Сохранить" : "Добавить"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {showBookingModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-background-light rounded-3xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-black">
+                {editingBooking ? "Редактировать запись" : "Добавить запись"}
+              </h2>
+              <button
+                onClick={() => setShowBookingModal(false)}
+                className="size-10 rounded-xl hover:bg-slate-100 flex items-center justify-center transition-colors"
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+
+            <form onSubmit={handleBookingSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-bold mb-2">Услуга *</label>
+                <select
+                  value={bookingForm.service}
+                  onChange={(e) => {
+                    const selectedService = services.find(s => s.service === e.target.value);
+                    setBookingForm({ 
+                      ...bookingForm, 
+                      service: e.target.value,
+                      master: selectedService ? selectedService.master : ""
+                    });
+                  }}
+                  required
+                  className="w-full p-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                >
+                  <option value="">Выберите услугу</option>
+                  {services.map((service) => (
+                    <option key={service.id} value={service.service}>
+                      {service.service} ({service.master})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold mb-2">Мастер *</label>
+                <input
+                  type="text"
+                  value={bookingForm.master}
+                  readOnly
+                  className="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-600 cursor-not-allowed"
+                  placeholder="Выберите услугу"
+                />
+                <p className="text-xs text-slate-500 mt-1">Мастер определяется автоматически при выборе услуги</p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-bold mb-2">Дата *</label>
+                  <input
+                    type="date"
+                    value={bookingForm.date}
+                    onChange={(e) => setBookingForm({ ...bookingForm, date: e.target.value })}
+                    min={new Date().toISOString().split('T')[0]}
+                    required
+                    className="w-full p-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-bold mb-2">Время *</label>
+                  <input
+                    type="time"
+                    value={bookingForm.time}
+                    onChange={(e) => setBookingForm({ ...bookingForm, time: e.target.value })}
+                    required
+                    className="w-full p-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold mb-2">Имя клиента *</label>
+                <input
+                  type="text"
+                  value={bookingForm.clientName}
+                  onChange={(e) => setBookingForm({ ...bookingForm, clientName: e.target.value })}
+                  required
+                  className="w-full p-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                  placeholder="Александр Пушкин"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold mb-2">Телефон клиента *</label>
+                <input
+                  type="tel"
+                  value={bookingForm.clientPhone}
+                  onChange={(e) => setBookingForm({ ...bookingForm, clientPhone: e.target.value })}
+                  required
+                  className="w-full p-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                  placeholder="+7 (___) ___-__-__"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold mb-2">Комментарий</label>
+                <textarea
+                  value={bookingForm.comment}
+                  onChange={(e) => setBookingForm({ ...bookingForm, comment: e.target.value })}
+                  className="w-full p-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all min-h-[100px]"
+                  placeholder="Дополнительные пожелания клиента"
+                />
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowBookingModal(false)}
+                  className="flex-1 px-6 py-3 rounded-xl border border-slate-200 font-bold hover:bg-slate-50 transition-colors"
+                >
+                  Отмена
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 gradient-bg px-6 py-3 rounded-xl text-white font-bold hover:opacity-90 transition-opacity"
+                >
+                  {editingBooking ? "Сохранить" : "Добавить"}
                 </button>
               </div>
             </form>
