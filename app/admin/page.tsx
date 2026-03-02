@@ -532,15 +532,18 @@ export default function AdminPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold mb-2">Длительность *</label>
+                  <label className="block text-sm font-bold mb-2">Длительность (минуты) *</label>
                   <input
-                    type="text"
+                    type="number"
                     value={serviceForm.duration}
                     onChange={(e) => setServiceForm({ ...serviceForm, duration: e.target.value })}
                     required
+                    min="1"
+                    step="1"
                     className="w-full p-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
-                    placeholder="2 часа"
+                    placeholder="90"
                   />
+                  <p className="text-xs text-slate-500 mt-1">Укажите длительность в минутах (например: 90 для 1.5 часа)</p>
                 </div>
               </div>
 

@@ -35,7 +35,7 @@ model Price {
   description String?
   category    String
   master      String
-  duration    String
+  duration    Int      // Длительность в минутах
   price       Int
   image       String?
   createdAt   DateTime @default(now())

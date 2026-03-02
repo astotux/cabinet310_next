@@ -17,7 +17,7 @@ export async function PATCH(
         description,
         category,
         master,
-        duration,
+        duration: parseInt(duration),
         price: parseInt(price),
         image,
       },
@@ -25,6 +25,7 @@ export async function PATCH(
 
     return NextResponse.json(updated);
   } catch (error) {
+    console.error('Ошибка обновления услуги:', error);
     return NextResponse.json({ error: "Ошибка обновления услуги" }, { status: 500 });
   }
 }

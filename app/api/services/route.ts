@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
         description: description || "",
         category,
         master,
-        duration,
+        duration: parseInt(duration),
         price: parseInt(price),
         image: image || null,
       },
@@ -38,6 +38,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(newService, { status: 201 });
   } catch (error) {
+    console.error('Ошибка создания услуги:', error);
     return NextResponse.json({ error: "Ошибка создания услуги" }, { status: 500 });
   }
 }
