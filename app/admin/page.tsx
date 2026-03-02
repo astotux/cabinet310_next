@@ -7,6 +7,19 @@ import Link from "next/link";
 export default function AdminPage() {
   const [bookings, setBookings] = useState<any[]>([]);
   const [reviews, setReviews] = useState<any[]>([]);
+  const [services, setServices] = useState<any[]>([]);
+  const [showServiceModal, setShowServiceModal] = useState(false);
+  const [editingService, setEditingService] = useState<any>(null);
+  const [serviceForm, setServiceForm] = useState({
+    service: "",
+    description: "",
+    category: "",
+    master: "",
+    duration: "",
+    price: "",
+    image: "",
+  });
+  const [uploading, setUploading] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -19,13 +32,24 @@ export default function AdminPage() {
   }, []);
 
   const fetchData = async () => {
-    const bookingsRes = await fetch("/api/bookings");
-    const bookingsData = await bookingsRes.json();
-    setBookings(bookingsData);
+    try {
+      const bookingsRes = await fetch("/api/bookings");
+      const bookingsData = await bookingsRes.json();
+      setBookings(Array.isArray(bookingsData) ? bookingsData : []);
 
-    const reviewsRes = await fetch("/api/admin/reviews");
-    const reviewsData = await reviewsRes.json();
-    setReviews(reviewsData);
+      const reviewsRes = await fetch("/api/admin/reviews");
+      const reviewsData = await reviewsRes.json();
+      setReviews(Array.isArray(reviewsData) ? reviewsData : []);
+
+      const servicesRes = await fetch("/api/services");
+      const servicesData = await servicesRes.json();
+      setServices(Array.isArray(servicesData) ? servicesData : []);
+    } catch (error) {
+      console.error("Ошибка загрузки данных:", error);
+      setBookings([]);
+      setReviews([]);
+      setServices([]);
+    }
   };
 
   const approveReview = async (id: number) => {
@@ -47,6 +71,88 @@ export default function AdminPage() {
     await fetch('/api/admin/logout', { method: 'POST' });
     localStorage.removeItem("adminToken");
     window.location.href = "/admin/login";
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.filename) {
+        setServiceForm({ ...serviceForm, image: data.filename });
+      }
+    } catch (error) {
+      alert("Ошибка загрузки изображения");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const openAddServiceModal = () => {
+    setEditingService(null);
+    setServiceForm({
+      service: "",
+      description: "",
+      category: "",
+      master: "",
+      duration: "",
+      price: "",
+      image: "",
+    });
+    setShowServiceModal(true);
+  };
+
+  const openEditServiceModal = (service: any) => {
+    setEditingService(service);
+    setServiceForm({
+      service: service.service,
+      description: service.description || "",
+      category: service.category || "",
+      master: service.master,
+      duration: service.duration,
+      price: service.price.toString(),
+      image: service.image || "",
+    });
+    setShowServiceModal(true);
+  };
+
+  const handleServiceSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      if (editingService) {
+        await fetch(`/api/services/${editingService.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(serviceForm),
+        });
+      } else {
+        await fetch("/api/services", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(serviceForm),
+        });
+      }
+      setShowServiceModal(false);
+      fetchData();
+    } catch (error) {
+      alert("Ошибка сохранения услуги");
+    }
+  };
+
+  const deleteService = async (id: number) => {
+    if (!confirm("Удалить эту услугу?")) return;
+    await fetch(`/api/services/${id}`, { method: "DELETE" });
+    fetchData();
   };
 
   return (
@@ -258,7 +364,10 @@ export default function AdminPage() {
         <div className="mt-6 service-card-glass rounded-3xl p-8 max-[480px]:p-6 max-[320px]:p-5">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-black tracking-tight">Управление ценами</h2>
-            <button className="px-4 py-2 rounded-xl gradient-bg text-white text-sm font-bold shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity">
+            <button 
+              onClick={openAddServiceModal}
+              className="px-4 py-2 rounded-xl gradient-bg text-white text-sm font-bold shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity"
+            >
               + Добавить услугу
             </button>
           </div>
@@ -275,175 +384,227 @@ export default function AdminPage() {
                 </tr>
               </thead>
               <tbody>
-                <tr className="border-b border-slate-100 hover:bg-white/40 transition-colors">
-                  <td className="py-4 px-4">
-                    <div className="flex items-center gap-3">
-                      <div className="size-10 rounded-xl bg-accent-pink/20 text-accent-pink flex items-center justify-center">
-                        <span className="material-symbols-outlined text-lg">face_3</span>
-                      </div>
-                      <div>
-                        <p className="font-bold">Перманент бровей</p>
-                        <p className="text-xs text-slate-500">Пудровое напыление</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="py-4 px-4">
-                    <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold">Мастер Б</span>
-                  </td>
-                  <td className="py-4 px-4">
-                    <span className="text-sm font-semibold">2 часа</span>
-                  </td>
-                  <td className="py-4 px-4">
-                    <span className="text-lg font-black text-gradient">5 000 ₽</span>
-                  </td>
-                  <td className="py-4 px-4">
-                    <div className="flex gap-2 justify-end">
-                      <button className="size-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center hover:bg-primary/20 transition-colors">
-                        <span className="material-symbols-outlined text-lg">edit</span>
-                      </button>
-                      <button className="size-9 rounded-xl bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 transition-colors">
-                        <span className="material-symbols-outlined text-lg">delete</span>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-
-                <tr className="border-b border-slate-100 hover:bg-white/40 transition-colors">
-                  <td className="py-4 px-4">
-                    <div className="flex items-center gap-3">
-                      <div className="size-10 rounded-xl bg-accent-pink/20 text-accent-pink flex items-center justify-center">
-                        <span className="material-symbols-outlined text-lg">face_3</span>
-                      </div>
-                      <div>
-                        <p className="font-bold">Перманент губ</p>
-                        <p className="text-xs text-slate-500">Акварельная техника</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="py-4 px-4">
-                    <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold">Мастер Б</span>
-                  </td>
-                  <td className="py-4 px-4">
-                    <span className="text-sm font-semibold">2.5 часа</span>
-                  </td>
-                  <td className="py-4 px-4">
-                    <span className="text-lg font-black text-gradient">6 500 ₽</span>
-                  </td>
-                  <td className="py-4 px-4">
-                    <div className="flex gap-2 justify-end">
-                      <button className="size-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center hover:bg-primary/20 transition-colors">
-                        <span className="material-symbols-outlined text-lg">edit</span>
-                      </button>
-                      <button className="size-9 rounded-xl bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 transition-colors">
-                        <span className="material-symbols-outlined text-lg">delete</span>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-
-                <tr className="border-b border-slate-100 hover:bg-white/40 transition-colors">
-                  <td className="py-4 px-4">
-                    <div className="flex items-center gap-3">
-                      <div className="size-10 rounded-xl bg-accent-purple/20 text-accent-purple flex items-center justify-center">
-                        <span className="material-symbols-outlined text-lg">back_hand</span>
-                      </div>
-                      <div>
-                        <p className="font-bold">Маникюр</p>
-                        <p className="text-xs text-slate-500">Покрытие гель-лак</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="py-4 px-4">
-                    <span className="px-3 py-1 rounded-full bg-accent-purple/10 text-accent-purple text-xs font-bold">Мастер А</span>
-                  </td>
-                  <td className="py-4 px-4">
-                    <span className="text-sm font-semibold">1.5 часа</span>
-                  </td>
-                  <td className="py-4 px-4">
-                    <span className="text-lg font-black text-gradient">2 500 ₽</span>
-                  </td>
-                  <td className="py-4 px-4">
-                    <div className="flex gap-2 justify-end">
-                      <button className="size-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center hover:bg-primary/20 transition-colors">
-                        <span className="material-symbols-outlined text-lg">edit</span>
-                      </button>
-                      <button className="size-9 rounded-xl bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 transition-colors">
-                        <span className="material-symbols-outlined text-lg">delete</span>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-
-                <tr className="border-b border-slate-100 hover:bg-white/40 transition-colors">
-                  <td className="py-4 px-4">
-                    <div className="flex items-center gap-3">
-                      <div className="size-10 rounded-xl bg-accent-purple/20 text-accent-purple flex items-center justify-center">
-                        <span className="material-symbols-outlined text-lg">back_hand</span>
-                      </div>
-                      <div>
-                        <p className="font-bold">Наращивание ногтей</p>
-                        <p className="text-xs text-slate-500">Гелевое наращивание</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="py-4 px-4">
-                    <span className="px-3 py-1 rounded-full bg-accent-purple/10 text-accent-purple text-xs font-bold">Мастер А</span>
-                  </td>
-                  <td className="py-4 px-4">
-                    <span className="text-sm font-semibold">2 часа</span>
-                  </td>
-                  <td className="py-4 px-4">
-                    <span className="text-lg font-black text-gradient">3 500 ₽</span>
-                  </td>
-                  <td className="py-4 px-4">
-                    <div className="flex gap-2 justify-end">
-                      <button className="size-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center hover:bg-primary/20 transition-colors">
-                        <span className="material-symbols-outlined text-lg">edit</span>
-                      </button>
-                      <button className="size-9 rounded-xl bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 transition-colors">
-                        <span className="material-symbols-outlined text-lg">delete</span>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-
-                <tr className="hover:bg-white/40 transition-colors">
-                  <td className="py-4 px-4">
-                    <div className="flex items-center gap-3">
-                      <div className="size-10 rounded-xl bg-accent-pink/20 text-accent-pink flex items-center justify-center">
-                        <span className="material-symbols-outlined text-lg">visibility</span>
-                      </div>
-                      <div>
-                        <p className="font-bold">Ламинирование ресниц</p>
-                        <p className="text-xs text-slate-500">С ботоксом</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="py-4 px-4">
-                    <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold">Мастер Б</span>
-                  </td>
-                  <td className="py-4 px-4">
-                    <span className="text-sm font-semibold">1 час</span>
-                  </td>
-                  <td className="py-4 px-4">
-                    <span className="text-lg font-black text-gradient">2 000 ₽</span>
-                  </td>
-                  <td className="py-4 px-4">
-                    <div className="flex gap-2 justify-end">
-                      <button className="size-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center hover:bg-primary/20 transition-colors">
-                        <span className="material-symbols-outlined text-lg">edit</span>
-                      </button>
-                      <button className="size-9 rounded-xl bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 transition-colors">
-                        <span className="material-symbols-outlined text-lg">delete</span>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
+                {services.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="py-8 text-center text-slate-500">
+                      Услуг пока нет
+                    </td>
+                  </tr>
+                ) : (
+                  services.map((service, index) => (
+                    <tr 
+                      key={service.id} 
+                      className={`${index !== services.length - 1 ? 'border-b border-slate-100' : ''} hover:bg-white/40 transition-colors`}
+                    >
+                      <td className="py-4 px-4">
+                        <div className="flex items-center gap-3">
+                          {service.image ? (
+                            <img 
+                              src={service.image} 
+                              alt={service.service}
+                              className="size-10 rounded-xl object-cover"
+                            />
+                          ) : (
+                            <div className="size-10 rounded-xl bg-accent-pink/20 text-accent-pink flex items-center justify-center">
+                              <span className="material-symbols-outlined text-lg">spa</span>
+                            </div>
+                          )}
+                          <div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <p className="font-bold">{service.service}</p>
+                              <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold">
+                                {service.category}
+                              </span>
+                            </div>
+                            {service.description && (
+                              <p className="text-xs text-slate-500">{service.description}</p>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="py-4 px-4">
+                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                          service.master.includes('А') 
+                            ? 'bg-accent-purple/10 text-accent-purple' 
+                            : 'bg-primary/10 text-primary'
+                        }`}>
+                          {service.master}
+                        </span>
+                      </td>
+                      <td className="py-4 px-4">
+                        <span className="text-sm font-semibold">{service.duration}</span>
+                      </td>
+                      <td className="py-4 px-4">
+                        <span className="text-lg font-black text-gradient">{service.price.toLocaleString()} ₽</span>
+                      </td>
+                      <td className="py-4 px-4">
+                        <div className="flex gap-2 justify-end">
+                          <button 
+                            onClick={() => openEditServiceModal(service)}
+                            className="size-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center hover:bg-primary/20 transition-colors"
+                          >
+                            <span className="material-symbols-outlined text-lg">edit</span>
+                          </button>
+                          <button 
+                            onClick={() => deleteService(service.id)}
+                            className="size-9 rounded-xl bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 transition-colors"
+                          >
+                            <span className="material-symbols-outlined text-lg">delete</span>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
         </div>
       </main>
+
+      {showServiceModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="glass rounded-3xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-black">
+                {editingService ? "Редактировать услугу" : "Добавить услугу"}
+              </h2>
+              <button
+                onClick={() => setShowServiceModal(false)}
+                className="size-10 rounded-xl hover:bg-slate-100 flex items-center justify-center transition-colors"
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+
+            <form onSubmit={handleServiceSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-bold mb-2">Название услуги *</label>
+                <input
+                  type="text"
+                  value={serviceForm.service}
+                  onChange={(e) => setServiceForm({ ...serviceForm, service: e.target.value })}
+                  required
+                  className="w-full p-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                  placeholder="Перманент бровей"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold mb-2">Описание</label>
+                <input
+                  type="text"
+                  value={serviceForm.description}
+                  onChange={(e) => setServiceForm({ ...serviceForm, description: e.target.value })}
+                  className="w-full p-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                  placeholder="Пудровое напыление"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold mb-2">Категория *</label>
+                <select
+                  value={serviceForm.category}
+                  onChange={(e) => setServiceForm({ ...serviceForm, category: e.target.value })}
+                  required
+                  className="w-full p-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                >
+                  <option value="">Выберите категорию</option>
+                  <option value="Перманент">Перманент</option>
+                  <option value="Маникюр">Маникюр</option>
+                  <option value="Ламинирование">Ламинирование</option>
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-bold mb-2">Мастер *</label>
+                  <select
+                    value={serviceForm.master}
+                    onChange={(e) => setServiceForm({ ...serviceForm, master: e.target.value })}
+                    required
+                    className="w-full p-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                  >
+                    <option value="">Выберите мастера</option>
+                    <option value="Мастер А">Мастер А</option>
+                    <option value="Мастер Б">Мастер Б</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-bold mb-2">Длительность *</label>
+                  <input
+                    type="text"
+                    value={serviceForm.duration}
+                    onChange={(e) => setServiceForm({ ...serviceForm, duration: e.target.value })}
+                    required
+                    className="w-full p-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                    placeholder="2 часа"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold mb-2">Цена (₽) *</label>
+                <input
+                  type="number"
+                  value={serviceForm.price}
+                  onChange={(e) => setServiceForm({ ...serviceForm, price: e.target.value })}
+                  required
+                  className="w-full p-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                  placeholder="5000"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold mb-2">Изображение</label>
+                <div className="space-y-3">
+                  {serviceForm.image && (
+                    <div className="relative inline-block">
+                      <img
+                        src={serviceForm.image}
+                        alt="Preview"
+                        className="w-32 h-32 object-cover rounded-xl"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setServiceForm({ ...serviceForm, image: "" })}
+                        className="absolute -top-2 -right-2 size-6 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600"
+                      >
+                        <span className="material-symbols-outlined text-sm">close</span>
+                      </button>
+                    </div>
+                  )}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    disabled={uploading}
+                    className="w-full p-3 rounded-xl border border-slate-200 focus:border-primary transition-all"
+                  />
+                  {uploading && <p className="text-sm text-slate-500">Загрузка...</p>}
+                </div>
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowServiceModal(false)}
+                  className="flex-1 px-6 py-3 rounded-xl border border-slate-200 font-bold hover:bg-slate-50 transition-colors"
+                >
+                  Отмена
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 gradient-bg px-6 py-3 rounded-xl text-white font-bold hover:opacity-90 transition-opacity"
+                >
+                  {editingService ? "Сохранить" : "Добавить"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       <footer className="bg-slate-900 text-white py-16">
         <div className="max-w-7xl mx-auto px-6 max-[480px]:px-4 max-[320px]:px-3 grid grid-cols-1 md:grid-cols-4 gap-12">

@@ -30,9 +30,15 @@ model Review {
 }
 
 model Price {
-  id      Int    @id @default(autoincrement())
-  service String @unique
-  price   Int
+  id          Int      @id @default(autoincrement())
+  service     String
+  description String?
+  category    String
+  master      String
+  duration    String
+  price       Int
+  image       String?
+  createdAt   DateTime @default(now())
 }
 
 model Admin {
