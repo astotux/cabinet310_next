@@ -14,13 +14,19 @@ export default function PortfolioCarousel() {
         slidesPerView: 1,
         spaceBetween: 20,
         loop: true,
+        speed: 600,
         autoplay: {
           delay: 3500,
           disableOnInteraction: false,
+          pauseOnMouseEnter: true,
         },
         pagination: {
           el: '.swiper-pagination',
           clickable: true,
+          type: 'bullets',
+          renderBullet: function (index: number, className: string) {
+            return '<span class="' + className + '"></span>';
+          },
         },
         navigation: {
           nextEl: '.swiper-button-next',
@@ -44,6 +50,9 @@ export default function PortfolioCarousel() {
             spaceBetween: 32,
           },
         },
+        watchSlidesProgress: true,
+        observer: true,
+        observeParents: true,
       });
     };
 
