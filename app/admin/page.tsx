@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { IMaskInput } from 'react-imask';
 import { Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -434,6 +435,13 @@ export default function AdminPage() {
 
   const handleBookingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Валидация телефона
+    const phoneDigits = bookingForm.clientPhone.replace(/\D/g, '');
+    if (phoneDigits.length !== 11) {
+      alert("Пожалуйста, введите полный номер телефона");
+      return;
+    }
 
     try {
       if (editingBooking) {
@@ -1641,13 +1649,13 @@ export default function AdminPage() {
 
               <div>
                 <label className="block text-sm font-bold mb-2">Телефон клиента *</label>
-                <input
-                  type="tel"
+                <IMaskInput
+                  mask="+7 (000) 000-00-00"
                   value={bookingForm.clientPhone}
-                  onChange={(e) => setBookingForm({ ...bookingForm, clientPhone: e.target.value })}
-                  required
-                  className="w-full p-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                  onAccept={(value) => setBookingForm({ ...bookingForm, clientPhone: value })}
                   placeholder="+7 (___) ___-__-__"
+                  className="w-full p-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                  required
                 />
               </div>
 

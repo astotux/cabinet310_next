@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { IMaskInput } from 'react-imask';
 import Footer from "@/components/Footer";
 import BookingCalendar from "./components/BookingCalendar";
 
@@ -88,6 +89,14 @@ export default function BookingPage() {
 
   const handleSubmitBooking = async () => {
     setBookingError("");
+    
+    // Валидация телефона
+    const phoneDigits = clientPhone.replace(/\D/g, '');
+    if (phoneDigits.length !== 11) {
+      setBookingError("Пожалуйста, введите полный номер телефона");
+      return;
+    }
+    
     setSubmitting(true);
 
     try {
@@ -481,13 +490,13 @@ export default function BookingPage() {
 
                     <div className="space-y-2">
                       <label className="text-sm font-bold text-slate-700 ml-1" htmlFor="phone">Телефон</label>
-                      <input
+                      <IMaskInput
+                        mask="+7 (000) 000-00-00"
+                        value={clientPhone}
+                        onAccept={(value) => setClientPhone(value)}
+                        placeholder="+7 (___) ___-__-__"
                         className="w-full px-5 py-4 max-[480px]:py-3.5 max-[320px]:py-3 rounded-xl bg-white border border-slate-200 focus:border-transparent focus:ring-4 focus:ring-primary/10 transition-all outline-none placeholder:text-slate-400"
                         id="phone"
-                        placeholder="+7 (___) ___-__-__"
-                        type="tel"
-                        value={clientPhone}
-                        onChange={(e) => setClientPhone(e.target.value)}
                         required
                       />
                     </div>
