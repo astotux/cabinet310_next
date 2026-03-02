@@ -1058,15 +1058,15 @@ export default function AdminPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           <div className="lg:col-span-8 space-y-6">
             <div className="service-card-glass rounded-3xl p-8 max-[480px]:p-6 max-[320px]:p-5">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-black tracking-tight">Календарь записей</h2>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
+                <h2 className="text-2xl max-[480px]:text-xl font-black tracking-tight">Календарь записей</h2>
                 <div className="flex gap-2">
                   <button 
                     onClick={() => {
                       setViewMode('day');
                       setCurrentDate(new Date());
                     }}
-                    className={`px-4 py-2 rounded-xl text-sm font-semibold transition-colors ${
+                    className={`px-4 py-2 max-[480px]:px-3 max-[480px]:py-1.5 rounded-xl text-sm max-[480px]:text-xs font-semibold transition-colors ${
                       viewMode === 'day'
                         ? 'bg-gradient-to-r from-accent-pink to-accent-purple text-white'
                         : 'border border-slate-200 hover:border-primary'
@@ -1076,7 +1076,7 @@ export default function AdminPage() {
                   </button>
                   <button 
                     onClick={() => setViewMode('week')}
-                    className={`px-4 py-2 rounded-xl text-sm font-semibold transition-colors ${
+                    className={`px-4 py-2 max-[480px]:px-3 max-[480px]:py-1.5 rounded-xl text-sm max-[480px]:text-xs font-semibold transition-colors ${
                       viewMode === 'week'
                         ? 'bg-gradient-to-r from-accent-pink to-accent-purple text-white'
                         : 'border border-slate-200 hover:border-primary'
@@ -1087,32 +1087,31 @@ export default function AdminPage() {
                 </div>
               </div>
 
-              <div className="mb-6 flex items-center justify-between">
-                <div className="flex items-center gap-4">
+              <div className="mb-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-2 sm:gap-4 justify-center sm:justify-start">
                   <button 
                     onClick={navigatePrevious}
-                    className="size-10 rounded-xl border border-slate-200 flex items-center justify-center hover:border-primary transition-colors"
+                    className="size-10 max-[480px]:size-9 rounded-xl border border-slate-200 flex items-center justify-center hover:border-primary transition-colors"
                   >
-                    <span className="material-symbols-outlined">chevron_left</span>
+                    <span className="material-symbols-outlined max-[480px]:text-lg">chevron_left</span>
                   </button>
-                  <h3 className="text-lg font-bold min-w-[200px] text-center">
+                  <h3 className="text-lg max-[480px]:text-sm font-bold min-w-[200px] max-[480px]:min-w-[150px] text-center">
                     {viewMode === 'day' ? formatDate(currentDate) : formatWeekRange(currentDate)}
                   </h3>
                   <button 
                     onClick={navigateNext}
-                    className="size-10 rounded-xl border border-slate-200 flex items-center justify-center hover:border-primary transition-colors"
+                    className="size-10 max-[480px]:size-9 rounded-xl border border-slate-200 flex items-center justify-center hover:border-primary transition-colors"
                   >
-                    <span className="material-symbols-outlined">chevron_right</span>
+                    <span className="material-symbols-outlined max-[480px]:text-lg">chevron_right</span>
                   </button>
                 </div>
                 <button 
                   onClick={openBlockTimeModal}
-                  className="px-4 py-2 rounded-xl gradient-bg text-white text-sm font-bold shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity flex items-center justify-center"
+                  className="px-4 py-2 max-[480px]:px-3 max-[480px]:py-2 rounded-xl gradient-bg text-white text-sm max-[480px]:text-xs font-bold shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
                 >
-                  <div className="size-1 text-white flex items-center justify-center mr-4">
-                    <span className="material-symbols-outlined">block</span>
-                  </div>
-                  Заблокировать время
+                  <span className="material-symbols-outlined max-[480px]:text-base">block</span>
+                  <span className="max-[480px]:hidden">Заблокировать время</span>
+                  <span className="hidden max-[480px]:inline">Блокировка</span>
                 </button>
               </div>
 
@@ -1123,17 +1122,17 @@ export default function AdminPage() {
                   </p>
                 ) : (
                   getFilteredBookings().map((booking) => (
-                    <div key={booking.id} className="flex items-center gap-4 p-4 rounded-2xl bg-white/60 border border-slate-200/60">
-                      <div className="text-center min-w-[80px]">
+                    <div key={booking.id} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 p-4 max-[480px]:p-3 rounded-2xl bg-white/60 border border-slate-200/60">
+                      <div className="text-center sm:text-left min-w-[80px] max-[480px]:min-w-0">
                         <p className="text-xs font-bold text-slate-400 uppercase mb-1">Дата</p>
                         <p className="text-sm font-bold text-slate-700">{formatReadableDate(booking.date)}</p>
                         <p className="text-lg font-black text-primary mt-1">{booking.time}</p>
                       </div>
-                      <div className="h-16 w-px bg-slate-200"></div>
+                      <div className="hidden sm:block h-16 w-px bg-slate-200"></div>
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
+                        <div className="flex flex-wrap items-center gap-2 mb-1">
                           <span className="material-symbols-outlined text-sm text-accent-pink">face_3</span>
-                          <h4 className="font-bold">{booking.service}</h4>
+                          <h4 className="font-bold text-sm sm:text-base">{booking.service}</h4>
                           <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-semibold">
                             {booking.master}
                           </span>
@@ -1143,18 +1142,18 @@ export default function AdminPage() {
                           <p className="text-sm text-slate-500 italic mt-1">💬 {booking.comment}</p>
                         )}
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 justify-end sm:justify-start">
                         <button 
                           onClick={() => openEditBookingModal(booking)}
-                          className="size-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center hover:bg-primary/20 transition-colors"
+                          className="size-9 max-[480px]:size-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center hover:bg-primary/20 transition-colors"
                         >
-                          <span className="material-symbols-outlined text-lg">edit</span>
+                          <span className="material-symbols-outlined text-lg max-[480px]:text-base">edit</span>
                         </button>
                         <button 
                           onClick={() => deleteBooking(booking.id)}
-                          className="size-9 rounded-xl bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 transition-colors"
+                          className="size-9 max-[480px]:size-8 rounded-xl bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 transition-colors"
                         >
-                          <span className="material-symbols-outlined text-lg">close</span>
+                          <span className="material-symbols-outlined text-lg max-[480px]:text-base">close</span>
                         </button>
                       </div>
                     </div>
@@ -1173,57 +1172,57 @@ export default function AdminPage() {
           </div>
 
           <div className="lg:col-span-4 space-y-6">
-            <div className="service-card-glass rounded-3xl p-6">
+            <div className="service-card-glass rounded-3xl p-6 max-[480px]:p-5">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-black tracking-tight">Быстрые действия</h2>
+                <h2 className="text-xl max-[480px]:text-lg font-black tracking-tight">Быстрые действия</h2>
               </div>
               <div className="space-y-3">
                 <button 
                   onClick={() => setShowStatsModal(true)}
-                  className="w-full p-4 rounded-2xl bg-white/60 border border-slate-200/60 hover:border-primary transition-colors flex items-center gap-3"
+                  className="w-full p-4 max-[480px]:p-3 rounded-2xl bg-white/60 border border-slate-200/60 hover:border-primary transition-colors flex items-center gap-3"
                 >
-                  <div className="size-10 rounded-xl bg-gradient-to-r from-accent-pink to-accent-purple text-white flex items-center justify-center">
-                    <span className="material-symbols-outlined">analytics</span>
+                  <div className="size-10 max-[480px]:size-9 rounded-xl bg-gradient-to-r from-accent-pink to-accent-purple text-white flex items-center justify-center">
+                    <span className="material-symbols-outlined max-[480px]:text-lg">analytics</span>
                   </div>
                   <div className="text-left flex-1">
-                    <p className="font-bold text-sm">Статистика</p>
-                    <p className="text-xs text-slate-500">График за месяц</p>
+                    <p className="font-bold text-sm max-[480px]:text-xs">Статистика</p>
+                    <p className="text-xs max-[480px]:text-[10px] text-slate-500">График за месяц</p>
                   </div>
                 </button>
 
                 <button 
                   onClick={handleExportPDF}
-                  className="w-full p-4 rounded-2xl bg-white/60 border border-slate-200/60 hover:border-primary transition-colors flex items-center gap-3"
+                  className="w-full p-4 max-[480px]:p-3 rounded-2xl bg-white/60 border border-slate-200/60 hover:border-primary transition-colors flex items-center gap-3"
                 >
-                  <div className="size-10 rounded-xl bg-accent-purple/20 text-accent-purple flex items-center justify-center">
-                    <span className="material-symbols-outlined">download</span>
+                  <div className="size-10 max-[480px]:size-9 rounded-xl bg-accent-purple/20 text-accent-purple flex items-center justify-center">
+                    <span className="material-symbols-outlined max-[480px]:text-lg">download</span>
                   </div>
                   <div className="text-left flex-1">
-                    <p className="font-bold text-sm">Экспорт записей</p>
-                    <p className="text-xs text-slate-500">За текущий месяц</p>
+                    <p className="font-bold text-sm max-[480px]:text-xs">Экспорт записей</p>
+                    <p className="text-xs max-[480px]:text-[10px] text-slate-500">За текущий месяц</p>
                   </div>
                 </button>
               </div>
             </div>
 
-            <div className="service-card-glass rounded-3xl p-6">
+            <div className="service-card-glass rounded-3xl p-6 max-[480px]:p-5">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-black tracking-tight">Отзывы на модерации</h2>
+                <h2 className="text-xl max-[480px]:text-lg font-black tracking-tight">Отзывы на модерации</h2>
               </div>
               <div className="space-y-3">
                 {reviews.filter(r => !r.approved).length === 0 ? (
                   <p className="text-slate-500 text-sm text-center py-4">Нет отзывов</p>
                 ) : (
                   reviews.filter(r => !r.approved).slice(0, 3).map((review) => (
-                    <div key={review.id} className="p-3 rounded-xl bg-white/60 border border-slate-200/60">
+                    <div key={review.id} className="p-3 max-[480px]:p-2 rounded-xl bg-white/60 border border-slate-200/60">
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="material-symbols-outlined text-sm text-primary">person</span>
-                        <span className="text-xs font-bold text-slate-400">{review.name}</span>
+                        <span className="material-symbols-outlined text-sm max-[480px]:text-xs text-primary">person</span>
+                        <span className="text-xs max-[480px]:text-[10px] font-bold text-slate-400">{review.name}</span>
                       </div>
-                      <p className="font-bold text-sm mb-1">{review.text.substring(0, 50)}...</p>
+                      <p className="font-bold text-sm max-[480px]:text-xs mb-1">{review.text.substring(0, 50)}...</p>
                       <button
                         onClick={() => approveReview(review.id)}
-                        className="text-xs text-primary font-bold hover:underline"
+                        className="text-xs max-[480px]:text-[10px] text-primary font-bold hover:underline"
                       >
                         Одобрить
                       </button>
@@ -1236,17 +1235,18 @@ export default function AdminPage() {
         </div>
 
         <div className="mt-6 service-card-glass rounded-3xl p-8 max-[480px]:p-6 max-[320px]:p-5">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-black tracking-tight">Управление ценами</h2>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between mb-6 gap-4">
+            <h2 className="text-2xl max-[480px]:text-xl font-black tracking-tight">Управление ценами</h2>
             <button 
               onClick={openAddServiceModal}
-              className="px-4 py-2 rounded-xl gradient-bg text-white text-sm font-bold shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity"
+              className="px-4 py-2 rounded-xl gradient-bg text-white text-sm max-[480px]:text-xs font-bold shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity"
             >
               + Добавить услугу
             </button>
           </div>
 
-          <div className="overflow-x-auto">
+          {/* Десктопная таблица */}
+          <div className="hidden lg:block overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-slate-200">
@@ -1333,21 +1333,88 @@ export default function AdminPage() {
               </tbody>
             </table>
           </div>
+
+          {/* Мобильные карточки */}
+          <div className="lg:hidden space-y-4">
+            {services.length === 0 ? (
+              <p className="text-slate-500 text-center py-8">Услуг пока нет</p>
+            ) : (
+              services.map((service) => (
+                <div key={service.id} className="p-4 rounded-2xl bg-white/60 border border-slate-200/60">
+                  <div className="flex items-start gap-3 mb-3">
+                    {service.image ? (
+                      <img 
+                        src={service.image} 
+                        alt={service.service}
+                        className="size-16 rounded-xl object-cover flex-shrink-0"
+                      />
+                    ) : (
+                      <div className="size-16 rounded-xl bg-accent-pink/20 text-accent-pink flex items-center justify-center flex-shrink-0">
+                        <span className="material-symbols-outlined text-2xl">spa</span>
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-2 mb-1">
+                        <h4 className="font-bold text-sm">{service.service}</h4>
+                        <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold">
+                          {service.category}
+                        </span>
+                      </div>
+                      {service.description && (
+                        <p className="text-xs text-slate-500 mb-2">{service.description}</p>
+                      )}
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+                          service.master.includes('А') 
+                            ? 'bg-accent-purple/10 text-accent-purple' 
+                            : 'bg-primary/10 text-primary'
+                        }`}>
+                          {service.master}
+                        </span>
+                        <span className="text-xs font-semibold text-slate-600">
+                          {formatDuration(service.duration)}
+                        </span>
+                        <span className="text-base font-black text-gradient">
+                          {service.price.toLocaleString()} ₽
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 pt-3 border-t border-slate-200">
+                    <button 
+                      onClick={() => openEditServiceModal(service)}
+                      className="flex-1 py-2 rounded-xl bg-primary/10 text-primary text-sm font-semibold hover:bg-primary/20 transition-colors flex items-center justify-center gap-1"
+                    >
+                      <span className="material-symbols-outlined text-base">edit</span>
+                      <span>Изменить</span>
+                    </button>
+                    <button 
+                      onClick={() => deleteService(service.id)}
+                      className="flex-1 py-2 rounded-xl bg-red-50 text-red-500 text-sm font-semibold hover:bg-red-100 transition-colors flex items-center justify-center gap-1"
+                    >
+                      <span className="material-symbols-outlined text-base">delete</span>
+                      <span>Удалить</span>
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
         </div>
       </main>
 
       {showServiceModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-background-light rounded-3xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-background-light rounded-3xl p-8 max-[480px]:p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-black">
+              <h2 className="text-2xl max-[480px]:text-xl font-black">
                 {editingService ? "Редактировать услугу" : "Добавить услугу"}
               </h2>
               <button
                 onClick={() => setShowServiceModal(false)}
-                className="size-10 rounded-xl hover:bg-slate-100 flex items-center justify-center transition-colors"
+                className="size-10 max-[480px]:size-9 rounded-xl hover:bg-slate-100 flex items-center justify-center transition-colors"
               >
-                <span className="material-symbols-outlined">close</span>
+                <span className="material-symbols-outlined max-[480px]:text-lg">close</span>
               </button>
             </div>
 
@@ -1390,7 +1457,7 @@ export default function AdminPage() {
                 </select>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-bold mb-2">Мастер *</label>
                   <select
@@ -1485,16 +1552,16 @@ export default function AdminPage() {
 
       {showBookingModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-background-light rounded-3xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-background-light rounded-3xl p-8 max-[480px]:p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-black">
+              <h2 className="text-2xl max-[480px]:text-xl font-black">
                 {editingBooking ? "Редактировать запись" : "Добавить запись"}
               </h2>
               <button
                 onClick={() => setShowBookingModal(false)}
-                className="size-10 rounded-xl hover:bg-slate-100 flex items-center justify-center transition-colors"
+                className="size-10 max-[480px]:size-9 rounded-xl hover:bg-slate-100 flex items-center justify-center transition-colors"
               >
-                <span className="material-symbols-outlined">close</span>
+                <span className="material-symbols-outlined max-[480px]:text-lg">close</span>
               </button>
             </div>
 
@@ -1535,7 +1602,7 @@ export default function AdminPage() {
                 <p className="text-xs text-slate-500 mt-1">Мастер определяется автоматически при выборе услуги</p>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-bold mb-2">Дата *</label>
                   <input
@@ -1616,14 +1683,14 @@ export default function AdminPage() {
 
       {showBlockTimeModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-background-light rounded-3xl p-8 max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-background-light rounded-3xl p-8 max-[480px]:p-6 max-w-6xl w-full max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-black">Заблокировать время</h2>
+              <h2 className="text-2xl max-[480px]:text-xl font-black">Заблокировать время</h2>
               <button
                 onClick={() => setShowBlockTimeModal(false)}
-                className="size-10 rounded-xl hover:bg-slate-100 flex items-center justify-center transition-colors"
+                className="size-10 max-[480px]:size-9 rounded-xl hover:bg-slate-100 flex items-center justify-center transition-colors"
               >
-                <span className="material-symbols-outlined">close</span>
+                <span className="material-symbols-outlined max-[480px]:text-lg">close</span>
               </button>
             </div>
 
@@ -1717,9 +1784,9 @@ export default function AdminPage() {
                 {/* Временные слоты */}
                 <div className="lg:col-span-5 flex flex-col border-t border-slate-200/50 pt-8 lg:pt-0 lg:border-t-0 lg:border-l lg:border-slate-200/50 pl-0 lg:pl-8">
                   <div className="mb-6">
-                    <h3 className="text-xl font-bold mb-1">Выберите время</h3>
+                    <h3 className="text-xl max-[480px]:text-lg font-bold mb-1">Выберите время</h3>
                     {selectedCalendarDate && (
-                      <p className="text-sm text-slate-500">
+                      <p className="text-sm max-[480px]:text-xs text-slate-500">
                         {selectedCalendarDate.toLocaleDateString('ru-RU', { 
                           weekday: 'long', 
                           day: 'numeric', 
@@ -1731,17 +1798,17 @@ export default function AdminPage() {
 
                   {!blockTimeForm.master ? (
                     <div className="flex-grow flex items-center justify-center text-slate-400">
-                      <p className="text-center">Выберите мастера</p>
+                      <p className="text-center text-sm">Выберите мастера</p>
                     </div>
                   ) : !selectedCalendarDate ? (
                     <div className="flex-grow flex items-center justify-center text-slate-400">
-                      <p className="text-center">Выберите дату в календаре</p>
+                      <p className="text-center text-sm">Выберите дату в календаре</p>
                     </div>
                   ) : loadingSlots ? (
                     <div className="flex-grow flex items-center justify-center">
                       <div className="text-center">
                         <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-4"></div>
-                        <p className="text-slate-500">Загрузка...</p>
+                        <p className="text-slate-500 text-sm">Загрузка...</p>
                       </div>
                     </div>
                   ) : (
@@ -1753,7 +1820,7 @@ export default function AdminPage() {
                       }).length > 0 && (
                         <div>
                           <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Утро</h4>
-                          <div className="grid grid-cols-3 gap-2">
+                          <div className="grid grid-cols-3 max-[480px]:grid-cols-2 gap-2">
                             {availableSlots.filter(slot => {
                               const hour = parseInt(slot.split(':')[0]);
                               return hour >= 9 && hour < 12;
@@ -1762,7 +1829,7 @@ export default function AdminPage() {
                                 key={slot}
                                 type="button"
                                 onClick={() => toggleTimeSlot(slot)}
-                                className={`py-3 rounded-xl text-sm font-semibold transition-all ${
+                                className={`py-3 max-[480px]:py-2 rounded-xl text-sm max-[480px]:text-xs font-semibold transition-all ${
                                   blockTimeForm.selectedTimes.includes(slot)
                                     ? 'gradient-bg text-white shadow-lg shadow-primary/20'
                                     : 'bg-white border border-slate-200 hover:border-primary'
@@ -1782,7 +1849,7 @@ export default function AdminPage() {
                       }).length > 0 && (
                         <div>
                           <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">День</h4>
-                          <div className="grid grid-cols-3 gap-2">
+                          <div className="grid grid-cols-3 max-[480px]:grid-cols-2 gap-2">
                             {availableSlots.filter(slot => {
                               const hour = parseInt(slot.split(':')[0]);
                               return hour >= 12 && hour < 17;
@@ -1791,7 +1858,7 @@ export default function AdminPage() {
                                 key={slot}
                                 type="button"
                                 onClick={() => toggleTimeSlot(slot)}
-                                className={`py-3 rounded-xl text-sm font-semibold transition-all ${
+                                className={`py-3 max-[480px]:py-2 rounded-xl text-sm max-[480px]:text-xs font-semibold transition-all ${
                                   blockTimeForm.selectedTimes.includes(slot)
                                     ? 'gradient-bg text-white shadow-lg shadow-primary/20'
                                     : 'bg-white border border-slate-200 hover:border-primary'
@@ -1811,7 +1878,7 @@ export default function AdminPage() {
                       }).length > 0 && (
                         <div>
                           <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Вечер</h4>
-                          <div className="grid grid-cols-3 gap-2">
+                          <div className="grid grid-cols-3 max-[480px]:grid-cols-2 gap-2">
                             {availableSlots.filter(slot => {
                               const hour = parseInt(slot.split(':')[0]);
                               return hour >= 17 && hour < 20;
@@ -1820,7 +1887,7 @@ export default function AdminPage() {
                                 key={slot}
                                 type="button"
                                 onClick={() => toggleTimeSlot(slot)}
-                                className={`py-3 rounded-xl text-sm font-semibold transition-all ${
+                                className={`py-3 max-[480px]:py-2 rounded-xl text-sm max-[480px]:text-xs font-semibold transition-all ${
                                   blockTimeForm.selectedTimes.includes(slot)
                                     ? 'gradient-bg text-white shadow-lg shadow-primary/20'
                                     : 'bg-white border border-slate-200 hover:border-primary'
@@ -1840,7 +1907,7 @@ export default function AdminPage() {
                               Выбрано слотов: <span className="text-primary">{blockTimeForm.selectedTimes.length}</span>
                             </p>
                           )}
-                          <div className="flex gap-2">
+                          <div className="flex flex-col sm:flex-row gap-2">
                             <button
                               type="button"
                               onClick={selectAllSlots}
@@ -1908,52 +1975,52 @@ export default function AdminPage() {
       {/* Модальное окно статистики */}
       {showStatsModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-background-light rounded-3xl p-8 max-w-5xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-background-light rounded-3xl p-8 max-[480px]:p-6 max-w-5xl w-full max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-black">Статистика за месяц</h2>
+              <h2 className="text-2xl max-[480px]:text-xl font-black">Статистика за месяц</h2>
               <button
                 onClick={() => setShowStatsModal(false)}
-                className="size-10 rounded-xl hover:bg-slate-100 flex items-center justify-center transition-colors"
+                className="size-10 max-[480px]:size-9 rounded-xl hover:bg-slate-100 flex items-center justify-center transition-colors"
               >
-                <span className="material-symbols-outlined">close</span>
+                <span className="material-symbols-outlined max-[480px]:text-lg">close</span>
               </button>
             </div>
 
             {/* Переключатель режима */}
-            <div className="flex gap-3 mb-4">
+            <div className="flex flex-col sm:flex-row gap-3 mb-4">
               <button
                 onClick={() => setStatsViewMode('bookings')}
-                className={`flex-1 p-4 rounded-2xl font-bold transition-all ${
+                className={`flex-1 p-4 max-[480px]:p-3 rounded-2xl font-bold transition-all ${
                   statsViewMode === 'bookings'
                     ? 'gradient-bg text-white shadow-lg shadow-primary/20'
                     : 'bg-white border-2 border-slate-200 hover:border-primary'
                 }`}
               >
                 <div className="flex items-center justify-center gap-2">
-                  <span className="material-symbols-outlined">event</span>
-                  <span>Записи по дням</span>
+                  <span className="material-symbols-outlined max-[480px]:text-lg">event</span>
+                  <span className="text-sm sm:text-base">Записи по дням</span>
                 </div>
               </button>
               <button
                 onClick={() => setStatsViewMode('revenue')}
-                className={`flex-1 p-4 rounded-2xl font-bold transition-all ${
+                className={`flex-1 p-4 max-[480px]:p-3 rounded-2xl font-bold transition-all ${
                   statsViewMode === 'revenue'
                     ? 'gradient-bg text-white shadow-lg shadow-primary/20'
                     : 'bg-white border-2 border-slate-200 hover:border-primary'
                 }`}
               >
                 <div className="flex items-center justify-center gap-2">
-                  <span className="material-symbols-outlined">payments</span>
-                  <span>Доход по дням</span>
+                  <span className="material-symbols-outlined max-[480px]:text-lg">payments</span>
+                  <span className="text-sm sm:text-base">Доход по дням</span>
                 </div>
               </button>
             </div>
 
             {/* Переключатель мастера */}
-            <div className="flex gap-2 mb-8 justify-center">
+            <div className="flex gap-2 mb-8 justify-center flex-wrap">
               <button
                 onClick={() => setStatsMasterFilter('all')}
-                className={`px-6 py-2 rounded-xl text-sm font-semibold transition-all ${
+                className={`px-6 py-2 max-[480px]:px-4 max-[480px]:py-1.5 rounded-xl text-sm max-[480px]:text-xs font-semibold transition-all ${
                   statsMasterFilter === 'all'
                     ? 'bg-gradient-to-r from-accent-pink to-accent-purple text-white'
                     : 'bg-white border border-slate-200 hover:border-primary'
@@ -1963,7 +2030,7 @@ export default function AdminPage() {
               </button>
               <button
                 onClick={() => setStatsMasterFilter('Лиза')}
-                className={`px-6 py-2 rounded-xl text-sm font-semibold transition-all ${
+                className={`px-6 py-2 max-[480px]:px-4 max-[480px]:py-1.5 rounded-xl text-sm max-[480px]:text-xs font-semibold transition-all ${
                   statsMasterFilter === 'Лиза'
                     ? 'bg-gradient-to-r from-accent-pink to-accent-purple text-white'
                     : 'bg-white border border-slate-200 hover:border-primary'
@@ -1973,7 +2040,7 @@ export default function AdminPage() {
               </button>
               <button
                 onClick={() => setStatsMasterFilter('Женя')}
-                className={`px-6 py-2 rounded-xl text-sm font-semibold transition-all ${
+                className={`px-6 py-2 max-[480px]:px-4 max-[480px]:py-1.5 rounded-xl text-sm max-[480px]:text-xs font-semibold transition-all ${
                   statsMasterFilter === 'Женя'
                     ? 'bg-gradient-to-r from-accent-pink to-accent-purple text-white'
                     : 'bg-white border border-slate-200 hover:border-primary'
@@ -1984,11 +2051,11 @@ export default function AdminPage() {
             </div>
 
             {/* График */}
-            <div className="glass rounded-2xl p-6">
-              <h3 className="text-lg font-bold mb-6">
+            <div className="glass rounded-2xl p-6 max-[480px]:p-4">
+              <h3 className="text-lg max-[480px]:text-base font-bold mb-6">
                 {statsViewMode === 'bookings' ? 'Количество записей' : 'Доход в рублях'}
               </h3>
-              <div className="h-80">
+              <div className="h-80 max-[480px]:h-64">
                 <Line
                   data={{
                     labels: getChartData().map(d => d.label),
@@ -2027,10 +2094,12 @@ export default function AdminPage() {
                         },
                         callbacks: {
                           label: function(context) {
+                            const value = context.parsed.y;
+                            if (value === null) return '';
                             if (statsViewMode === 'revenue') {
-                              return `${context.parsed.y.toLocaleString()} ₽`;
+                              return `${value.toLocaleString()} ₽`;
                             }
-                            return `${context.parsed.y} ${context.parsed.y === 1 ? 'запись' : 'записей'}`;
+                            return `${value} ${value === 1 ? 'запись' : 'записей'}`;
                           }
                         }
                       },
@@ -2072,10 +2141,10 @@ export default function AdminPage() {
               </div>
               
               {/* Итоги */}
-              <div className="mt-6 pt-6 border-t border-slate-200 grid grid-cols-3 gap-4">
+              <div className="mt-6 pt-6 border-t border-slate-200 grid grid-cols-3 gap-4 max-[480px]:gap-2">
                 <div className="text-center">
-                  <p className="text-xs text-slate-400 uppercase tracking-widest mb-1">Всего</p>
-                  <p className="text-2xl font-black text-gradient">
+                  <p className="text-xs max-[480px]:text-[10px] text-slate-400 uppercase tracking-widest mb-1">Всего</p>
+                  <p className="text-2xl max-[480px]:text-lg font-black text-gradient">
                     {statsViewMode === 'bookings'
                       ? getChartData().reduce((sum, d) => sum + d.value, 0)
                       : `${getChartData().reduce((sum, d) => sum + d.value, 0).toLocaleString()} ₽`
@@ -2083,8 +2152,8 @@ export default function AdminPage() {
                   </p>
                 </div>
                 <div className="text-center">
-                  <p className="text-xs text-slate-400 uppercase tracking-widest mb-1">Среднее</p>
-                  <p className="text-2xl font-black text-gradient">
+                  <p className="text-xs max-[480px]:text-[10px] text-slate-400 uppercase tracking-widest mb-1">Среднее</p>
+                  <p className="text-2xl max-[480px]:text-lg font-black text-gradient">
                     {statsViewMode === 'bookings'
                       ? Math.round(getChartData().reduce((sum, d) => sum + d.value, 0) / getChartData().length)
                       : `${Math.round(getChartData().reduce((sum, d) => sum + d.value, 0) / getChartData().length).toLocaleString()} ₽`
@@ -2092,8 +2161,8 @@ export default function AdminPage() {
                   </p>
                 </div>
                 <div className="text-center">
-                  <p className="text-xs text-slate-400 uppercase tracking-widest mb-1">Максимум</p>
-                  <p className="text-2xl font-black text-gradient">
+                  <p className="text-xs max-[480px]:text-[10px] text-slate-400 uppercase tracking-widest mb-1">Максимум</p>
+                  <p className="text-2xl max-[480px]:text-lg font-black text-gradient">
                     {statsViewMode === 'bookings'
                       ? Math.max(...getChartData().map(d => d.value))
                       : `${Math.max(...getChartData().map(d => d.value)).toLocaleString()} ₽`
