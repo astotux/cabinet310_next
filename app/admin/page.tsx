@@ -90,7 +90,11 @@ export default function AdminPage() {
   
   // Состояние для календаря
   const [viewMode, setViewMode] = useState<'day' | 'week'>('day');
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState(() => {
+    const now = new Date();
+    // Создаем дату в полдень, чтобы избежать проблем с часовыми поясами
+    return new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12, 0, 0);
+  });
   
   // Функция для форматирования даты
   const formatDate = (date: Date): string => {
@@ -147,18 +151,27 @@ export default function AdminPage() {
   };
   
   const goToToday = () => {
-    setCurrentDate(new Date());
+    const now = new Date();
+    // Создаем дату в полдень, чтобы избежать проблем с часовыми поясами
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12, 0, 0);
+    setCurrentDate(today);
   };
   
   // Фильтрация записей по текущей дате/неделе
   const getFilteredBookings = () => {
     if (viewMode === 'day') {
-      const dateStr = currentDate.toISOString().split('T')[0];
+      // Форматируем дату вручную, избегая проблем с часовыми поясами
+      const year = currentDate.getFullYear();
+      const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+      const day = String(currentDate.getDate()).padStart(2, '0');
+      const dateStr = `${year}-${month}-${day}`;
       return bookings.filter(b => b.date === dateStr);
     } else {
       const { start, end } = getWeekRange(currentDate);
       return bookings.filter(b => {
-        const bookingDate = new Date(b.date);
+        // Парсим дату как локальную
+        const [year, month, day] = b.date.split('-').map(Number);
+        const bookingDate = new Date(year, month - 1, day);
         return bookingDate >= start && bookingDate <= end;
       }).sort((a, b) => {
         // Сортировка по дате, затем по времени
@@ -219,7 +232,8 @@ export default function AdminPage() {
 
   const calculateStats = (bookingsData: any[], reviewsData: any[], servicesData: any[]) => {
     // Записей сегодня для каждого мастера
-    const today = new Date().toISOString().split('T')[0];
+    const now = new Date();
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     const todayBookings = bookingsData.filter((b: any) => b.date === today);
     
     const lizaTodayBookings = todayBookings.filter((b: any) => b.master === 'Лиза');
@@ -229,13 +243,13 @@ export default function AdminPage() {
     setTodayBookingsZhenya(zhenyaTodayBookings.length);
 
     // Доход за текущий месяц для каждого мастера
-    const now = new Date();
     const currentMonth = now.getMonth();
     const currentYear = now.getFullYear();
     
     const monthBookings = bookingsData.filter((booking: any) => {
-      const bookingDate = new Date(booking.date);
-      return bookingDate.getMonth() === currentMonth && bookingDate.getFullYear() === currentYear;
+      // Парсим дату как локальную
+      const [year, month] = booking.date.split('-').map(Number);
+      return month - 1 === currentMonth && year === currentYear;
     });
 
     // Доход Лизы
@@ -279,11 +293,15 @@ export default function AdminPage() {
         dayBookings = dayBookings.filter((b: any) => b.master === statsMasterFilter);
       }
       
+      // Создаем дату локально, избегая проблем с часовыми поясами
+      const localDate = new Date(currentYear, currentMonth, day);
+      const monthLabel = localDate.toLocaleDateString('ru-RU', { month: 'short' });
+      
       if (statsViewMode === 'bookings') {
         data.push({
           day,
           value: dayBookings.length,
-          label: `${day} ${new Date(dateStr).toLocaleDateString('ru-RU', { month: 'short' })}`
+          label: `${day} ${monthLabel}`
         });
       } else {
         const dayRevenue = dayBookings.reduce((sum: number, booking: any) => {
@@ -293,7 +311,7 @@ export default function AdminPage() {
         data.push({
           day,
           value: dayRevenue,
-          label: `${day} ${new Date(dateStr).toLocaleDateString('ru-RU', { month: 'short' })}`
+          label: `${day} ${monthLabel}`
         });
       }
     }
@@ -656,7 +674,9 @@ export default function AdminPage() {
       // Фильтруем существующие блокировки для текущего мастера и периода
       const existingBlocks = blockedData.filter((slot: any) => {
         if (slot.master !== blockTimeForm.master) return false;
-        const slotDate = new Date(slot.date);
+        // Парсим дату как локальную
+        const [slotYear, slotMonth, slotDay] = slot.date.split('-').map(Number);
+        const slotDate = new Date(slotYear, slotMonth - 1, slotDay);
         return slotDate >= selectedDate && slotDate.getMonth() === month;
       });
 
@@ -779,8 +799,9 @@ export default function AdminPage() {
 
       // Фильтруем записи за текущий месяц
       const monthBookings = bookings.filter(booking => {
-        const bookingDate = new Date(booking.date);
-        return bookingDate.getMonth() === currentMonth && bookingDate.getFullYear() === currentYear;
+        // Парсим дату как локальную
+        const [year, month] = booking.date.split('-').map(Number);
+        return month - 1 === currentMonth && year === currentYear;
       });
 
       if (monthBookings.length === 0) {
@@ -824,7 +845,9 @@ export default function AdminPage() {
         ],
         // Данные
         ...sortedBookings.map(booking => {
-          const date = new Date(booking.date);
+          // Парсим дату как локальную
+          const [year, month, day] = booking.date.split('-').map(Number);
+          const date = new Date(year, month - 1, day);
           const formattedDate = date.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' });
           
           return [
@@ -939,7 +962,9 @@ export default function AdminPage() {
 
   // Функция для форматирования даты в читаемый формат
   const formatReadableDate = (dateStr: string): string => {
-    const date = new Date(dateStr);
+    // Парсим дату как локальную, избегая проблем с часовыми поясами
+    const [year, month, day] = dateStr.split('-').map(Number);
+    const date = new Date(year, month - 1, day);
     const options: Intl.DateTimeFormatOptions = { 
       day: 'numeric', 
       month: 'long',
@@ -1072,7 +1097,9 @@ export default function AdminPage() {
                   <button 
                     onClick={() => {
                       setViewMode('day');
-                      setCurrentDate(new Date());
+                      const now = new Date();
+                      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12, 0, 0);
+                      setCurrentDate(today);
                     }}
                     className={`px-4 py-2 max-[480px]:px-3 max-[480px]:py-1.5 rounded-xl text-sm max-[480px]:text-xs font-semibold transition-colors ${
                       viewMode === 'day'

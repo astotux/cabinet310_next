@@ -41,7 +41,12 @@ export default function BookingCalendar({
     setError(null);
 
     try {
-      const dateStr = format(selectedDate, "yyyy-MM-dd");
+      // Форматируем дату вручную, чтобы избежать проблем с часовыми поясами
+      const year = selectedDate.getFullYear();
+      const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+      const day = String(selectedDate.getDate()).padStart(2, '0');
+      const dateStr = `${year}-${month}-${day}`;
+      
       const response = await fetch(
         `/api/availability?service=${serviceId}&master=${encodeURIComponent(
           master
@@ -63,14 +68,25 @@ export default function BookingCalendar({
   };
 
   const handleDateSelect = (date: Date | undefined) => {
-    setSelectedDate(date);
+    if (date) {
+      // Создаем дату в полдень локального времени, чтобы избежать проблем с часовыми поясами
+      const localDate = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12, 0, 0);
+      setSelectedDate(localDate);
+    } else {
+      setSelectedDate(undefined);
+    }
     setSelectedTime(null); // Сбрасываем выбранное время при смене даты
   };
 
   const handleTimeSelect = (time: string) => {
     setSelectedTime(time);
     if (selectedDate) {
-      onSlotSelect(format(selectedDate, "yyyy-MM-dd"), time);
+      // Форматируем дату вручную, чтобы избежать проблем с часовыми поясами
+      const year = selectedDate.getFullYear();
+      const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+      const day = String(selectedDate.getDate()).padStart(2, '0');
+      const dateStr = `${year}-${month}-${day}`;
+      onSlotSelect(dateStr, time);
     }
   };
 
