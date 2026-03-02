@@ -3,6 +3,30 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Line } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler
+} from 'chart.js';
+
+// Регистрация компонентов Chart.js
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler
+);
 
 export default function AdminPage() {
   const [bookings, setBookings] = useState<any[]>([]);
@@ -55,6 +79,10 @@ export default function AdminPage() {
   const [monthRevenueZhenya, setMonthRevenueZhenya] = useState(0);
   const [selectedMasterForRevenue, setSelectedMasterForRevenue] = useState<'Лиза' | 'Женя'>('Лиза');
   const [pendingReviewsCount, setPendingReviewsCount] = useState(0);
+  
+  // Модальное окно статистики
+  const [showStatsModal, setShowStatsModal] = useState(false);
+  const [statsViewMode, setStatsViewMode] = useState<'bookings' | 'revenue'>('bookings');
   
   const router = useRouter();
   
@@ -229,6 +257,41 @@ export default function AdminPage() {
     // Отзывов на модерации
     const pendingReviews = reviewsData.filter((r: any) => !r.approved);
     setPendingReviewsCount(pendingReviews.length);
+  };
+
+  // Подготовка данных для графика
+  const getChartData = () => {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+    
+    const data = [];
+    
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      const dayBookings = bookings.filter((b: any) => b.date === dateStr);
+      
+      if (statsViewMode === 'bookings') {
+        data.push({
+          day,
+          value: dayBookings.length,
+          label: `${day} ${new Date(dateStr).toLocaleDateString('ru-RU', { month: 'short' })}`
+        });
+      } else {
+        const dayRevenue = dayBookings.reduce((sum: number, booking: any) => {
+          const service = services.find((s: any) => s.service === booking.service);
+          return sum + (service?.price || 0);
+        }, 0);
+        data.push({
+          day,
+          value: dayRevenue,
+          label: `${day} ${new Date(dateStr).toLocaleDateString('ru-RU', { month: 'short' })}`
+        });
+      }
+    }
+    
+    return data;
   };
 
   const approveReview = async (id: number) => {
@@ -1110,6 +1173,19 @@ export default function AdminPage() {
               </div>
               <div className="space-y-3">
                 <button 
+                  onClick={() => setShowStatsModal(true)}
+                  className="w-full p-4 rounded-2xl bg-white/60 border border-slate-200/60 hover:border-primary transition-colors flex items-center gap-3"
+                >
+                  <div className="size-10 rounded-xl bg-gradient-to-r from-accent-pink to-accent-purple text-white flex items-center justify-center">
+                    <span className="material-symbols-outlined">analytics</span>
+                  </div>
+                  <div className="text-left flex-1">
+                    <p className="font-bold text-sm">Статистика</p>
+                    <p className="text-xs text-slate-500">График за месяц</p>
+                  </div>
+                </button>
+
+                <button 
                   onClick={handleExportPDF}
                   className="w-full p-4 rounded-2xl bg-white/60 border border-slate-200/60 hover:border-primary transition-colors flex items-center gap-3"
                 >
@@ -1819,6 +1895,173 @@ export default function AdminPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Модальное окно статистики */}
+      {showStatsModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-background-light rounded-3xl p-8 max-w-5xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-black">Статистика за месяц</h2>
+              <button
+                onClick={() => setShowStatsModal(false)}
+                className="size-10 rounded-xl hover:bg-slate-100 flex items-center justify-center transition-colors"
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+
+            {/* Переключатель режима */}
+            <div className="flex gap-3 mb-8">
+              <button
+                onClick={() => setStatsViewMode('bookings')}
+                className={`flex-1 p-4 rounded-2xl font-bold transition-all ${
+                  statsViewMode === 'bookings'
+                    ? 'gradient-bg text-white shadow-lg shadow-primary/20'
+                    : 'bg-white border-2 border-slate-200 hover:border-primary'
+                }`}
+              >
+                <div className="flex items-center justify-center gap-2">
+                  <span className="material-symbols-outlined">event</span>
+                  <span>Записи по дням</span>
+                </div>
+              </button>
+              <button
+                onClick={() => setStatsViewMode('revenue')}
+                className={`flex-1 p-4 rounded-2xl font-bold transition-all ${
+                  statsViewMode === 'revenue'
+                    ? 'gradient-bg text-white shadow-lg shadow-primary/20'
+                    : 'bg-white border-2 border-slate-200 hover:border-primary'
+                }`}
+              >
+                <div className="flex items-center justify-center gap-2">
+                  <span className="material-symbols-outlined">payments</span>
+                  <span>Доход по дням</span>
+                </div>
+              </button>
+            </div>
+
+            {/* График */}
+            <div className="glass rounded-2xl p-6">
+              <h3 className="text-lg font-bold mb-6">
+                {statsViewMode === 'bookings' ? 'Количество записей' : 'Доход в рублях'}
+              </h3>
+              <div className="h-80">
+                <Line
+                  data={{
+                    labels: getChartData().map(d => d.label),
+                    datasets: [
+                      {
+                        label: statsViewMode === 'bookings' ? 'Записей' : 'Доход (₽)',
+                        data: getChartData().map(d => d.value),
+                        borderColor: 'rgb(147, 51, 234)',
+                        backgroundColor: 'rgba(147, 51, 234, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: 'rgb(147, 51, 234)',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                      },
+                    ],
+                  }}
+                  options={{
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                      legend: {
+                        display: false,
+                      },
+                      tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        titleFont: {
+                          size: 14,
+                          weight: 'bold',
+                        },
+                        bodyFont: {
+                          size: 13,
+                        },
+                        callbacks: {
+                          label: function(context) {
+                            if (statsViewMode === 'revenue') {
+                              return `${context.parsed.y.toLocaleString()} ₽`;
+                            }
+                            return `${context.parsed.y} ${context.parsed.y === 1 ? 'запись' : 'записей'}`;
+                          }
+                        }
+                      },
+                    },
+                    scales: {
+                      y: {
+                        beginAtZero: true,
+                        ticks: {
+                          callback: function(value) {
+                            if (statsViewMode === 'revenue') {
+                              return value.toLocaleString() + ' ₽';
+                            }
+                            return value;
+                          },
+                          font: {
+                            size: 12,
+                          },
+                        },
+                        grid: {
+                          color: 'rgba(0, 0, 0, 0.05)',
+                        },
+                      },
+                      x: {
+                        ticks: {
+                          font: {
+                            size: 11,
+                          },
+                          maxRotation: 0,
+                          autoSkip: true,
+                          maxTicksLimit: 15,
+                        },
+                        grid: {
+                          display: false,
+                        },
+                      },
+                    },
+                  }}
+                />
+              </div>
+              
+              {/* Итоги */}
+              <div className="mt-6 pt-6 border-t border-slate-200 grid grid-cols-3 gap-4">
+                <div className="text-center">
+                  <p className="text-xs text-slate-400 uppercase tracking-widest mb-1">Всего</p>
+                  <p className="text-2xl font-black text-gradient">
+                    {statsViewMode === 'bookings'
+                      ? getChartData().reduce((sum, d) => sum + d.value, 0)
+                      : `${getChartData().reduce((sum, d) => sum + d.value, 0).toLocaleString()} ₽`
+                    }
+                  </p>
+                </div>
+                <div className="text-center">
+                  <p className="text-xs text-slate-400 uppercase tracking-widest mb-1">Среднее</p>
+                  <p className="text-2xl font-black text-gradient">
+                    {statsViewMode === 'bookings'
+                      ? Math.round(getChartData().reduce((sum, d) => sum + d.value, 0) / getChartData().length)
+                      : `${Math.round(getChartData().reduce((sum, d) => sum + d.value, 0) / getChartData().length).toLocaleString()} ₽`
+                    }
+                  </p>
+                </div>
+                <div className="text-center">
+                  <p className="text-xs text-slate-400 uppercase tracking-widest mb-1">Максимум</p>
+                  <p className="text-2xl font-black text-gradient">
+                    {statsViewMode === 'bookings'
+                      ? Math.max(...getChartData().map(d => d.value))
+                      : `${Math.max(...getChartData().map(d => d.value)).toLocaleString()} ₽`
+                    }
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
