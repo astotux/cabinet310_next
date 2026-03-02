@@ -44,6 +44,8 @@ export default function AdminPage() {
   });
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [selectedCalendarDate, setSelectedCalendarDate] = useState<Date | null>(null);
   
   const router = useRouter();
   
@@ -338,7 +340,100 @@ export default function AdminPage() {
       reason: "",
     });
     setAvailableSlots([]);
+    setCurrentMonth(new Date());
+    setSelectedCalendarDate(null);
     setShowBlockTimeModal(true);
+  };
+
+  // Функции для календаря
+  const handlePreviousMonth = () => {
+    setCurrentMonth(prev => {
+      const newDate = new Date(prev);
+      newDate.setMonth(newDate.getMonth() - 1);
+      return newDate;
+    });
+  };
+
+  const handleNextMonth = () => {
+    setCurrentMonth(prev => {
+      const newDate = new Date(prev);
+      newDate.setMonth(newDate.getMonth() + 1);
+      return newDate;
+    });
+  };
+
+  const handleDateSelect = (date: Date) => {
+    setSelectedCalendarDate(date);
+    // Форматируем дату правильно, избегая проблем с часовыми поясами
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const dateStr = `${year}-${month}-${day}`;
+    setBlockTimeForm(prev => ({ ...prev, date: dateStr }));
+    if (blockTimeForm.master) {
+      loadAvailableSlots(dateStr);
+    }
+  };
+
+  const renderCalendarDays = () => {
+    const year = currentMonth.getFullYear();
+    const month = currentMonth.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startingDayOfWeek = firstDay.getDay();
+    const adjustedStartDay = startingDayOfWeek === 0 ? 6 : startingDayOfWeek - 1;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const days = [];
+
+    // Пустые ячейки для дней предыдущего месяца
+    for (let i = 0; i < adjustedStartDay; i++) {
+      days.push(<div key={`empty-${i}`} className="aspect-square"></div>);
+    }
+
+    // Дни текущего месяца
+    for (let day = 1; day <= daysInMonth; day++) {
+      const date = new Date(year, month, day);
+      date.setHours(0, 0, 0, 0);
+      const isPast = date < today;
+      
+      // Сравниваем даты правильно
+      const isSelected = selectedCalendarDate && 
+        date.getFullYear() === selectedCalendarDate.getFullYear() &&
+        date.getMonth() === selectedCalendarDate.getMonth() &&
+        date.getDate() === selectedCalendarDate.getDate();
+
+      days.push(
+        <button
+          key={day}
+          type="button"
+          onClick={() => !isPast && handleDateSelect(date)}
+          disabled={isPast}
+          className={`aspect-square flex items-center justify-center rounded-2xl text-sm font-medium transition-all ${
+            isSelected
+              ? "gradient-bg text-white shadow-lg shadow-primary/20"
+              : isPast
+              ? "text-slate-300 cursor-not-allowed"
+              : "hover:bg-white cursor-pointer"
+          }`}
+        >
+          {day}
+        </button>
+      );
+    }
+
+    return days;
+  };
+
+  const formatMonthYear = () => {
+    const months = [
+      'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+      'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
+    ];
+    return `${months[currentMonth.getMonth()]} ${currentMonth.getFullYear()}`;
   };
 
   const loadAvailableSlots = async (date: string) => {
@@ -382,6 +477,89 @@ export default function AdminPage() {
         ? prev.selectedTimes.filter(t => t !== time)
         : [...prev.selectedTimes, time]
     }));
+  };
+
+  const selectAllSlots = () => {
+    setBlockTimeForm(prev => ({
+      ...prev,
+      selectedTimes: [...availableSlots]
+    }));
+  };
+
+  const selectAllSlotsUntilEndOfMonth = async () => {
+    if (!blockTimeForm.master || !selectedCalendarDate || blockTimeForm.selectedTimes.length === 0) {
+      alert('Сначала выберите хотя бы один временной слот');
+      return;
+    }
+
+    const selectedDate = new Date(selectedCalendarDate);
+    const year = selectedDate.getFullYear();
+    const month = selectedDate.getMonth();
+    const lastDayOfMonth = new Date(year, month + 1, 0).getDate();
+    const currentDay = selectedDate.getDate();
+
+    // Собираем только выбранные слоты для всех дней до конца месяца
+    const allSlots: { date: string; time: string }[] = [];
+    
+    for (let day = currentDay; day <= lastDayOfMonth; day++) {
+      const date = new Date(year, month, day);
+      const dateYear = date.getFullYear();
+      const dateMonth = String(date.getMonth() + 1).padStart(2, '0');
+      const dateDay = String(date.getDate()).padStart(2, '0');
+      const dateStr = `${dateYear}-${dateMonth}-${dateDay}`;
+      
+      // Добавляем только выбранные временные слоты для этого дня
+      blockTimeForm.selectedTimes.forEach(time => {
+        allSlots.push({ date: dateStr, time });
+      });
+    }
+
+    // Загружаем существующие блокировки для этого периода
+    try {
+      const blockedRes = await fetch('/api/blocked-slots');
+      const blockedData = await blockedRes.json();
+      
+      // Фильтруем существующие блокировки для текущего мастера и периода
+      const existingBlocks = blockedData.filter((slot: any) => {
+        if (slot.master !== blockTimeForm.master) return false;
+        const slotDate = new Date(slot.date);
+        return slotDate >= selectedDate && slotDate.getMonth() === month;
+      });
+
+      // Создаем новые блокировки только для тех слотов, которых еще нет
+      const createPromises = allSlots.map(slot => {
+        // Проверяем, не существует ли уже такая блокировка
+        const exists = existingBlocks.some(
+          (existing: any) => existing.date === slot.date && existing.time === slot.time
+        );
+        
+        if (!exists) {
+          return fetch('/api/blocked-slots', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              master: blockTimeForm.master,
+              date: slot.date,
+              time: slot.time,
+              reason: blockTimeForm.reason || null,
+            }),
+          });
+        }
+        return Promise.resolve({ ok: true });
+      });
+
+      const responses = await Promise.all(createPromises);
+      const newBlocksCount = responses.filter(r => r && r.ok).length;
+
+      const daysCount = lastDayOfMonth - currentDay + 1;
+      const timeSlotsCount = blockTimeForm.selectedTimes.length;
+      
+      alert(`Успешно заблокированы слоты:\n${timeSlotsCount} временных слота × ${daysCount} дней = ${timeSlotsCount * daysCount} блокировок`);
+      fetchData();
+    } catch (error) {
+      console.error('Ошибка блокировки слотов:', error);
+      alert('Ошибка при блокировке слотов до конца месяца');
+    }
   };
 
   const handleBlockTimeSubmit = async (e: React.FormEvent) => {
@@ -1257,7 +1435,7 @@ export default function AdminPage() {
 
       {showBlockTimeModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-background-light rounded-3xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-background-light rounded-3xl p-8 max-w-6xl w-full max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-black">Заблокировать время</h2>
               <button
@@ -1269,132 +1447,247 @@ export default function AdminPage() {
             </div>
 
             <form onSubmit={handleBlockTimeSubmit} className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-bold mb-2">Мастер *</label>
-                  <select
-                    value={blockTimeForm.master}
-                    onChange={(e) => {
-                      setBlockTimeForm({ ...blockTimeForm, master: e.target.value });
+              {/* Выбор мастера */}
+              <div>
+                <label className="block text-sm font-bold mb-3">Мастер *</label>
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setBlockTimeForm({ ...blockTimeForm, master: "Мастер А" });
                       if (blockTimeForm.date) {
                         loadAvailableSlots(blockTimeForm.date);
                       }
                     }}
-                    required
-                    className="w-full p-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                    className={`flex-1 p-4 rounded-2xl font-bold transition-all ${
+                      blockTimeForm.master === "Мастер А"
+                        ? "gradient-bg text-white shadow-lg shadow-primary/20"
+                        : "bg-white border-2 border-slate-200 hover:border-primary"
+                    }`}
                   >
-                    <option value="">Выберите мастера</option>
-                    <option value="Мастер А">Мастер А</option>
-                    <option value="Мастер Б">Мастер Б</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-bold mb-2">Дата *</label>
-                  <input
-                    type="date"
-                    value={blockTimeForm.date}
-                    onChange={(e) => {
-                      setBlockTimeForm({ ...blockTimeForm, date: e.target.value });
-                      if (blockTimeForm.master) {
-                        loadAvailableSlots(e.target.value);
+                    <div className="flex items-center justify-center gap-2">
+                      <span className="material-symbols-outlined">face_3</span>
+                      <span>Мастер А</span>
+                    </div>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setBlockTimeForm({ ...blockTimeForm, master: "Мастер Б" });
+                      if (blockTimeForm.date) {
+                        loadAvailableSlots(blockTimeForm.date);
                       }
                     }}
-                    min={new Date().toISOString().split('T')[0]}
-                    required
-                    className="w-full p-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
-                  />
+                    className={`flex-1 p-4 rounded-2xl font-bold transition-all ${
+                      blockTimeForm.master === "Мастер Б"
+                        ? "gradient-bg text-white shadow-lg shadow-primary/20"
+                        : "bg-white border-2 border-slate-200 hover:border-primary"
+                    }`}
+                  >
+                    <div className="flex items-center justify-center gap-2">
+                      <span className="material-symbols-outlined">face_3</span>
+                      <span>Мастер Б</span>
+                    </div>
+                  </button>
                 </div>
               </div>
 
-              {blockTimeForm.date && (
-                <div>
-                  <label className="block text-sm font-bold mb-3">Выберите время для блокировки *</label>
-                  {loadingSlots ? (
-                    <p className="text-slate-500 text-center py-4">Загрузка слотов...</p>
-                  ) : (
-                    <div className="space-y-4">
-                      {/* Утро */}
-                      <div>
-                        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Утро</h3>
-                        <div className="grid grid-cols-4 gap-2">
-                          {availableSlots.filter(slot => {
-                            const hour = parseInt(slot.split(':')[0]);
-                            return hour >= 9 && hour < 12;
-                          }).map(slot => (
-                            <button
-                              key={slot}
-                              type="button"
-                              onClick={() => toggleTimeSlot(slot)}
-                              className={`p-3 rounded-xl text-sm font-semibold transition-all ${
-                                blockTimeForm.selectedTimes.includes(slot)
-                                  ? 'gradient-bg text-white shadow-lg shadow-primary/20'
-                                  : 'bg-white border border-slate-200 hover:border-primary'
-                              }`}
-                            >
-                              {slot}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
+              {/* Календарь и временные слоты */}
+              <div className="glass rounded-3xl p-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+                {/* Календарь */}
+                <div className="lg:col-span-7">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-xl font-bold">{formatMonthYear()}</h3>
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={handlePreviousMonth}
+                        className="size-10 rounded-xl border border-slate-200 flex items-center justify-center hover:bg-white transition-colors"
+                      >
+                        <span className="material-symbols-outlined text-xl">chevron_left</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleNextMonth}
+                        className="size-10 rounded-xl border border-slate-200 flex items-center justify-center hover:bg-white transition-colors"
+                      >
+                        <span className="material-symbols-outlined text-xl">chevron_right</span>
+                      </button>
+                    </div>
+                  </div>
 
-                      {/* День */}
-                      <div>
-                        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">День</h3>
-                        <div className="grid grid-cols-4 gap-2">
-                          {availableSlots.filter(slot => {
-                            const hour = parseInt(slot.split(':')[0]);
-                            return hour >= 12 && hour < 17;
-                          }).map(slot => (
-                            <button
-                              key={slot}
-                              type="button"
-                              onClick={() => toggleTimeSlot(slot)}
-                              className={`p-3 rounded-xl text-sm font-semibold transition-all ${
-                                blockTimeForm.selectedTimes.includes(slot)
-                                  ? 'gradient-bg text-white shadow-lg shadow-primary/20'
-                                  : 'bg-white border border-slate-200 hover:border-primary'
-                              }`}
-                            >
-                              {slot}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
+                  {/* Заголовки дней недели */}
+                  <div className="grid grid-cols-7 gap-2 mb-4">
+                    <div className="text-center text-xs font-bold text-slate-400 uppercase tracking-widest py-2">Пн</div>
+                    <div className="text-center text-xs font-bold text-slate-400 uppercase tracking-widest py-2">Вт</div>
+                    <div className="text-center text-xs font-bold text-slate-400 uppercase tracking-widest py-2">Ср</div>
+                    <div className="text-center text-xs font-bold text-slate-400 uppercase tracking-widest py-2">Чт</div>
+                    <div className="text-center text-xs font-bold text-slate-400 uppercase tracking-widest py-2">Пт</div>
+                    <div className="text-center text-xs font-bold text-slate-400 uppercase tracking-widest py-2">Сб</div>
+                    <div className="text-center text-xs font-bold text-slate-400 uppercase tracking-widest py-2">Вс</div>
+                  </div>
 
-                      {/* Вечер */}
-                      <div>
-                        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Вечер</h3>
-                        <div className="grid grid-cols-4 gap-2">
-                          {availableSlots.filter(slot => {
-                            const hour = parseInt(slot.split(':')[0]);
-                            return hour >= 17 && hour < 20;
-                          }).map(slot => (
-                            <button
-                              key={slot}
-                              type="button"
-                              onClick={() => toggleTimeSlot(slot)}
-                              className={`p-3 rounded-xl text-sm font-semibold transition-all ${
-                                blockTimeForm.selectedTimes.includes(slot)
-                                  ? 'gradient-bg text-white shadow-lg shadow-primary/20'
-                                  : 'bg-white border border-slate-200 hover:border-primary'
-                              }`}
-                            >
-                              {slot}
-                            </button>
-                          ))}
-                        </div>
+                  {/* Сетка календаря */}
+                  <div className="grid grid-cols-7 gap-2">
+                    {renderCalendarDays()}
+                  </div>
+                </div>
+
+                {/* Временные слоты */}
+                <div className="lg:col-span-5 flex flex-col border-t border-slate-200/50 pt-8 lg:pt-0 lg:border-t-0 lg:border-l lg:border-slate-200/50 pl-0 lg:pl-8">
+                  <div className="mb-6">
+                    <h3 className="text-xl font-bold mb-1">Выберите время</h3>
+                    {selectedCalendarDate && (
+                      <p className="text-sm text-slate-500">
+                        {selectedCalendarDate.toLocaleDateString('ru-RU', { 
+                          weekday: 'long', 
+                          day: 'numeric', 
+                          month: 'long' 
+                        })}
+                      </p>
+                    )}
+                  </div>
+
+                  {!blockTimeForm.master ? (
+                    <div className="flex-grow flex items-center justify-center text-slate-400">
+                      <p className="text-center">Выберите мастера</p>
+                    </div>
+                  ) : !selectedCalendarDate ? (
+                    <div className="flex-grow flex items-center justify-center text-slate-400">
+                      <p className="text-center">Выберите дату в календаре</p>
+                    </div>
+                  ) : loadingSlots ? (
+                    <div className="flex-grow flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-4"></div>
+                        <p className="text-slate-500">Загрузка...</p>
                       </div>
                     </div>
-                  )}
-                  {blockTimeForm.selectedTimes.length > 0 && (
-                    <p className="text-sm text-slate-500 mt-3">
-                      Выбрано слотов: {blockTimeForm.selectedTimes.length}
-                    </p>
+                  ) : (
+                    <div className="flex-grow overflow-y-auto space-y-6">
+                      {/* Утро */}
+                      {availableSlots.filter(slot => {
+                        const hour = parseInt(slot.split(':')[0]);
+                        return hour >= 9 && hour < 12;
+                      }).length > 0 && (
+                        <div>
+                          <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Утро</h4>
+                          <div className="grid grid-cols-3 gap-2">
+                            {availableSlots.filter(slot => {
+                              const hour = parseInt(slot.split(':')[0]);
+                              return hour >= 9 && hour < 12;
+                            }).map(slot => (
+                              <button
+                                key={slot}
+                                type="button"
+                                onClick={() => toggleTimeSlot(slot)}
+                                className={`py-3 rounded-xl text-sm font-semibold transition-all ${
+                                  blockTimeForm.selectedTimes.includes(slot)
+                                    ? 'gradient-bg text-white shadow-lg shadow-primary/20'
+                                    : 'bg-white border border-slate-200 hover:border-primary'
+                                }`}
+                              >
+                                {slot}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* День */}
+                      {availableSlots.filter(slot => {
+                        const hour = parseInt(slot.split(':')[0]);
+                        return hour >= 12 && hour < 17;
+                      }).length > 0 && (
+                        <div>
+                          <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">День</h4>
+                          <div className="grid grid-cols-3 gap-2">
+                            {availableSlots.filter(slot => {
+                              const hour = parseInt(slot.split(':')[0]);
+                              return hour >= 12 && hour < 17;
+                            }).map(slot => (
+                              <button
+                                key={slot}
+                                type="button"
+                                onClick={() => toggleTimeSlot(slot)}
+                                className={`py-3 rounded-xl text-sm font-semibold transition-all ${
+                                  blockTimeForm.selectedTimes.includes(slot)
+                                    ? 'gradient-bg text-white shadow-lg shadow-primary/20'
+                                    : 'bg-white border border-slate-200 hover:border-primary'
+                                }`}
+                              >
+                                {slot}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Вечер */}
+                      {availableSlots.filter(slot => {
+                        const hour = parseInt(slot.split(':')[0]);
+                        return hour >= 17 && hour < 20;
+                      }).length > 0 && (
+                        <div>
+                          <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Вечер</h4>
+                          <div className="grid grid-cols-3 gap-2">
+                            {availableSlots.filter(slot => {
+                              const hour = parseInt(slot.split(':')[0]);
+                              return hour >= 17 && hour < 20;
+                            }).map(slot => (
+                              <button
+                                key={slot}
+                                type="button"
+                                onClick={() => toggleTimeSlot(slot)}
+                                className={`py-3 rounded-xl text-sm font-semibold transition-all ${
+                                  blockTimeForm.selectedTimes.includes(slot)
+                                    ? 'gradient-bg text-white shadow-lg shadow-primary/20'
+                                    : 'bg-white border border-slate-200 hover:border-primary'
+                                }`}
+                              >
+                                {slot}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {availableSlots.length > 0 && (
+                        <div className="pt-4 border-t border-slate-200 space-y-3">
+                          {blockTimeForm.selectedTimes.length > 0 && (
+                            <p className="text-sm font-semibold text-center">
+                              Выбрано слотов: <span className="text-primary">{blockTimeForm.selectedTimes.length}</span>
+                            </p>
+                          )}
+                          <div className="flex gap-2">
+                            <button
+                              type="button"
+                              onClick={selectAllSlots}
+                              className="flex-1 px-4 py-2 rounded-xl bg-primary/10 text-primary text-sm font-semibold hover:bg-primary/20 transition-colors"
+                            >
+                              Выбрать все
+                            </button>
+                            <button
+                              type="button"
+                              onClick={selectAllSlotsUntilEndOfMonth}
+                              disabled={blockTimeForm.selectedTimes.length === 0}
+                              className={`flex-1 px-4 py-2 rounded-xl text-sm font-semibold transition-colors ${
+                                blockTimeForm.selectedTimes.length === 0
+                                  ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                                  : 'bg-accent-purple/10 text-accent-purple hover:bg-accent-purple/20'
+                              }`}
+                            >
+                              До конца месяца
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   )}
                 </div>
-              )}
+              </div>
 
+              {/* Причина */}
               <div>
                 <label className="block text-sm font-bold mb-2">Причина (необязательно)</label>
                 <textarea
@@ -1405,6 +1698,7 @@ export default function AdminPage() {
                 />
               </div>
 
+              {/* Кнопки */}
               <div className="flex gap-3 pt-4">
                 <button
                   type="button"
@@ -1415,12 +1709,14 @@ export default function AdminPage() {
                 </button>
                 <button
                   type="submit"
-                  disabled={blockTimeForm.selectedTimes.length === 0}
+                  disabled={!blockTimeForm.master || !blockTimeForm.date || blockTimeForm.selectedTimes.length === 0}
                   className={`flex-1 gradient-bg px-6 py-3 rounded-xl text-white font-bold transition-opacity ${
-                    blockTimeForm.selectedTimes.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'
+                    !blockTimeForm.master || !blockTimeForm.date || blockTimeForm.selectedTimes.length === 0 
+                      ? 'opacity-50 cursor-not-allowed' 
+                      : 'hover:opacity-90'
                   }`}
                 >
-                  Заблокировать ({blockTimeForm.selectedTimes.length})
+                  Сохранить ({blockTimeForm.selectedTimes.length})
                 </button>
               </div>
             </form>
