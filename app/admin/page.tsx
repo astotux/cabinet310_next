@@ -83,6 +83,7 @@ export default function AdminPage() {
   // Модальное окно статистики
   const [showStatsModal, setShowStatsModal] = useState(false);
   const [statsViewMode, setStatsViewMode] = useState<'bookings' | 'revenue'>('bookings');
+  const [statsMasterFilter, setStatsMasterFilter] = useState<'all' | 'Лиза' | 'Женя'>('all');
   
   const router = useRouter();
   
@@ -270,7 +271,12 @@ export default function AdminPage() {
     
     for (let day = 1; day <= daysInMonth; day++) {
       const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-      const dayBookings = bookings.filter((b: any) => b.date === dateStr);
+      let dayBookings = bookings.filter((b: any) => b.date === dateStr);
+      
+      // Фильтрация по мастеру
+      if (statsMasterFilter !== 'all') {
+        dayBookings = dayBookings.filter((b: any) => b.master === statsMasterFilter);
+      }
       
       if (statsViewMode === 'bookings') {
         data.push({
@@ -1062,7 +1068,7 @@ export default function AdminPage() {
                     }}
                     className={`px-4 py-2 rounded-xl text-sm font-semibold transition-colors ${
                       viewMode === 'day'
-                        ? 'bg-primary text-white'
+                        ? 'bg-gradient-to-r from-accent-pink to-accent-purple text-white'
                         : 'border border-slate-200 hover:border-primary'
                     }`}
                   >
@@ -1072,7 +1078,7 @@ export default function AdminPage() {
                     onClick={() => setViewMode('week')}
                     className={`px-4 py-2 rounded-xl text-sm font-semibold transition-colors ${
                       viewMode === 'week'
-                        ? 'bg-primary text-white'
+                        ? 'bg-gradient-to-r from-accent-pink to-accent-purple text-white'
                         : 'border border-slate-200 hover:border-primary'
                     }`}
                   >
@@ -1914,7 +1920,7 @@ export default function AdminPage() {
             </div>
 
             {/* Переключатель режима */}
-            <div className="flex gap-3 mb-8">
+            <div className="flex gap-3 mb-4">
               <button
                 onClick={() => setStatsViewMode('bookings')}
                 className={`flex-1 p-4 rounded-2xl font-bold transition-all ${
@@ -1940,6 +1946,40 @@ export default function AdminPage() {
                   <span className="material-symbols-outlined">payments</span>
                   <span>Доход по дням</span>
                 </div>
+              </button>
+            </div>
+
+            {/* Переключатель мастера */}
+            <div className="flex gap-2 mb-8 justify-center">
+              <button
+                onClick={() => setStatsMasterFilter('all')}
+                className={`px-6 py-2 rounded-xl text-sm font-semibold transition-all ${
+                  statsMasterFilter === 'all'
+                    ? 'bg-gradient-to-r from-accent-pink to-accent-purple text-white'
+                    : 'bg-white border border-slate-200 hover:border-primary'
+                }`}
+              >
+                Все
+              </button>
+              <button
+                onClick={() => setStatsMasterFilter('Лиза')}
+                className={`px-6 py-2 rounded-xl text-sm font-semibold transition-all ${
+                  statsMasterFilter === 'Лиза'
+                    ? 'bg-gradient-to-r from-accent-pink to-accent-purple text-white'
+                    : 'bg-white border border-slate-200 hover:border-primary'
+                }`}
+              >
+                Лиза
+              </button>
+              <button
+                onClick={() => setStatsMasterFilter('Женя')}
+                className={`px-6 py-2 rounded-xl text-sm font-semibold transition-all ${
+                  statsMasterFilter === 'Женя'
+                    ? 'bg-gradient-to-r from-accent-pink to-accent-purple text-white'
+                    : 'bg-white border border-slate-200 hover:border-primary'
+                }`}
+              >
+                Женя
               </button>
             </div>
 
