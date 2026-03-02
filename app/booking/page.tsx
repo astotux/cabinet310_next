@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import Footer from "@/components/Footer";
 import BookingCalendar from "./components/BookingCalendar";
 
@@ -138,46 +137,85 @@ export default function BookingPage() {
     }
   };
 
-  const getStepProgress = () => {
-    return `${(step / 3) * 100}%`;
+  // Функция для форматирования даты в читаемый формат
+  const formatReadableDate = (dateStr: string): string => {
+    const date = new Date(dateStr);
+    const options: Intl.DateTimeFormatOptions = { 
+      day: 'numeric', 
+      month: 'long',
+      weekday: 'long'
+    };
+    return date.toLocaleDateString('ru-RU', options);
   };
 
   return (
-    <div className="font-display bg-background-light text-slate-900 min-h-screen">
-      <header className="sticky top-0 z-50 w-full glass border-b border-primary/10">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-6 h-16 md:h-20 flex items-center justify-between">
-          <div className="flex items-center gap-2 md:gap-3">
-            <Link href="/">
-              <img src="/logo.svg" className="w-20 md:w-24 lg:w-28" alt="Logo" />
-            </Link>
+    <>
+      {/* Header без кнопки "Записаться" */}
+      <header className="sticky top-0 z-50 w-full font-display">
+        <div className="hidden md:block glass border-b border-primary/10">
+          <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-6 h-16 md:h-20 flex items-center justify-between">
+            <div className="flex items-center gap-2 md:gap-3">
+              <a href="/">
+                <img src="/logo.svg" className="w-20 md:w-24 lg:w-28" alt="Logo" />
+              </a>
+            </div>
+            <nav className="flex items-center gap-6 lg:gap-10">
+              <a className="text-xs lg:text-sm font-semibold hover:text-primary transition-colors" href="/">
+                Главная
+              </a>
+              <a className="text-xs lg:text-sm font-semibold hover:text-primary transition-colors" href="/reviews">
+                Отзывы
+              </a>
+              <a className="text-xs lg:text-sm font-semibold hover:text-primary transition-colors" href="/contacts">
+                Контакты
+              </a>
+            </nav>
           </div>
-          <nav className="hidden md:flex items-center gap-6 lg:gap-10">
-            <Link className="text-xs lg:text-sm font-semibold hover:text-primary transition-colors" href="/">Главная</Link>
-            <Link className="text-xs lg:text-sm font-semibold hover:text-primary transition-colors" href="/reviews">Отзывы</Link>
-            <Link className="text-xs lg:text-sm font-semibold hover:text-primary transition-colors" href="/contacts">Контакты</Link>
+        </div>
+
+        <div className="md:hidden p-3 w-full flex justify-center">
+          <div className="glass rounded-2xl px-4 py-3 inline-flex items-center justify-center">
+            <a href="/">
+              <img src="/logo.svg" className="w-24" alt="Logo" />
+            </a>
+          </div>
+        </div>
+
+        <div className="md:hidden fixed bottom-0 left-0 right-0 z-50">
+          <nav className="glass rounded-2xl px-4 py-3 flex items-center justify-around m-3">
+            <a className="flex flex-col items-center gap-1 text-xs font-semibold hover:text-primary transition-colors" href="/reviews">
+              <span className="material-symbols-outlined text-xl">star</span>
+              <span>Отзывы</span>
+            </a>
+            <a className="flex flex-col items-center gap-1 text-xs font-semibold hover:text-primary transition-colors" href="/">
+              <span className="material-symbols-outlined text-xl">home</span>
+              <span>Главная</span>
+            </a>
+            <a className="flex flex-col items-center gap-1 text-xs font-semibold hover:text-primary transition-colors" href="/contacts">
+              <span className="material-symbols-outlined text-xl">account_box</span>
+              <span>Контакты</span>
+            </a>
           </nav>
-          <div className="flex items-center gap-3 md:gap-4">
-            <Link
-              href="/booking"
-              className="gradient-bg px-4 md:px-6 py-2 md:py-2.5 rounded-lg md:rounded-xl text-white text-xs md:text-sm font-bold shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity"
-            >
-              Записаться
-            </Link>
-          </div>
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-6 max-[480px]:px-4 max-[320px]:px-3 py-12 max-[480px]:py-8 max-[320px]:py-6">
-        {/* Индикатор прогресса */}
+      <div className="font-display bg-background-light text-slate-900 min-h-screen overflow-x-hidden">
+        <main className="max-w-6xl mx-auto px-6 max-[480px]:px-4 max-[320px]:px-3 py-12 max-[480px]:py-8 max-[320px]:py-6 pb-24 md:pb-12">
+        {/* Индикатор прогресса с полоской между этапами */}
         <div className="mb-12">
           <div className="flex items-center justify-between relative">
-            <div className="absolute top-1/2 left-0 w-full h-0.5 bg-slate-200 -z-10 -translate-y-1/2"></div>
+            {/* Фоновая линия */}
+            <div className="absolute top-5 left-0 right-0 h-0.5 bg-slate-200 z-0"></div>
+            
+            {/* Прогресс линия */}
             <div 
-              className="absolute top-1/2 left-0 h-0.5 gradient-bg -z-10 -translate-y-1/2 origin-left transition-transform duration-500"
-              style={{ width: getStepProgress() }}
+              className="absolute top-5 left-0 h-0.5 gradient-bg z-0 transition-all duration-500"
+              style={{ 
+                width: step === 1 ? '0%' : step === 2 ? '50%' : '100%'
+              }}
             ></div>
             
-            <div className="flex flex-col items-center gap-2 bg-background-light px-4 max-[320px]:px-2">
+            <div className="flex flex-col items-center gap-2 bg-background-light px-4 max-[320px]:px-2 relative z-10">
               <div className={`size-10 rounded-full flex items-center justify-center font-bold ${
                 step >= 1 ? "gradient-bg text-white shadow-lg shadow-primary/30" : "bg-white border-2 border-slate-200 text-slate-400"
               }`}>
@@ -188,7 +226,7 @@ export default function BookingPage() {
               }`}>Услуга</span>
             </div>
             
-            <div className="flex flex-col items-center gap-2 bg-background-light px-4 max-[320px]:px-2">
+            <div className="flex flex-col items-center gap-2 bg-background-light px-4 max-[320px]:px-2 relative z-10">
               <div className={`size-10 rounded-full flex items-center justify-center font-bold ${
                 step >= 2 ? "gradient-bg text-white shadow-lg shadow-primary/30" : "bg-white border-2 border-slate-200 text-slate-400"
               }`}>
@@ -199,7 +237,7 @@ export default function BookingPage() {
               }`}>Время</span>
             </div>
             
-            <div className="flex flex-col items-center gap-2 bg-background-light px-4 max-[320px]:px-2">
+            <div className="flex flex-col items-center gap-2 bg-background-light px-4 max-[320px]:px-2 relative z-10">
               <div className={`size-10 rounded-full flex items-center justify-center font-bold ${
                 step >= 3 ? "gradient-bg text-white shadow-lg shadow-primary/30" : "bg-white border-2 border-slate-200 text-slate-400"
               }`}>
@@ -245,13 +283,7 @@ export default function BookingPage() {
                 <p className="text-slate-500">Загрузка услуг...</p>
               </div>
             ) : (
-              <div className="space-y-4 mb-20 relative overflow-visible">
-                <div className="pointer-events-none absolute inset-0 overflow-visible z-20" aria-hidden="true">
-                  <img src="/star.svg" alt="" className="absolute -left-12 top-12 w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 opacity-25" />
-                  <img src="/star.svg" alt="" className="absolute -right-12 top-24 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 opacity-20" />
-                  <img src="/star.svg" alt="" className="hidden md:block absolute -left-12 bottom-12 w-8 h-8 md:w-10 md:h-10 opacity-15" />
-                  <img src="/star.svg" alt="" className="absolute -right-12 bottom-6 w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 opacity-15" />
-                </div>
+              <div className="space-y-4 mb-20 relative overflow-hidden">
 
                 {filteredServices.length === 0 ? (
                   <div className="text-center py-12">
@@ -381,13 +413,7 @@ export default function BookingPage() {
               </p>
             </div>
 
-            <div className="glass rounded-3xl p-8 max-[480px]:p-6 max-[320px]:p-5 lg:p-12 shadow-2xl border border-white/40 relative overflow-visible">
-              <div className="pointer-events-none absolute inset-0 overflow-visible z-20" aria-hidden="true">
-                <img src="/star.svg" alt="" className="absolute -left-12 top-16 w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 opacity-25" />
-                <img src="/star.svg" alt="" className="absolute -right-12 top-10 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 opacity-20" />
-                <img src="/star.svg" alt="" className="hidden sm:block absolute -left-12 bottom-10 w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 opacity-15" />
-                <img src="/star.svg" alt="" className="absolute -right-12 bottom-6 w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 opacity-15" />
-              </div>
+            <div className="glass rounded-3xl p-8 max-[480px]:p-6 max-[320px]:p-5 lg:p-12 shadow-2xl border border-white/40 relative overflow-hidden">
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-[480px]:gap-8 max-[320px]:gap-6">
                 {/* Левая колонка - Детали заказа */}
@@ -412,7 +438,8 @@ export default function BookingPage() {
                       </div>
                       <div>
                         <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Дата и Время</p>
-                        <p className="text-lg font-bold text-slate-900">{selectedDate}, {selectedTime}</p>
+                        <p className="text-lg font-bold text-slate-900 capitalize">{formatReadableDate(selectedDate)}</p>
+                        <p className="text-base font-semibold text-primary mt-1">{selectedTime}</p>
                       </div>
                     </div>
 
@@ -508,9 +535,10 @@ export default function BookingPage() {
             </div>
           </>
         )}
-      </main>
+        </main>
 
-      <Footer />
-    </div>
+        <Footer />
+      </div>
+    </>
   );
 }

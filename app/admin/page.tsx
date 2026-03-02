@@ -20,7 +20,116 @@ export default function AdminPage() {
     image: "",
   });
   const [uploading, setUploading] = useState(false);
+  
+  // Состояние для модального окна записи
+  const [showBookingModal, setShowBookingModal] = useState(false);
+  const [editingBooking, setEditingBooking] = useState<any>(null);
+  const [bookingForm, setBookingForm] = useState({
+    service: "",
+    master: "",
+    date: "",
+    time: "",
+    clientName: "",
+    clientPhone: "",
+  });
+  
   const router = useRouter();
+  
+  // Состояние для календаря
+  const [viewMode, setViewMode] = useState<'day' | 'week'>('day');
+  const [currentDate, setCurrentDate] = useState(new Date());
+  
+  // Функция для форматирования даты
+  const formatDate = (date: Date): string => {
+    const options: Intl.DateTimeFormatOptions = { 
+      day: 'numeric', 
+      month: 'long', 
+      year: 'numeric' 
+    };
+    return date.toLocaleDateString('ru-RU', options);
+  };
+  
+  // Функция для получения начала и конца недели
+  const getWeekRange = (date: Date): { start: Date; end: Date } => {
+    const start = new Date(date);
+    const day = start.getDay();
+    const diff = start.getDate() - day + (day === 0 ? -6 : 1); // Понедельник как первый день
+    start.setDate(diff);
+    start.setHours(0, 0, 0, 0);
+    
+    const end = new Date(start);
+    end.setDate(start.getDate() + 6);
+    end.setHours(23, 59, 59, 999);
+    
+    return { start, end };
+  };
+  
+  // Функция для форматирования диапазона недели
+  const formatWeekRange = (date: Date): string => {
+    const { start, end } = getWeekRange(date);
+    const startStr = start.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
+    const endStr = end.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+    return `${startStr} - ${endStr}`;
+  };
+  
+  // Навигация по календарю
+  const navigatePrevious = () => {
+    const newDate = new Date(currentDate);
+    if (viewMode === 'day') {
+      newDate.setDate(newDate.getDate() - 1);
+    } else {
+      newDate.setDate(newDate.getDate() - 7);
+    }
+    setCurrentDate(newDate);
+  };
+  
+  const navigateNext = () => {
+    const newDate = new Date(currentDate);
+    if (viewMode === 'day') {
+      newDate.setDate(newDate.getDate() + 1);
+    } else {
+      newDate.setDate(newDate.getDate() + 7);
+    }
+    setCurrentDate(newDate);
+  };
+  
+  const goToToday = () => {
+    setCurrentDate(new Date());
+  };
+  
+  // Фильтрация записей по текущей дате/неделе
+  const getFilteredBookings = () => {
+    if (viewMode === 'day') {
+      const dateStr = currentDate.toISOString().split('T')[0];
+      return bookings.filter(b => b.date === dateStr);
+    } else {
+      const { start, end } = getWeekRange(currentDate);
+      return bookings.filter(b => {
+        const bookingDate = new Date(b.date);
+        return bookingDate >= start && bookingDate <= end;
+      }).sort((a, b) => {
+        // Сортировка по дате, затем по времени
+        if (a.date !== b.date) {
+          return a.date.localeCompare(b.date);
+        }
+        return a.time.localeCompare(b.time);
+      });
+    }
+  };
+
+  // Функция для форматирования длительности из минут в читаемый формат
+  const formatDuration = (minutes: number): string => {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    
+    if (hours === 0) {
+      return `${mins} мин`;
+    } else if (mins === 0) {
+      return `${hours} ч`;
+    } else {
+      return `${hours} ч ${mins} мин`;
+    }
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("adminToken");
@@ -155,6 +264,67 @@ export default function AdminPage() {
     fetchData();
   };
 
+  // Функции для работы с записями
+  const openAddBookingModal = () => {
+    setEditingBooking(null);
+    setBookingForm({
+      service: "",
+      master: "",
+      date: "",
+      time: "",
+      clientName: "",
+      clientPhone: "",
+    });
+    setShowBookingModal(true);
+  };
+
+  const openEditBookingModal = (booking: any) => {
+    setEditingBooking(booking);
+    setBookingForm({
+      service: booking.service,
+      master: booking.master,
+      date: booking.date,
+      time: booking.time,
+      clientName: booking.clientName,
+      clientPhone: booking.clientPhone,
+    });
+    setShowBookingModal(true);
+  };
+
+  const handleBookingSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      if (editingBooking) {
+        await fetch(`/api/bookings/${editingBooking.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(bookingForm),
+        });
+      } else {
+        await fetch("/api/bookings", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(bookingForm),
+        });
+      }
+      setShowBookingModal(false);
+      fetchData();
+    } catch (error) {
+      alert("Ошибка сохранения записи");
+    }
+  };
+
+  // Функция для форматирования даты в читаемый формат
+  const formatReadableDate = (dateStr: string): string => {
+    const date = new Date(dateStr);
+    const options: Intl.DateTimeFormatOptions = { 
+      day: 'numeric', 
+      month: 'long',
+    };
+    return date.toLocaleDateString('ru-RU', options);
+  };
+
   return (
     <div className="font-display bg-background-light text-slate-900 min-h-screen overflow-x-hidden">
       <header className="sticky top-0 z-50 w-full glass border-b border-primary/10">
@@ -166,10 +336,6 @@ export default function AdminPage() {
             <span className="text-xs font-bold uppercase tracking-widest text-primary">Админ</span>
           </div>
           <div className="flex items-center gap-4">
-            <div className="hidden md:flex items-center gap-3">
-              <span className="material-symbols-outlined text-slate-400">account_circle</span>
-              <span className="text-sm font-semibold">Мастер А</span>
-            </div>
             <button 
               onClick={handleLogout}
               className="px-4 py-2 rounded-xl border border-slate-200 text-sm font-semibold hover:border-primary transition-colors"
@@ -229,10 +395,27 @@ export default function AdminPage() {
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-black tracking-tight">Календарь записей</h2>
                 <div className="flex gap-2">
-                  <button className="px-4 py-2 rounded-xl bg-primary text-white text-sm font-semibold">
+                  <button 
+                    onClick={() => {
+                      setViewMode('day');
+                      setCurrentDate(new Date());
+                    }}
+                    className={`px-4 py-2 rounded-xl text-sm font-semibold transition-colors ${
+                      viewMode === 'day'
+                        ? 'bg-primary text-white'
+                        : 'border border-slate-200 hover:border-primary'
+                    }`}
+                  >
                     Сегодня
                   </button>
-                  <button className="px-4 py-2 rounded-xl border border-slate-200 text-sm font-semibold hover:border-primary transition-colors">
+                  <button 
+                    onClick={() => setViewMode('week')}
+                    className={`px-4 py-2 rounded-xl text-sm font-semibold transition-colors ${
+                      viewMode === 'week'
+                        ? 'bg-primary text-white'
+                        : 'border border-slate-200 hover:border-primary'
+                    }`}
+                  >
                     Неделя
                   </button>
                 </div>
@@ -240,34 +423,51 @@ export default function AdminPage() {
 
               <div className="mb-6 flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <button className="size-10 rounded-xl border border-slate-200 flex items-center justify-center hover:border-primary transition-colors">
+                  <button 
+                    onClick={navigatePrevious}
+                    className="size-10 rounded-xl border border-slate-200 flex items-center justify-center hover:border-primary transition-colors"
+                  >
                     <span className="material-symbols-outlined">chevron_left</span>
                   </button>
-                  <h3 className="text-lg font-bold">27 февраля 2026</h3>
-                  <button className="size-10 rounded-xl border border-slate-200 flex items-center justify-center hover:border-primary transition-colors">
+                  <h3 className="text-lg font-bold min-w-[200px] text-center">
+                    {viewMode === 'day' ? formatDate(currentDate) : formatWeekRange(currentDate)}
+                  </h3>
+                  <button 
+                    onClick={navigateNext}
+                    className="size-10 rounded-xl border border-slate-200 flex items-center justify-center hover:border-primary transition-colors"
+                  >
                     <span className="material-symbols-outlined">chevron_right</span>
                   </button>
                 </div>
-                <button className="px-4 py-2 rounded-xl gradient-bg text-white text-sm font-bold shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity">
-                  + Добавить запись
+                <button className="px-4 py-2 rounded-xl gradient-bg text-white text-sm font-bold shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity flex items-center justify-center">
+                  <div className="size-1 text-white flex items-center justify-center mr-4">
+                    <span className="material-symbols-outlined">block</span>
+                  </div>
+                  Заблокировать время
                 </button>
               </div>
 
               <div className="space-y-3">
-                {bookings.length === 0 ? (
-                  <p className="text-slate-500 text-center py-8">Записей пока нет</p>
+                {getFilteredBookings().length === 0 ? (
+                  <p className="text-slate-500 text-center py-8">
+                    {viewMode === 'day' ? 'Записей на этот день нет' : 'Записей на эту неделю нет'}
+                  </p>
                 ) : (
-                  bookings.map((booking) => (
+                  getFilteredBookings().map((booking) => (
                     <div key={booking.id} className="flex items-center gap-4 p-4 rounded-2xl bg-white/60 border border-slate-200/60">
-                      <div className="text-center min-w-[60px]">
-                        <p className="text-xs font-bold text-slate-400 uppercase">Время</p>
-                        <p className="text-lg font-black text-primary">{booking.time}</p>
+                      <div className="text-center min-w-[80px]">
+                        <p className="text-xs font-bold text-slate-400 uppercase mb-1">Дата</p>
+                        <p className="text-sm font-bold text-slate-700">{formatReadableDate(booking.date)}</p>
+                        <p className="text-lg font-black text-primary mt-1">{booking.time}</p>
                       </div>
-                      <div className="h-12 w-px bg-slate-200"></div>
+                      <div className="h-16 w-px bg-slate-200"></div>
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
                           <span className="material-symbols-outlined text-sm text-accent-pink">face_3</span>
                           <h4 className="font-bold">{booking.service}</h4>
+                          <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-semibold">
+                            {booking.master}
+                          </span>
                         </div>
                         <p className="text-sm text-slate-500">{booking.clientName} • {booking.clientPhone}</p>
                       </div>
@@ -288,7 +488,7 @@ export default function AdminPage() {
 
                 <button className="w-full p-4 rounded-2xl border-2 border-dashed border-slate-300 text-slate-400 hover:border-primary hover:text-primary transition-colors flex items-center justify-center gap-2">
                   <span className="material-symbols-outlined">add</span>
-                  <span className="font-semibold">Добавить слот или блокировку</span>
+                  <span className="font-semibold">Добавить запись</span>
                 </button>
               </div>
             </div>
@@ -301,22 +501,12 @@ export default function AdminPage() {
               </div>
               <div className="space-y-3">
                 <button className="w-full p-4 rounded-2xl bg-white/60 border border-slate-200/60 hover:border-primary transition-colors flex items-center gap-3">
-                  <div className="size-10 rounded-xl gradient-bg text-white flex items-center justify-center">
-                    <span className="material-symbols-outlined">block</span>
-                  </div>
-                  <div className="text-left flex-1">
-                    <p className="font-bold text-sm">Заблокировать время</p>
-                    <p className="text-xs text-slate-500">Технический перерыв</p>
-                  </div>
-                </button>
-
-                <button className="w-full p-4 rounded-2xl bg-white/60 border border-slate-200/60 hover:border-primary transition-colors flex items-center gap-3">
                   <div className="size-10 rounded-xl bg-accent-pink/20 text-accent-pink flex items-center justify-center">
                     <span className="material-symbols-outlined">event_available</span>
                   </div>
                   <div className="text-left flex-1">
-                    <p className="font-bold text-sm">Открыть слоты</p>
-                    <p className="text-xs text-slate-500">На следующую неделю</p>
+                    <p className="font-bold text-sm">Разблокировать слоты</p>
+                    <p className="text-xs text-slate-500">Отменить блокировку времени</p>
                   </div>
                 </button>
 
@@ -432,7 +622,7 @@ export default function AdminPage() {
                         </span>
                       </td>
                       <td className="py-4 px-4">
-                        <span className="text-sm font-semibold">{service.duration}</span>
+                        <span className="text-sm font-semibold">{formatDuration(service.duration)}</span>
                       </td>
                       <td className="py-4 px-4">
                         <span className="text-lg font-black text-gradient">{service.price.toLocaleString()} ₽</span>
@@ -464,7 +654,7 @@ export default function AdminPage() {
 
       {showServiceModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="glass rounded-3xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-background-light rounded-3xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-black">
                 {editingService ? "Редактировать услугу" : "Добавить услугу"}
