@@ -65,18 +65,18 @@ export default function Home() {
               <div className="absolute inset-0 grid grid-cols-2 gap-3 md:gap-4">
                 <div className="space-y-3 md:space-y-4 floating">
                   <div className="bento-card h-32 md:h-40 lg:h-48 rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl">
-                    <Image src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYZO5DyIWa0pCfDz662qMo1pL0qqDJtl8nr3nOGiV7jCJmWJOdlazfoR8zFpwLKu72up2pyeRr4_DRWbJ8FxHBH3DVBbvd0QgCihCcLnWkTqb06IAIJqQyw3ifMYYsL0X6pPgE1znJLhY0NwtZqsuEzXpnWj43zJ5dihBz15Iviq0a7abIUBAvACyWK-z7gUfkothzymVqhM1MW8HzcOqk6BHiiJ4KZZQXCsvGFOKUz2GAddcQ1nLu_VfxO93Qu02-h_NwbiM1KxQ" alt="Перманент" width={400} height={300} className="w-full h-full object-cover" />
+                    <Image src="/photo1.png" alt="Перманент" width={400} height={300} className="w-full h-full object-cover" />
                   </div>
                   <div className="bento-card h-44 md:h-56 lg:h-64 rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl">
-                    <Image src="https://lh3.googleusercontent.com/aida-public/AB6AXuAv9twUesAuYJaCTlwZiBhhnUaP7fiKG4-A8ClhNHPYqsCOEYEabVVGQonjsUd_CWvrppGDcBq2BRd9c4Kiq-K__FbeUIoXDGYqhgKmiDWb5PGV8LWaZYp4hWBT9iY0oYRWUs-2GnTXLj-dq6hrqOizEAh91qjmi_BAMNZOqyBWCyRHeAi2Wzdt5eP0jp8cAYaLDl0LvR-S1paHEnS-pdGDU3aH8yfEc6Sdf_1RAeNhI1ZN1P8mOklppZgzNXKDlgENvZoDMFZlSSw" alt="Маникюр" width={400} height={500} className="w-full h-full object-cover" />
+                    <Image src="/photo3.png" alt="Маникюр" width={400} height={500} className="w-full h-full object-cover" />
                   </div>
                 </div>
                 <div className="space-y-3 md:space-y-4 pt-8 md:pt-12 floating-undi">
                   <div className="bento-card h-44 md:h-56 lg:h-64 rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl">
-                    <Image src="https://lh3.googleusercontent.com/aida-public/AB6AXuDKoK0nkxIPDHSXuDFo9eRTbxbcpR4kN-rudegvXGjJXCEiTXCbuW_EBk_IJ6I5_aPpiXRz_Klm150HCSLuofnCb2UeRawuUu8rRk96tqeFeouGml5bWCZeOl0K7tcuYWx7kjU-lvRloZBhfN-hEFvSzZfRDS56oSzpteWn-AaRQJyv5OFk4fFK2rki0RZjilpERZiWvHl18zVtbwFHWC51-gM-f1ISHhSXC0tw7Im68__0Ma7nb-LEHtm9JQ8zM6we7ZBuCyBTDRw" alt="Ресницы" width={400} height={500} className="w-full h-full object-cover" />
+                    <Image src="/photo4.png" alt="Ресницы" width={400} height={500} className="w-full h-full object-cover" />
                   </div>
                   <div className="bento-card h-32 md:h-40 lg:h-48 rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl">
-                    <Image src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5o8dJxHaU2afrjR1saDcd58EmcGKvCRm3rYCwoCj6t5n-XPM9DJyTozPbuvLnde9I0M67EUlxxTx9loPtnuUjvG3ZSNqRLfit5p5ir8X4gfJaA47kdDEEylwqEXsJ7QQzuj4mAwoISCVv9IoD3MpF0gSE9rK3607pEQekTts3nRCwPYxWWhPPpN3UjXwEKFVd8ayko_qT73AMdOlmHG_XHawcwjRThozQb7uSYLJz-Sw5LddB-3cyVyn-X4NKz8wicVGne1dMQXs" alt="Интерьер" width={400} height={300} className="w-full h-full object-cover" />
+                    <Image src="/photo2.png" alt="Интерьер" width={400} height={300} className="w-full h-full object-cover" />
                   </div>
                 </div>
               </div>
@@ -96,18 +96,18 @@ export default function Home() {
                 <div className="grid grid-cols-2 gap-4 md:gap-6">
                   <div className="space-y-4 md:space-y-6">
                     <div className="bento-card aspect-square rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl">
-                      <Image src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYZO5DyIWa0pCfDz662qMo1pL0qqDJtl8nr3nOGiV7jCJmWJOdlazfoR8zFpwLKu72up2pyeRr4_DRWbJ8FxHBH3DVBbvd0QgCihCcLnWkTqb06IAIJqQyw3ifMYYsL0X6pPgE1znJLhY0NwtZqsuEzXpnWj43zJ5dihBz15Iviq0a7abIUBAvACyWK-z7gUfkothzymVqhM1MW8HzcOqk6BHiiJ4KZZQXCsvGFOKUz2GAddcQ1nLu_VfxO93Qu02-h_NwbiM1KxQ" alt="Работа мастера" width={400} height={400} className="w-full h-full object-cover" />
+                      <Image src="/photo6.png" alt="Работа мастера" width={400} height={400} className="w-full h-full object-cover" />
                     </div>
                     <div className="bento-card aspect-[4/3] rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl">
-                      <Image src="https://lh3.googleusercontent.com/aida-public/AB6AXuAv9twUesAuYJaCTlwZiBhhnUaP7fiKG4-A8ClhNHPYqsCOEYEabVVGQonjsUd_CWvrppGDcBq2BRd9c4Kiq-K__FbeUIoXDGYqhgKmiDWb5PGV8LWaZYp4hWBT9iY0oYRWUs-2GnTXLj-dq6hrqOizEAh91qjmi_BAMNZOqyBWCyRHeAi2Wzdt5eP0jp8cAYaLDl0LvR-S1paHEnS-pdGDU3aH8yfEc6Sdf_1RAeNhI1ZN1P8mOklppZgzNXKDlgENvZoDMFZlSSw" alt="Маникюр" width={400} height={300} className="w-full h-full object-cover" />
+                      <Image src="/photo5.png" alt="Маникюр" width={400} height={300} className="w-full h-full object-cover" />
                     </div>
                   </div>
                   <div className="space-y-4 md:space-y-6 pt-8 md:pt-12">
                     <div className="bento-card aspect-[4/3] rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl">
-                      <Image src="https://lh3.googleusercontent.com/aida-public/AB6AXuDKoK0nkxIPDHSXuDFo9eRTbxbcpR4kN-rudegvXGjJXCEiTXCbuW_EBk_IJ6I5_aPpiXRz_Klm150HCSLuofnCb2UeRawuUu8rRk96tqeFeouGml5bWCZeOl0K7tcuYWx7kjU-lvRloZBhfN-hEFvSzZfRDS56oSzpteWn-AaRQJyv5OFk4fFK2rki0RZjilpERZiWvHl18zVtbwFHWC51-gM-f1ISHhSXC0tw7Im68__0Ma7nb-LEHtm9JQ8zM6we7ZBuCyBTDRw" alt="Ресницы" width={400} height={300} className="w-full h-full object-cover" />
+                      <Image src="/photo8.png" alt="Ресницы" width={400} height={300} className="w-full h-full object-cover" />
                     </div>
                     <div className="bento-card aspect-square rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl">
-                      <Image src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5o8dJxHaU2afrjR1saDcd58EmcGKvCRm3rYCwoCj6t5n-XPM9DJyTozPbuvLnde9I0M67EUlxxTx9loPtnuUjvG3ZSNqRLfit5p5ir8X4gfJaA47kdDEEylwqEXsJ7QQzuj4mAwoISCVv9IoD3MpF0gSE9rK3607pEQekTts3nRCwPYxWWhPPpN3UjXwEKFVd8ayko_qT73AMdOlmHG_XHawcwjRThozQb7uSYLJz-Sw5LddB-3cyVyn-X4NKz8wicVGne1dMQXs" alt="Интерьер" width={400} height={400} className="w-full h-full object-cover" />
+                      <Image src="/photo7.png" alt="Интерьер" width={400} height={400} className="w-full h-full object-cover" />
                     </div>
                   </div>
                 </div>

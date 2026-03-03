@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { IMaskInput } from 'react-imask';
 import Footer from "@/components/Footer";
 import BookingCalendar from "./components/BookingCalendar";
+import Cookies from 'js-cookie';
 
 interface Service {
   id: number;
@@ -40,6 +41,42 @@ export default function BookingPage() {
     fetchServices();
   }, []);
 
+  // Проверка существующей записи из куки после загрузки услуг
+  useEffect(() => {
+    if (services.length > 0) {
+      checkExistingBooking();
+    }
+  }, [services]);
+
+  // Проверка существующей записи из куки
+  const checkExistingBooking = () => {
+    const bookingData = Cookies.get('activeBooking');
+    if (bookingData) {
+      try {
+        const booking = JSON.parse(bookingData);
+        const bookingDateTime = new Date(`${booking.date}T${booking.time}`);
+        const now = new Date();
+
+        // Если время записи еще не прошло, показываем экран успешного бронирования
+        if (bookingDateTime > now) {
+          setSelectedServices(booking.serviceIds);
+          setSelectedDate(booking.date);
+          setSelectedTime(booking.time);
+          setClientName(booking.clientName);
+          setClientPhone(booking.clientPhone);
+          setClientComment(booking.clientComment || "");
+          setBookingSuccess(true);
+        } else {
+          // Время прошло, удаляем куки
+          Cookies.remove('activeBooking');
+        }
+      } catch (error) {
+        console.error("Ошибка при чтении данных бронирования:", error);
+        Cookies.remove('activeBooking');
+      }
+    }
+  };
+
   // Плавная прокрутка вверх при смене этапа
   useEffect(() => {
     window.scrollTo({
@@ -47,6 +84,39 @@ export default function BookingPage() {
       behavior: 'smooth'
     });
   }, [step]);
+
+  // Автоматическая проверка истечения времени записи
+  useEffect(() => {
+    if (bookingSuccess) {
+      const checkInterval = setInterval(() => {
+        const bookingData = Cookies.get('activeBooking');
+        if (bookingData) {
+          try {
+            const booking = JSON.parse(bookingData);
+            const bookingDateTime = new Date(`${booking.date}T${booking.time}`);
+            const now = new Date();
+
+            // Если время записи прошло, сбрасываем состояние
+            if (bookingDateTime <= now) {
+              Cookies.remove('activeBooking');
+              setBookingSuccess(false);
+              setStep(1);
+              setSelectedServices([]);
+              setSelectedDate("");
+              setSelectedTime("");
+              setClientName("");
+              setClientPhone("");
+              setClientComment("");
+            }
+          } catch (error) {
+            console.error("Ошибка при проверке времени записи:", error);
+          }
+        }
+      }, 60000); // Проверяем каждую минуту
+
+      return () => clearInterval(checkInterval);
+    }
+  }, [bookingSuccess]);
 
   const fetchServices = async () => {
     try {
@@ -136,6 +206,19 @@ export default function BookingPage() {
         const errorData = firstError ? await firstError.json() : null;
         throw new Error(errorData?.error || "Ошибка создания бронирования");
       }
+
+      // Сохраняем данные бронирования в куки
+      const bookingData = {
+        serviceIds: selectedServices,
+        date: selectedDate,
+        time: selectedTime,
+        clientName,
+        clientPhone,
+        clientComment,
+      };
+      
+      // Устанавливаем куки с истечением через 30 дней
+      Cookies.set('activeBooking', JSON.stringify(bookingData), { expires: 30 });
 
       setBookingSuccess(true);
 
@@ -269,13 +352,32 @@ export default function BookingPage() {
                 </div>
 
                 {/* Кнопка на главную */}
-                <a
-                  href="/"
-                  className="inline-flex items-center justify-center gap-3 gradient-bg px-10 max-[480px]:px-8 py-4 max-[480px]:py-3.5 rounded-2xl text-white font-bold text-lg max-[480px]:text-base shadow-xl shadow-primary/30 hover:scale-[1.02] transition-transform"
-                >
-                  <span className="material-symbols-outlined">home</span>
-                  Вернуться на главную
-                </a>
+                <div className="flex gap-4 max-[480px]:flex-col">
+                  <a
+                    href="/"
+                    className="inline-flex items-center justify-center gap-3 gradient-bg px-10 max-[480px]:px-8 py-4 max-[480px]:py-3.5 rounded-2xl text-white font-bold text-lg max-[480px]:text-base shadow-xl shadow-primary/30 hover:scale-[1.02] transition-transform"
+                  >
+                    <span className="material-symbols-outlined">home</span>
+                    Вернуться на главную
+                  </a>
+                  <button
+                    onClick={() => {
+                      Cookies.remove('activeBooking');
+                      setBookingSuccess(false);
+                      setStep(1);
+                      setSelectedServices([]);
+                      setSelectedDate("");
+                      setSelectedTime("");
+                      setClientName("");
+                      setClientPhone("");
+                      setClientComment("");
+                    }}
+                    className="inline-flex items-center justify-center gap-3 bg-white border-2 border-primary/20 px-10 max-[480px]:px-8 py-4 max-[480px]:py-3.5 rounded-2xl text-gradient font-bold text-lg max-[480px]:text-base hover:scale-[1.02] transition-transform"
+                  >
+                    <span className="material-symbols-outlined">add</span>
+                    Новая запись
+                  </button>
+                </div>
               </div>
             </div>
           </div>
