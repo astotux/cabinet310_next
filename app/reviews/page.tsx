@@ -220,52 +220,56 @@ export default function ReviewsPage() {
 
       {showForm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl p-8 max-[480px]:p-6 max-w-2xl w-full my-8 relative">
-            {/* Декоративные звезды */}
-            <div className="pointer-events-none absolute inset-0 overflow-visible" aria-hidden="true">
-              <img src="/star.svg" alt="" className="absolute -left-8 top-14 w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 opacity-15" />
-              <img src="/star.svg" alt="" className="absolute -right-8 top-10 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 opacity-15" />
-              <img src="/star.svg" alt="" className="hidden sm:block absolute -left-8 bottom-10 w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 opacity-12" />
-              <img src="/star.svg" alt="" className="absolute -right-8 bottom-8 w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 opacity-12" />
-            </div>
-
+          <div className="bg-white rounded-3xl p-6 max-[480px]:p-5 max-w-2xl w-full my-8 relative max-h-[90vh] overflow-y-auto">
             <div className="relative z-10">
-              <div className="text-center mb-8">
-                <h2 className="text-4xl max-[480px]:text-3xl max-[320px]:text-2xl font-black text-slate-900 tracking-tight mb-3">
+              <div className="text-center mb-6">
+                <h2 className="text-3xl max-[480px]:text-2xl max-[320px]:text-xl font-black text-slate-900 tracking-tight mb-2">
                   Поделитесь впечатлениями
                 </h2>
-                <p className="text-slate-500 max-w-md mx-auto max-[480px]:text-sm">
+                <p className="text-slate-500 max-w-md mx-auto text-sm max-[480px]:text-xs">
                   Ваше мнение помогает нам становиться лучше и радовать вас качественным сервисом
                 </p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-5 max-[480px]:space-y-4">
+                {/* Name Input - moved to top */}
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-slate-700 ml-1">Ваше имя</label>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                    className="w-full rounded-xl border-2 border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all p-3.5 text-sm"
+                    placeholder="Введите имя"
+                  />
+                </div>
                 {/* Service Selection */}
-                <div className="space-y-3">
+                <div className="space-y-2">
                   <label className="text-sm font-bold text-slate-700 ml-1">Выберите услугу</label>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-[320px]:gap-2">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-[320px]:gap-1.5">
                     {serviceOptions.map((option) => (
                       <button
                         key={option.name}
                         type="button"
                         onClick={() => setService(option.name)}
-                        className={`flex flex-col items-center justify-center p-4 rounded-2xl border transition-all shadow-sm ${
+                        className={`flex flex-col items-center justify-center p-3 max-[480px]:p-2.5 rounded-2xl border-2 transition-all shadow-sm ${
                           service === option.name
                             ? "bg-primary/5 border-primary text-primary"
-                            : "bg-white border-slate-100 hover:border-primary hover:text-primary"
+                            : "bg-white border-slate-200 hover:border-primary hover:text-primary"
                         }`}
                       >
-                        <span className="material-symbols-outlined mb-2">{option.icon}</span>
-                        <span className="text-xs font-semibold">{option.name}</span>
+                        <span className="material-symbols-outlined mb-1 text-xl max-[480px]:text-lg">{option.icon}</span>
+                        <span className="text-xs max-[480px]:text-[10px] font-semibold text-center leading-tight">{option.name}</span>
                       </button>
                     ))}
                   </div>
                 </div>
 
                 {/* Rating */}
-                <div className="flex flex-col items-center space-y-3">
+                <div className="flex flex-col items-center space-y-2">
                   <label className="text-sm font-bold text-slate-700">Ваша оценка</label>
-                  <div className="flex gap-2">
+                  <div className="flex gap-1.5">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <button
                         key={star}
@@ -276,7 +280,7 @@ export default function ReviewsPage() {
                         }`}
                       >
                         <span
-                          className="material-symbols-outlined text-4xl"
+                          className="material-symbols-outlined text-3xl max-[480px]:text-2xl"
                           style={{ fontVariationSettings: star <= rating ? "'FILL' 1" : "'FILL' 0" }}
                         >
                           star
@@ -287,27 +291,27 @@ export default function ReviewsPage() {
                 </div>
 
                 {/* Feedback Area */}
-                <div className="space-y-3">
+                <div className="space-y-2">
                   <label className="text-sm font-bold text-slate-700 ml-1">Ваш отзыв</label>
                   <textarea
                     value={text}
                     onChange={(e) => setText(e.target.value)}
                     required
-                    rows={4}
-                    className="w-full rounded-2xl border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all p-4 placeholder:text-slate-400"
+                    rows={3}
+                    className="w-full rounded-2xl border-2 border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all p-3 max-[480px]:p-2.5 placeholder:text-slate-400 text-sm"
                     placeholder="Расскажите, как все прошло..."
                   />
                 </div>
 
                 {/* Photo Upload */}
-                <div className="space-y-3">
+                <div className="space-y-2">
                   <label className="text-sm font-bold text-slate-700 ml-1">
                     Фото (необязательно, до 5 шт)
                   </label>
-                  <div className="flex flex-wrap gap-3">
-                    <label className="flex items-center gap-2 px-4 py-3 rounded-xl border border-dashed border-slate-300 text-slate-500 hover:border-primary hover:text-primary transition-all bg-white/50 cursor-pointer">
-                      <span className="material-symbols-outlined">add_a_photo</span>
-                      <span className="text-xs font-bold uppercase tracking-wider">Прикрепить фото</span>
+                  <div className="flex flex-wrap gap-2">
+                    <label className="flex items-center gap-2 px-3 py-2.5 max-[480px]:px-2.5 max-[480px]:py-2 rounded-xl border border-dashed border-slate-300 text-slate-500 hover:border-primary hover:text-primary transition-all bg-white/50 cursor-pointer">
+                      <span className="material-symbols-outlined text-lg">add_a_photo</span>
+                      <span className="text-xs font-bold uppercase tracking-wider max-[480px]:text-[10px]">Прикрепить фото</span>
                       <input
                         type="file"
                         accept="image/*"
@@ -339,34 +343,21 @@ export default function ReviewsPage() {
                   </div>
                 </div>
 
-                {/* Name Input */}
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-slate-700 ml-1">Ваше имя</label>
-                  <input
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                    className="w-full rounded-xl border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all p-3.5"
-                    placeholder="Введите имя"
-                  />
-                </div>
-
                 {/* Submit Buttons */}
-                <div className="flex gap-3 pt-2">
+                <div className="flex gap-2.5 pt-2 max-[480px]:flex-col-reverse">
                   <button
                     type="button"
                     onClick={() => setShowForm(false)}
-                    className="flex-1 px-6 py-4 max-[480px]:py-3.5 rounded-2xl border-2 border-slate-200 font-bold hover:bg-slate-50 transition-all"
+                    className="flex-1 px-4 py-3.5 max-[480px]:py-3 rounded-2xl border-2 border-slate-200 font-bold hover:bg-slate-50 transition-all text-sm"
                   >
                     Отмена
                   </button>
                   <button
                     type="submit"
                     disabled={uploading}
-                    className="flex-1 gradient-bg py-4 max-[480px]:py-3.5 rounded-2xl text-white font-black text-lg max-[480px]:text-base tracking-wide shadow-xl shadow-accent-purple/30 hover:shadow-2xl hover:shadow-accent-purple/40 hover:-translate-y-1 transition-all disabled:opacity-50 disabled:hover:translate-y-0"
+                    className="flex-1 gradient-bg py-3.5 max-[480px]:py-3 rounded-2xl text-white font-black text-base max-[480px]:text-sm tracking-wide shadow-xl shadow-accent-purple/30 hover:shadow-2xl hover:shadow-accent-purple/40 hover:-translate-y-1 transition-all disabled:opacity-50 disabled:hover:translate-y-0"
                   >
-                    {uploading ? "ОТПРАВКА..." : "ОТПРАВИТЬ ОТЗЫВ"}
+                    {uploading ? "ОТПРАВКА..." : "ОТПРАВИТЬ"}
                   </button>
                 </div>
               </form>
