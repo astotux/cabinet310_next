@@ -92,17 +92,43 @@ export default function BookingCalendar({
 
   // Группировка слотов по времени суток
   const groupSlotsByPeriod = () => {
-    const morning = availableSlots.filter((slot) => {
+    const now = new Date();
+    const isToday = selectedDate && 
+      selectedDate.getDate() === now.getDate() &&
+      selectedDate.getMonth() === now.getMonth() &&
+      selectedDate.getFullYear() === now.getFullYear();
+
+    // Фильтруем слоты, убирая те, что в ближайшие 3 часа
+    const filteredSlots = availableSlots.map(slot => {
+      if (!isToday) return slot; // Если не сегодня, все слоты доступны
+
+      // Парсим время слота
+      const [hours, minutes] = slot.time.split(':').map(Number);
+      const slotDateTime = new Date(selectedDate);
+      slotDateTime.setHours(hours, minutes, 0, 0);
+
+      // Проверяем, не попадает ли слот в ближайшие 3 часа
+      const threeHoursFromNow = new Date();
+      threeHoursFromNow.setHours(threeHoursFromNow.getHours() + 3);
+
+      if (slotDateTime <= threeHoursFromNow) {
+        return { ...slot, available: false };
+      }
+
+      return slot;
+    });
+
+    const morning = filteredSlots.filter((slot) => {
       const hour = parseInt(slot.time.split(":")[0]);
       return hour >= 9 && hour < 12;
     });
 
-    const afternoon = availableSlots.filter((slot) => {
+    const afternoon = filteredSlots.filter((slot) => {
       const hour = parseInt(slot.time.split(":")[0]);
       return hour >= 12 && hour < 17;
     });
 
-    const evening = availableSlots.filter((slot) => {
+    const evening = filteredSlots.filter((slot) => {
       const hour = parseInt(slot.time.split(":")[0]);
       return hour >= 17 && hour <= 20;
     });
@@ -119,6 +145,15 @@ export default function BookingCalendar({
   const handleNextMonth = () => {
     setCurrentMonth(addMonths(currentMonth, 1));
   };
+
+  // Максимальная дата для бронирования (45 дней от сегодня)
+  const maxBookingDate = new Date();
+  maxBookingDate.setDate(maxBookingDate.getDate() + 45);
+  maxBookingDate.setHours(0, 0, 0, 0);
+
+  // Минимальное время для бронирования (текущее время + 3 часа)
+  const minBookingTime = new Date();
+  minBookingTime.setHours(minBookingTime.getHours() + 3);
 
   // Функция для рендеринга дней календаря
   const renderCalendarDays = () => {
@@ -150,18 +185,20 @@ export default function BookingCalendar({
       const dayDate = new Date(day);
       dayDate.setHours(0, 0, 0, 0);
       const isPast = dayDate < today;
+      const isBeyondLimit = dayDate > maxBookingDate;
+      const isDisabled = isPast || isBeyondLimit;
       const isSelected = selectedDate && 
         dayDate.getTime() === new Date(selectedDate).setHours(0, 0, 0, 0);
 
       calendarDays.push(
         <button
           key={day.toISOString()}
-          onClick={() => !isPast && handleDateSelect(day)}
-          disabled={isPast}
+          onClick={() => !isDisabled && handleDateSelect(day)}
+          disabled={isDisabled}
           className={`aspect-square flex items-center justify-center rounded-2xl text-sm font-medium transition-colors ${
             isSelected
               ? "calendar-day-selected"
-              : isPast
+              : isDisabled
               ? "text-slate-300 cursor-not-allowed"
               : "hover:bg-white cursor-pointer"
           }`}

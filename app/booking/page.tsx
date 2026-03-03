@@ -137,18 +137,6 @@ export default function BookingPage() {
       }
 
       setBookingSuccess(true);
-      
-      // Сброс формы через 3 секунды
-      setTimeout(() => {
-        setStep(1);
-        setSelectedServices([]);
-        setSelectedDate("");
-        setSelectedTime("");
-        setClientName("");
-        setClientPhone("");
-        setClientComment("");
-        setBookingSuccess(false);
-      }, 3000);
 
     } catch (error) {
       setBookingError(error instanceof Error ? error.message : "Произошла ошибка");
@@ -221,6 +209,77 @@ export default function BookingPage() {
 
       <div className="font-display bg-background-light text-slate-900 min-h-screen overflow-x-hidden">
         <main className="max-w-6xl mx-auto px-6 max-[480px]:px-4 max-[320px]:px-3 py-12 max-[480px]:py-8 max-[320px]:py-6 pb-24 md:pb-12">
+        
+        {/* Экран успешного бронирования */}
+        {bookingSuccess ? (
+          <div className="min-h-[70vh] flex items-center justify-center">
+            <div className="glass rounded-3xl p-12 max-[480px]:p-8 max-[320px]:p-6 shadow-2xl border border-white/40 max-w-2xl w-full text-center relative overflow-hidden">
+
+              <div className="relative z-10">
+                {/* Иконка успеха */}
+                <div className="size-24 mx-auto mb-8 rounded-full gradient-bg flex items-center justify-center shadow-xl shadow-primary/30">
+                  <span className="material-symbols-outlined text-6xl text-white">check_circle</span>
+                </div>
+
+                {/* Заголовок */}
+                <h2 className="text-4xl max-[480px]:text-3xl max-[320px]:text-2xl font-black tracking-tight text-slate-900 mb-4">
+                  Запись успешно создана!
+                </h2>
+
+                {/* Описание */}
+                <p className="text-lg max-[480px]:text-base text-slate-600 mb-8 leading-relaxed">
+                  Спасибо за вашу запись! Мы свяжемся с вами в ближайшее время для подтверждения.
+                </p>
+
+                {/* Детали бронирования */}
+                <div className="bg-white/50 rounded-2xl p-6 max-[480px]:p-5 mb-8 space-y-4 text-left">
+                  <div className="flex items-center gap-4">
+                    <div className="size-10 rounded-xl gradient-bg text-white flex items-center justify-center shrink-0">
+                      <span className="material-symbols-outlined text-xl">face_3</span>
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Услуги</p>
+                      {selectedServiceObjects.map(service => (
+                        <p key={service.id} className="text-base font-bold text-slate-900">{service.service}</p>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-4">
+                    <div className="size-10 rounded-xl bg-accent-pink/20 text-accent-pink flex items-center justify-center shrink-0">
+                      <span className="material-symbols-outlined text-xl">calendar_today</span>
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Дата и время</p>
+                      <p className="text-base font-bold text-slate-900 capitalize">{formatReadableDate(selectedDate)}, {selectedTime}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-4">
+                    <div className="size-10 rounded-xl bg-accent-purple/20 text-accent-purple flex items-center justify-center shrink-0">
+                      <span className="material-symbols-outlined text-xl">person</span>
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Контакт</p>
+                      <p className="text-base font-bold text-slate-900">{clientName}</p>
+                      <p className="text-sm text-slate-600">{clientPhone}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Кнопка на главную */}
+                <a
+                  href="/"
+                  className="inline-flex items-center justify-center gap-3 gradient-bg px-10 max-[480px]:px-8 py-4 max-[480px]:py-3.5 rounded-2xl text-white font-bold text-lg max-[480px]:text-base shadow-xl shadow-primary/30 hover:scale-[1.02] transition-transform"
+                >
+                  <span className="material-symbols-outlined">home</span>
+                  Вернуться на главную
+                </a>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <>
         {/* Индикатор прогресса с полоской между этапами */}
         <div className="mb-12">
           <div className="flex items-center justify-between relative">
@@ -355,10 +414,6 @@ export default function BookingPage() {
             )}
 
             <div className="max-w-6xl mx-auto flex items-center justify-between relative overflow-visible max-[480px]:flex-col max-[480px]:items-stretch max-[480px]:gap-4">
-              <div className="pointer-events-none absolute inset-0 overflow-visible z-20" aria-hidden="true">
-                <img src="/star.svg" alt="" className="absolute -left-10 -top-10 w-10 h-10 sm:w-12 sm:h-12 opacity-15" />
-                <img src="/star.svg" alt="" className="absolute -right-10 -bottom-10 w-12 h-12 sm:w-14 sm:h-14 opacity-15" />
-              </div>
               <div>
                 <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-1">
                   Выбрано услуг: {selectedServices.length}
@@ -556,6 +611,8 @@ export default function BookingPage() {
               </div>
             </div>
           </>
+        )}
+        </>
         )}
         </main>
 
