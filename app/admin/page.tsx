@@ -1324,7 +1324,7 @@ export default function AdminPage() {
                       </div>
                       <div className="mb-2">
                         <p className="font-bold text-sm max-[480px]:text-xs">
-                          {expandedReviews.has(review.id) ? review.text : `${review.text.substring(0, 50)}...`}
+                          {expandedReviews.has(review.id) ? review.text : review.text.length >= 50 ? `${review.text.substring(0, 50)}...` : review.text}
                         </p>
                         {review.text.length > 50 && (
                           <button
@@ -1337,7 +1337,7 @@ export default function AdminPage() {
                       </div>
                       {review.photos && review.photos.length > 0 && (
                         <div className="flex gap-1 mb-2">
-                          {review.photos.slice(0, 3).map((photo: any) => (
+                          {review.photos.map((photo: any) => (
                             <img
                               key={photo.id}
                               src={photo.imageUrl}
@@ -1345,11 +1345,6 @@ export default function AdminPage() {
                               className="w-12 h-12 object-cover rounded"
                             />
                           ))}
-                          {review.photos.length > 3 && (
-                            <div className="w-12 h-12 bg-slate-200 rounded flex items-center justify-center text-xs font-bold">
-                              +{review.photos.length - 3}
-                            </div>
-                          )}
                         </div>
                       )}
                       <div className="flex gap-3">

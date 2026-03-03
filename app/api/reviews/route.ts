@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { notifyNewReview } from "@/lib/vkNotifications";
 
 export async function GET() {
   try {
@@ -41,6 +42,14 @@ export async function POST(request: NextRequest) {
         photos: true,
       },
     });
+
+    // Отправляем уведомление в VK (асинхронно, не блокируем ответ)
+    notifyNewReview({
+      name,
+      rating,
+      text,
+      service: service || undefined,
+    }).catch(err => console.error('Failed to send VK notification:', err));
 
     return NextResponse.json(review, { status: 201 });
   } catch (error) {

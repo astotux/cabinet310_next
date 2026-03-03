@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { validateBookingWithAvailability, BookingData } from "@/lib/booking/validator";
+import { notifyNewBooking } from "@/lib/vkNotifications";
 
 /**
  * POST /api/bookings
@@ -88,6 +89,17 @@ export async function POST(request: NextRequest) {
       maxWait: 10000, // Максимальное время ожидания начала транзакции
       timeout: 10000, // Максимальное время выполнения транзакции
     });
+
+    // Отправляем уведомление в VK (асинхронно, не блокируем ответ)
+    notifyNewBooking({
+      service,
+      master,
+      date,
+      time,
+      clientName,
+      clientPhone,
+      comment,
+    }).catch(err => console.error('Failed to send VK notification:', err));
 
     return NextResponse.json(booking, { status: 201 });
 
