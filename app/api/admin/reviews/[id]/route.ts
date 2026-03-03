@@ -23,3 +23,24 @@ export async function PATCH(
     );
   }
 }
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id: idStr } = await params;
+    const id = parseInt(idStr);
+
+    await prisma.review.delete({
+      where: { id },
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Ошибка удаления отзыва" },
+      { status: 500 }
+    );
+  }
+}

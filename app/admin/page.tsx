@@ -81,6 +81,9 @@ export default function AdminPage() {
   const [selectedMasterForRevenue, setSelectedMasterForRevenue] = useState<'Лиза' | 'Женя'>('Лиза');
   const [pendingReviewsCount, setPendingReviewsCount] = useState(0);
   
+  // Состояние для раскрытых отзывов
+  const [expandedReviews, setExpandedReviews] = useState<Set<number>>(new Set());
+  
   // Модальное окно статистики
   const [showStatsModal, setShowStatsModal] = useState(false);
   const [statsViewMode, setStatsViewMode] = useState<'bookings' | 'revenue'>('bookings');
@@ -356,6 +359,26 @@ export default function AdminPage() {
       body: JSON.stringify({ approved: true }),
     });
     fetchData();
+  };
+
+  const rejectReview = async (id: number) => {
+    if (!confirm("Отклонить этот отзыв? Он будет удален.")) return;
+    await fetch(`/api/admin/reviews/${id}`, {
+      method: "DELETE",
+    });
+    fetchData();
+  };
+
+  const toggleExpandReview = (id: number) => {
+    setExpandedReviews(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(id)) {
+        newSet.delete(id);
+      } else {
+        newSet.add(id);
+      }
+      return newSet;
+    });
   };
 
   const deleteBooking = async (id: number) => {
@@ -1299,7 +1322,19 @@ export default function AdminPage() {
                           </span>
                         )}
                       </div>
-                      <p className="font-bold text-sm max-[480px]:text-xs mb-1">{review.text.substring(0, 50)}...</p>
+                      <div className="mb-2">
+                        <p className="font-bold text-sm max-[480px]:text-xs">
+                          {expandedReviews.has(review.id) ? review.text : `${review.text.substring(0, 50)}...`}
+                        </p>
+                        {review.text.length > 50 && (
+                          <button
+                            onClick={() => toggleExpandReview(review.id)}
+                            className="text-xs text-primary hover:underline mt-1"
+                          >
+                            {expandedReviews.has(review.id) ? "Свернуть" : "Читать полностью"}
+                          </button>
+                        )}
+                      </div>
                       {review.photos && review.photos.length > 0 && (
                         <div className="flex gap-1 mb-2">
                           {review.photos.slice(0, 3).map((photo: any) => (
@@ -1317,12 +1352,20 @@ export default function AdminPage() {
                           )}
                         </div>
                       )}
-                      <button
-                        onClick={() => approveReview(review.id)}
-                        className="text-xs max-[480px]:text-[10px] text-primary font-bold hover:underline"
-                      >
-                        Одобрить
-                      </button>
+                      <div className="flex gap-3">
+                        <button
+                          onClick={() => approveReview(review.id)}
+                          className="text-xs max-[480px]:text-[10px] text-green-600 font-bold hover:underline"
+                        >
+                          Одобрить
+                        </button>
+                        <button
+                          onClick={() => rejectReview(review.id)}
+                          className="text-xs max-[480px]:text-[10px] text-red-600 font-bold hover:underline"
+                        >
+                          Отклонить
+                        </button>
+                      </div>
                     </div>
                   ))
                 )}
