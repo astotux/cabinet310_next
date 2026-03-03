@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import ReviewPhotosCarousel from "@/components/ReviewPhotosCarousel";
 
 export default function ReviewsPage() {
   const [reviews, setReviews] = useState<any[]>([]);
@@ -197,22 +198,7 @@ export default function ReviewsPage() {
                 {review.text}
               </p>
               
-              {review.photos && review.photos.length > 0 && (
-                <div className={`grid gap-2 mt-4 ${
-                  review.photos.length === 1 ? 'grid-cols-1' :
-                  review.photos.length === 2 ? 'grid-cols-2' :
-                  'grid-cols-2'
-                }`}>
-                  {review.photos.map((photo: any) => (
-                    <img
-                      key={photo.id}
-                      src={photo.imageUrl}
-                      alt="Фото отзыва"
-                      className="w-full h-32 object-cover rounded-xl"
-                    />
-                  ))}
-                </div>
-              )}
+              <ReviewPhotosCarousel photos={review.photos || []} reviewId={review.id} />
             </div>
           ))}
         </div>
