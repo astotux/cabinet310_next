@@ -14,6 +14,7 @@ export default function ReviewsPage() {
   const [service, setService] = useState("");
   const [photos, setPhotos] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [selectedFilter, setSelectedFilter] = useState("Все услуги");
 
   const serviceOptions = [
     { name: "Перманент губ", icon: "face_3" },
@@ -23,6 +24,34 @@ export default function ReviewsPage() {
     { name: "Маникюр", icon: "back_hand" },
     { name: "Другое", icon: "more_horiz" },
   ];
+
+  const filterCategories = [
+    "Все услуги",
+    "Перманент",
+    "Маникюр",
+    "Ресницы"
+  ];
+
+  const getFilteredReviews = () => {
+    if (selectedFilter === "Все услуги") {
+      return reviews;
+    }
+    
+    return reviews.filter(review => {
+      if (!review.service) return false;
+      
+      switch (selectedFilter) {
+        case "Перманент":
+          return review.service.includes("Перманент") || review.service.includes("Межресничка");
+        case "Маникюр":
+          return review.service.includes("Маникюр");
+        case "Ресницы":
+          return review.service.includes("ресниц") || review.service.includes("Лами");
+        default:
+          return true;
+      }
+    });
+  };
 
   useEffect(() => {
     fetchReviews();
@@ -143,14 +172,19 @@ export default function ReviewsPage() {
 
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-6">
           <div className="flex flex-wrap gap-3">
-            <button className="px-6 py-2.5 rounded-xl bg-primary text-white font-semibold text-sm shadow-md">Все услуги</button>
-            <button className="px-6 py-2.5 rounded-xl glass text-slate-600 font-semibold text-sm hover:bg-white transition-colors">Перманент</button>
-            <button className="px-6 py-2.5 rounded-xl glass text-slate-600 font-semibold text-sm hover:bg-white transition-colors">Маникюр</button>
-            <button className="px-6 py-2.5 rounded-xl glass text-slate-600 font-semibold text-sm hover:bg-white transition-colors">Ресницы</button>
-          </div>
-          <div className="flex items-center gap-2 text-slate-500 text-sm font-medium">
-            <span className="material-symbols-outlined text-primary">filter_list</span>
-            <span>Сортировка</span>
+            {filterCategories.map((category) => (
+              <button
+                key={category}
+                onClick={() => setSelectedFilter(category)}
+                className={`px-6 py-2.5 rounded-xl font-semibold text-sm shadow-md transition-all ${
+                  selectedFilter === category
+                    ? "gradient-bg text-white"
+                    : "glass text-slate-600 hover:bg-white"
+                }`}
+              >
+                {category}
+              </button>
+            ))}
           </div>
         </div>
 
@@ -164,7 +198,7 @@ export default function ReviewsPage() {
             <img src="/star.svg" alt="" className="absolute right-2 bottom-10 w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 opacity-12" />
           </div>
 
-          {reviews.map((review) => (
+          {getFilteredReviews().map((review) => (
             <div key={review.id} className="break-inside-avoid glass rounded-3xl p-6 max-[480px]:p-5 max-[320px]:p-4 shadow-sm hover:shadow-xl transition-all duration-300">
               <div className="flex items-center gap-3 mb-4">
                 <div className="size-12 rounded-full bg-gradient-to-br from-accent-pink to-accent-purple flex items-center justify-center text-white font-bold">

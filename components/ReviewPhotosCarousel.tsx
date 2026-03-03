@@ -12,38 +12,23 @@ export default function ReviewPhotosCarousel({ photos, reviewId }: ReviewPhotosC
     // Dynamically import Swiper only on client side
     const initSwiper = async () => {
       const Swiper = (await import('swiper')).default;
-      const { Navigation, Pagination } = await import('swiper/modules');
+      const { Navigation, Autoplay } = await import('swiper/modules');
       
       new Swiper(`.reviewSwiper-${reviewId}`, {
-        modules: [Navigation, Pagination],
+        modules: [Navigation, Autoplay],
         slidesPerView: 1,
         spaceBetween: 10,
-        loop: false, // Отключаем loop для корректной работы пагинации
-        speed: 400,
-        pagination: {
-          el: `.swiper-pagination-${reviewId}`,
-          clickable: true,
-          type: 'bullets',
-          dynamicBullets: true,
-          dynamicMainBullets: 3,
+        loop: true,
+        speed: 600,
+        autoplay: {
+          delay: 2500,
+          disableOnInteraction: false,
+          pauseOnMouseEnter: true,
         },
         navigation: {
           nextEl: `.swiper-button-next-${reviewId}`,
           prevEl: `.swiper-button-prev-${reviewId}`,
         },
-        breakpoints: {
-          480: {
-            slidesPerView: photos.length === 1 ? 1 : 1.5,
-            spaceBetween: 10,
-          },
-          640: {
-            slidesPerView: photos.length === 1 ? 1 : Math.min(2, photos.length),
-            spaceBetween: 12,
-          },
-        },
-        watchSlidesProgress: true,
-        observer: true,
-        observeParents: true,
       });
     };
 
@@ -72,7 +57,6 @@ export default function ReviewPhotosCarousel({ photos, reviewId }: ReviewPhotosC
           <>
             <div className={`swiper-button-next swiper-button-next-${reviewId}`}></div>
             <div className={`swiper-button-prev swiper-button-prev-${reviewId}`}></div>
-            <div className={`swiper-pagination swiper-pagination-${reviewId}`}></div>
           </>
         )}
       </div>
