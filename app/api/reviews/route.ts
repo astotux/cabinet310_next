@@ -22,15 +22,16 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, rating, text, photos = [] } = body;
+    const { name, rating, text, service, photos = [] } = body;
 
-    console.log('Creating review:', { name, rating, text, photosCount: photos.length });
+    console.log('Creating review:', { name, rating, text, service, photosCount: photos.length });
 
     const review = await prisma.review.create({
       data: {
         name,
         rating,
         text,
+        service: service || null,
         approved: false,
         photos: {
           create: photos.filter((url: string) => url).map((url: string) => ({ imageUrl: url })),

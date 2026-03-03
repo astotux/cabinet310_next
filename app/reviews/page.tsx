@@ -10,8 +10,18 @@ export default function ReviewsPage() {
   const [name, setName] = useState("");
   const [rating, setRating] = useState(5);
   const [text, setText] = useState("");
+  const [service, setService] = useState("");
   const [photos, setPhotos] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
+
+  const serviceOptions = [
+    { name: "Перманент губ", icon: "face_3" },
+    { name: "Перманент бровей", icon: "eye_tracking" },
+    { name: "Межресничка", icon: "visibility" },
+    { name: "Лами ресниц", icon: "content_cut" },
+    { name: "Маникюр", icon: "back_hand" },
+    { name: "Другое", icon: "more_horiz" },
+  ];
 
   useEffect(() => {
     fetchReviews();
@@ -52,7 +62,7 @@ export default function ReviewsPage() {
       const response = await fetch("/api/reviews", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, rating, text, photos: photoUrls }),
+        body: JSON.stringify({ name, rating, text, service, photos: photoUrls }),
       });
 
       if (response.ok) {
@@ -61,6 +71,7 @@ export default function ReviewsPage() {
         setName("");
         setRating(5);
         setText("");
+        setService("");
         setPhotos([]);
         fetchReviews();
       }
@@ -132,9 +143,9 @@ export default function ReviewsPage() {
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-6">
           <div className="flex flex-wrap gap-3">
             <button className="px-6 py-2.5 rounded-xl bg-primary text-white font-semibold text-sm shadow-md">Все услуги</button>
-            <button className="px-6 py-2.5 rounded-xl glass text-slate-600 dark:text-slate-300 font-semibold text-sm hover:bg-white dark:hover:bg-slate-800 transition-colors">Перманент</button>
-            <button className="px-6 py-2.5 rounded-xl glass text-slate-600 dark:text-slate-300 font-semibold text-sm hover:bg-white dark:hover:bg-slate-800 transition-colors">Маникюр</button>
-            <button className="px-6 py-2.5 rounded-xl glass text-slate-600 dark:text-slate-300 font-semibold text-sm hover:bg-white dark:hover:bg-slate-800 transition-colors">Ресницы</button>
+            <button className="px-6 py-2.5 rounded-xl glass text-slate-600 font-semibold text-sm hover:bg-white transition-colors">Перманент</button>
+            <button className="px-6 py-2.5 rounded-xl glass text-slate-600 font-semibold text-sm hover:bg-white transition-colors">Маникюр</button>
+            <button className="px-6 py-2.5 rounded-xl glass text-slate-600 font-semibold text-sm hover:bg-white transition-colors">Ресницы</button>
           </div>
           <div className="flex items-center gap-2 text-slate-500 text-sm font-medium">
             <span className="material-symbols-outlined text-primary">filter_list</span>
@@ -159,10 +170,18 @@ export default function ReviewsPage() {
                   {review.name.charAt(0)}
                 </div>
                 <div>
-                  <h4 className="font-bold text-slate-900 dark:text-white">{review.name}</h4>
+                  <h4 className="font-bold text-slate-900">{review.name}</h4>
                   <p className="text-xs text-slate-500">{new Date(review.createdAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
                 </div>
               </div>
+              
+              {review.service && (
+                <div className="mb-3 inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold">
+                  <span className="material-symbols-outlined text-sm">spa</span>
+                  {review.service}
+                </div>
+              )}
+              
               <div className="flex gap-0.5 mb-3 text-primary">
                 {[...Array(5)].map((_, i) => (
                   <span
@@ -174,7 +193,7 @@ export default function ReviewsPage() {
                   </span>
                 ))}
               </div>
-              <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed mb-3">
+              <p className="text-slate-700 text-sm leading-relaxed mb-3">
                 {review.text}
               </p>
               
@@ -200,95 +219,158 @@ export default function ReviewsPage() {
       </main>
 
       {showForm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 max-w-md w-full">
-            <h2 className="text-2xl font-black mb-6 dark:text-white">Оставить отзыв</h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-bold mb-2 dark:text-white">Имя</label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                  className="w-full p-3 rounded-xl border dark:bg-slate-800 dark:border-slate-700 dark:text-white"
-                />
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <div className="bg-white rounded-3xl p-8 max-[480px]:p-6 max-w-2xl w-full my-8 relative">
+            {/* Декоративные звезды */}
+            <div className="pointer-events-none absolute inset-0 overflow-visible" aria-hidden="true">
+              <img src="/star.svg" alt="" className="absolute -left-8 top-14 w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 opacity-15" />
+              <img src="/star.svg" alt="" className="absolute -right-8 top-10 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 opacity-15" />
+              <img src="/star.svg" alt="" className="hidden sm:block absolute -left-8 bottom-10 w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 opacity-12" />
+              <img src="/star.svg" alt="" className="absolute -right-8 bottom-8 w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 opacity-12" />
+            </div>
+
+            <div className="relative z-10">
+              <div className="text-center mb-8">
+                <h2 className="text-4xl max-[480px]:text-3xl max-[320px]:text-2xl font-black text-slate-900 tracking-tight mb-3">
+                  Поделитесь впечатлениями
+                </h2>
+                <p className="text-slate-500 max-w-md mx-auto max-[480px]:text-sm">
+                  Ваше мнение помогает нам становиться лучше и радовать вас качественным сервисом
+                </p>
               </div>
-              <div>
-                <label className="block text-sm font-bold mb-2 dark:text-white">Оценка</label>
-                <select
-                  value={rating}
-                  onChange={(e) => setRating(Number(e.target.value))}
-                  className="w-full p-3 rounded-xl border dark:bg-slate-800 dark:border-slate-700 dark:text-white"
-                >
-                  {[5, 4, 3, 2, 1].map((r) => (
-                    <option key={r} value={r}>{r} звезд</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-bold mb-2 dark:text-white">Отзыв</label>
-                <textarea
-                  value={text}
-                  onChange={(e) => setText(e.target.value)}
-                  required
-                  rows={4}
-                  className="w-full p-3 rounded-xl border dark:bg-slate-800 dark:border-slate-700 dark:text-white"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-bold mb-2 dark:text-white">
-                  Фото (необязательно, до 5 шт)
-                </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={handlePhotoChange}
-                  disabled={photos.length >= 5}
-                  className="w-full p-3 rounded-xl border dark:bg-slate-800 dark:border-slate-700 dark:text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary/90"
-                />
-                
-                {photos.length > 0 && (
-                  <div className="mt-3 grid grid-cols-3 gap-2">
+
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Service Selection */}
+                <div className="space-y-3">
+                  <label className="text-sm font-bold text-slate-700 ml-1">Выберите услугу</label>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-[320px]:gap-2">
+                    {serviceOptions.map((option) => (
+                      <button
+                        key={option.name}
+                        type="button"
+                        onClick={() => setService(option.name)}
+                        className={`flex flex-col items-center justify-center p-4 rounded-2xl border transition-all shadow-sm ${
+                          service === option.name
+                            ? "bg-primary/5 border-primary text-primary"
+                            : "bg-white border-slate-100 hover:border-primary hover:text-primary"
+                        }`}
+                      >
+                        <span className="material-symbols-outlined mb-2">{option.icon}</span>
+                        <span className="text-xs font-semibold">{option.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Rating */}
+                <div className="flex flex-col items-center space-y-3">
+                  <label className="text-sm font-bold text-slate-700">Ваша оценка</label>
+                  <div className="flex gap-2">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => setRating(star)}
+                        className={`transition-all hover:scale-110 ${
+                          star <= rating ? "text-primary" : "text-slate-300"
+                        }`}
+                      >
+                        <span
+                          className="material-symbols-outlined text-4xl"
+                          style={{ fontVariationSettings: star <= rating ? "'FILL' 1" : "'FILL' 0" }}
+                        >
+                          star
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Feedback Area */}
+                <div className="space-y-3">
+                  <label className="text-sm font-bold text-slate-700 ml-1">Ваш отзыв</label>
+                  <textarea
+                    value={text}
+                    onChange={(e) => setText(e.target.value)}
+                    required
+                    rows={4}
+                    className="w-full rounded-2xl border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all p-4 placeholder:text-slate-400"
+                    placeholder="Расскажите, как все прошло..."
+                  />
+                </div>
+
+                {/* Photo Upload */}
+                <div className="space-y-3">
+                  <label className="text-sm font-bold text-slate-700 ml-1">
+                    Фото (необязательно, до 5 шт)
+                  </label>
+                  <div className="flex flex-wrap gap-3">
+                    <label className="flex items-center gap-2 px-4 py-3 rounded-xl border border-dashed border-slate-300 text-slate-500 hover:border-primary hover:text-primary transition-all bg-white/50 cursor-pointer">
+                      <span className="material-symbols-outlined">add_a_photo</span>
+                      <span className="text-xs font-bold uppercase tracking-wider">Прикрепить фото</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={handlePhotoChange}
+                        disabled={photos.length >= 5}
+                        className="hidden"
+                      />
+                    </label>
+                    
                     {photos.map((photo, index) => (
                       <div key={index} className="relative group">
-                        <img
-                          src={URL.createObjectURL(photo)}
-                          alt={`Preview ${index + 1}`}
-                          className="w-full h-20 object-cover rounded-lg"
-                        />
+                        <div className="w-14 h-14 rounded-xl overflow-hidden border border-slate-200">
+                          <img
+                            src={URL.createObjectURL(photo)}
+                            alt={`Preview ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
                         <button
                           type="button"
                           onClick={() => removePhoto(index)}
-                          className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                          className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full size-5 flex items-center justify-center shadow-md"
                         >
-                          <span className="material-symbols-outlined text-sm">close</span>
+                          <span className="material-symbols-outlined text-[12px]">close</span>
                         </button>
                       </div>
                     ))}
                   </div>
-                )}
-              </div>
-              
-              <div className="flex gap-3">
-                <button
-                  type="button"
-                  onClick={() => setShowForm(false)}
-                  className="flex-1 px-6 py-3 rounded-xl border dark:border-slate-700 dark:text-white"
-                >
-                  Отмена
-                </button>
-                <button
-                  type="submit"
-                  disabled={uploading}
-                  className="flex-1 gradient-bg px-6 py-3 rounded-xl text-white font-bold disabled:opacity-50"
-                >
-                  {uploading ? "Отправка..." : "Отправить"}
-                </button>
-              </div>
-            </form>
+                </div>
+
+                {/* Name Input */}
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-slate-700 ml-1">Ваше имя</label>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                    className="w-full rounded-xl border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all p-3.5"
+                    placeholder="Введите имя"
+                  />
+                </div>
+
+                {/* Submit Buttons */}
+                <div className="flex gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowForm(false)}
+                    className="flex-1 px-6 py-4 max-[480px]:py-3.5 rounded-2xl border-2 border-slate-200 font-bold hover:bg-slate-50 transition-all"
+                  >
+                    Отмена
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={uploading}
+                    className="flex-1 gradient-bg py-4 max-[480px]:py-3.5 rounded-2xl text-white font-black text-lg max-[480px]:text-base tracking-wide shadow-xl shadow-accent-purple/30 hover:shadow-2xl hover:shadow-accent-purple/40 hover:-translate-y-1 transition-all disabled:opacity-50 disabled:hover:translate-y-0"
+                  >
+                    {uploading ? "ОТПРАВКА..." : "ОТПРАВИТЬ ОТЗЫВ"}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       )}

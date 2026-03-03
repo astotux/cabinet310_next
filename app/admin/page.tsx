@@ -1293,6 +1293,11 @@ export default function AdminPage() {
                       <div className="flex items-center gap-2 mb-2">
                         <span className="material-symbols-outlined text-sm max-[480px]:text-xs text-primary">person</span>
                         <span className="text-xs max-[480px]:text-[10px] font-bold text-slate-400">{review.name}</span>
+                        {review.service && (
+                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary font-bold">
+                            {review.service}
+                          </span>
+                        )}
                       </div>
                       <p className="font-bold text-sm max-[480px]:text-xs mb-1">{review.text.substring(0, 50)}...</p>
                       {review.photos && review.photos.length > 0 && (

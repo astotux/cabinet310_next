@@ -35,6 +35,7 @@ model Review {
   name      String
   rating    Int
   text      String
+  service   String?
   approved  Boolean       @default(false)
   createdAt DateTime      @default(now())
   photos    ReviewPhoto[]
