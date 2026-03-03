@@ -62,7 +62,10 @@ model Price {
 }
 
 model Admin {
-  id       Int    @id @default(autoincrement())
-  username String @unique
-  password String
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  email     String?  @unique
+  password  String   // Хешированный пароль
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 }

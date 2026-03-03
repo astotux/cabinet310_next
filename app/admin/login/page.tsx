@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export default function AdminLoginPage() {
+  const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -19,19 +21,27 @@ export default function AdminLoginPage() {
       const response = await fetch("/api/admin/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include", // Важно для cookies
         body: JSON.stringify({ username, password }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
+        // Сохраняем токен в localStorage как запасной вариант
         localStorage.setItem("adminToken", data.token);
+        
+        console.log('[Login] Success, redirecting to /admin');
+        
+        // Используем window.location для гарантированного редиректа
+        // Это обеспечит полную перезагрузку страницы и применение middleware
         window.location.href = "/admin";
       } else {
         setError(data.error || "Неверные данные");
         setLoading(false);
       }
     } catch (err) {
+      console.error("Login error:", err);
       setError("Ошибка подключения");
       setLoading(false);
     }
