@@ -39,6 +39,14 @@ export default function BookingPage() {
     fetchServices();
   }, []);
 
+  // Плавная прокрутка вверх при смене этапа
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  }, [step]);
+
   const fetchServices = async () => {
     try {
       const response = await fetch("/api/services");
