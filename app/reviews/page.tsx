@@ -8,6 +8,7 @@ import ReviewPhotosCarousel from "@/components/ReviewPhotosCarousel";
 export default function ReviewsPage() {
   const [reviews, setReviews] = useState<any[]>([]);
   const [showForm, setShowForm] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
   const [name, setName] = useState("");
   const [rating, setRating] = useState(5);
   const [text, setText] = useState("");
@@ -96,14 +97,24 @@ export default function ReviewsPage() {
       });
 
       if (response.ok) {
-        alert("Отзыв отправлен на модерацию!");
-        setShowForm(false);
+        // Показываем успешное уведомление
+        setShowSuccess(true);
+        
+        // Очищаем форму
         setName("");
         setRating(5);
         setText("");
         setService("");
         setPhotos([]);
+        
+        // Обновляем список отзывов
         fetchReviews();
+        
+        // Через 3 секунды закрываем модальное окно
+        setTimeout(() => {
+          setShowSuccess(false);
+          setShowForm(false);
+        }, 5000);
       }
     } catch (error) {
       alert("Ошибка при отправке отзыва");
@@ -241,147 +252,188 @@ export default function ReviewsPage() {
       {showForm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
           <div className="bg-white rounded-3xl p-6 max-[480px]:p-5 max-w-2xl w-full my-8 relative max-h-[90vh] overflow-y-auto">
-            <div className="relative z-10">
-              <div className="text-center mb-6">
-                <h2 className="text-3xl max-[480px]:text-2xl max-[320px]:text-xl font-black text-slate-900 tracking-tight mb-2">
-                  Поделитесь впечатлениями
-                </h2>
-                <p className="text-slate-500 max-w-md mx-auto text-sm max-[480px]:text-xs">
-                  Ваше мнение помогает нам становиться лучше и радовать вас качественным сервисом
+            {showSuccess ? (
+              // Success Message
+              <div className="text-center py-12 max-[480px]:py-8">
+                <div className="mb-6 relative">
+                  <div className="size-24 max-[480px]:size-20 mx-auto rounded-full gradient-bg flex items-center justify-center">
+                    <span className="material-symbols-outlined text-white text-5xl max-[480px]:text-4xl" style={{fontVariationSettings: "'FILL' 1"}}>
+                      check_circle
+                    </span>
+                  </div>
+                </div>
+                
+                <h3 className="text-3xl max-[480px]:text-2xl font-black text-slate-900 mb-3 tracking-tight">
+                  Спасибо за отзыв!
+                </h3>
+                
+                <p className="text-slate-600 text-lg max-[480px]:text-base mb-2 max-w-md mx-auto">
+                  Ваш отзыв отправлен на модерацию
                 </p>
+                
+                <p className="text-slate-500 text-sm max-[480px]:text-xs max-w-sm mx-auto">
+                  После проверки он появится на странице. Обычно это занимает несколько минут.
+                </p>
+
+                <div className="mt-8 flex items-center justify-center gap-2 text-primary">
+                  {[...Array(5)].map((_, i) => (
+                    <span
+                      key={i}
+                      className="material-symbols-outlined text-2xl max-[480px]:text-xl animate-pulse"
+                      style={{
+                        fontVariationSettings: "'FILL' 1",
+                        animationDelay: `${i * 0.1}s`
+                      }}
+                    >
+                      star
+                    </span>
+                  ))}
+                </div>
               </div>
-
-              <form onSubmit={handleSubmit} className="space-y-5 max-[480px]:space-y-4">
-                {/* Name Input - moved to top */}
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-slate-700 ml-1">Ваше имя</label>
-                  <input
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                    className="w-full rounded-xl border-2 border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all p-3.5 text-sm"
-                    placeholder="Введите имя"
-                  />
+            ) : (
+              // Review Form
+              <div className="relative z-10">
+                <div className="text-center mb-6">
+                  <h2 className="text-3xl max-[480px]:text-2xl max-[320px]:text-xl font-black text-slate-900 tracking-tight mb-2">
+                    Поделитесь впечатлениями
+                  </h2>
+                  <p className="text-slate-500 max-w-md mx-auto text-sm max-[480px]:text-xs">
+                    Ваше мнение помогает нам становиться лучше и радовать вас качественным сервисом
+                  </p>
                 </div>
-                {/* Service Selection */}
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-slate-700 ml-1">Выберите услугу</label>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-[320px]:gap-1.5">
-                    {serviceOptions.map((option) => (
-                      <button
-                        key={option.name}
-                        type="button"
-                        onClick={() => setService(option.name)}
-                        className={`flex flex-col items-center justify-center p-3 max-[480px]:p-2.5 rounded-2xl border-2 transition-all shadow-sm ${
-                          service === option.name
-                            ? "bg-primary/5 border-primary text-primary"
-                            : "bg-white border-slate-200 hover:border-primary hover:text-primary"
-                        }`}
-                      >
-                        <span className="material-symbols-outlined mb-1 text-xl max-[480px]:text-lg">{option.icon}</span>
-                        <span className="text-xs max-[480px]:text-[10px] font-semibold text-center leading-tight">{option.name}</span>
-                      </button>
-                    ))}
+
+                <form onSubmit={handleSubmit} className="space-y-5 max-[480px]:space-y-4">
+                  {/* Name Input - moved to top */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-slate-700 ml-1">Ваше имя</label>
+                    <input
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required
+                      className="w-full rounded-xl border-2 border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all p-3.5 text-sm"
+                      placeholder="Введите имя"
+                    />
                   </div>
-                </div>
-
-                {/* Rating */}
-                <div className="flex flex-col items-center space-y-2">
-                  <label className="text-sm font-bold text-slate-700">Ваша оценка</label>
-                  <div className="flex gap-1.5">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <button
-                        key={star}
-                        type="button"
-                        onClick={() => setRating(star)}
-                        className={`transition-all hover:scale-110 ${
-                          star <= rating ? "text-primary" : "text-slate-300"
-                        }`}
-                      >
-                        <span
-                          className="material-symbols-outlined text-3xl max-[480px]:text-2xl"
-                          style={{ fontVariationSettings: star <= rating ? "'FILL' 1" : "'FILL' 0" }}
-                        >
-                          star
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Feedback Area */}
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-slate-700 ml-1">Ваш отзыв</label>
-                  <textarea
-                    value={text}
-                    onChange={(e) => setText(e.target.value)}
-                    required
-                    rows={3}
-                    className="w-full rounded-2xl border-2 border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all p-3 max-[480px]:p-2.5 placeholder:text-slate-400 text-sm"
-                    placeholder="Расскажите, как все прошло..."
-                  />
-                </div>
-
-                {/* Photo Upload */}
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-slate-700 ml-1">
-                    Фото (необязательно, до 5 шт)
-                  </label>
-                  <div className="flex flex-wrap gap-2">
-                    <label className="flex items-center gap-2 px-3 py-2.5 max-[480px]:px-2.5 max-[480px]:py-2 rounded-xl border border-dashed border-slate-300 text-slate-500 hover:border-primary hover:text-primary transition-all bg-white/50 cursor-pointer">
-                      <span className="material-symbols-outlined text-lg">add_a_photo</span>
-                      <span className="text-xs font-bold uppercase tracking-wider max-[480px]:text-[10px]">Прикрепить фото</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        multiple
-                        onChange={handlePhotoChange}
-                        disabled={photos.length >= 5}
-                        className="hidden"
-                      />
-                    </label>
-                    
-                    {photos.map((photo, index) => (
-                      <div key={index} className="relative group">
-                        <div className="w-14 h-14 rounded-xl overflow-hidden border border-slate-200">
-                          <img
-                            src={URL.createObjectURL(photo)}
-                            alt={`Preview ${index + 1}`}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
+                  {/* Service Selection */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-slate-700 ml-1">Выберите услугу</label>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-[320px]:gap-1.5">
+                      {serviceOptions.map((option) => (
                         <button
+                          key={option.name}
                           type="button"
-                          onClick={() => removePhoto(index)}
-                          className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full size-5 flex items-center justify-center shadow-md"
+                          onClick={() => setService(option.name)}
+                          className={`flex flex-col items-center justify-center p-3 max-[480px]:p-2.5 rounded-2xl border-2 transition-all shadow-sm ${
+                            service === option.name
+                              ? "bg-primary/5 border-primary text-primary"
+                              : "bg-white border-slate-200 hover:border-primary hover:text-primary"
+                          }`}
                         >
-                          <span className="material-symbols-outlined text-[12px]">close</span>
+                          <span className="material-symbols-outlined mb-1 text-xl max-[480px]:text-lg">{option.icon}</span>
+                          <span className="text-xs max-[480px]:text-[10px] font-semibold text-center leading-tight">{option.name}</span>
                         </button>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
 
-                {/* Submit Buttons */}
-                <div className="flex gap-2.5 pt-2 max-[480px]:flex-col-reverse">
-                  <button
-                    type="button"
-                    onClick={() => setShowForm(false)}
-                    className="flex-1 px-4 py-3.5 max-[480px]:py-3 rounded-2xl border-2 border-slate-200 font-bold hover:bg-slate-50 transition-all text-sm"
-                  >
-                    Отмена
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={uploading}
-                    className="flex-1 gradient-bg py-3.5 max-[480px]:py-3 rounded-2xl text-white font-black text-base max-[480px]:text-sm tracking-wide shadow-xl shadow-accent-purple/30 hover:shadow-2xl hover:shadow-accent-purple/40 hover:-translate-y-1 transition-all disabled:opacity-50 disabled:hover:translate-y-0"
-                  >
-                    {uploading ? "ОТПРАВКА..." : "ОТПРАВИТЬ"}
-                  </button>
-                </div>
-              </form>
-            </div>
+                  {/* Rating */}
+                  <div className="flex flex-col items-center space-y-2">
+                    <label className="text-sm font-bold text-slate-700">Ваша оценка</label>
+                    <div className="flex gap-1.5">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button
+                          key={star}
+                          type="button"
+                          onClick={() => setRating(star)}
+                          className={`transition-all hover:scale-110 ${
+                            star <= rating ? "text-primary" : "text-slate-300"
+                          }`}
+                        >
+                          <span
+                            className="material-symbols-outlined text-3xl max-[480px]:text-2xl"
+                            style={{ fontVariationSettings: star <= rating ? "'FILL' 1" : "'FILL' 0" }}
+                          >
+                            star
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Feedback Area */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-slate-700 ml-1">Ваш отзыв</label>
+                    <textarea
+                      value={text}
+                      onChange={(e) => setText(e.target.value)}
+                      required
+                      rows={3}
+                      className="w-full rounded-2xl border-2 border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all p-3 max-[480px]:p-2.5 placeholder:text-slate-400 text-sm"
+                      placeholder="Расскажите, как все прошло..."
+                    />
+                  </div>
+
+                  {/* Photo Upload */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-slate-700 ml-1">
+                      Фото (необязательно, до 5 шт)
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      <label className="flex items-center gap-2 px-3 py-2.5 max-[480px]:px-2.5 max-[480px]:py-2 rounded-xl border border-dashed border-slate-300 text-slate-500 hover:border-primary hover:text-primary transition-all bg-white/50 cursor-pointer">
+                        <span className="material-symbols-outlined text-lg">add_a_photo</span>
+                        <span className="text-xs font-bold uppercase tracking-wider max-[480px]:text-[10px]">Прикрепить фото</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          multiple
+                          onChange={handlePhotoChange}
+                          disabled={photos.length >= 5}
+                          className="hidden"
+                        />
+                      </label>
+                      
+                      {photos.map((photo, index) => (
+                        <div key={index} className="relative group">
+                          <div className="w-14 h-14 rounded-xl overflow-hidden border border-slate-200">
+                            <img
+                              src={URL.createObjectURL(photo)}
+                              alt={`Preview ${index + 1}`}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => removePhoto(index)}
+                            className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full size-5 flex items-center justify-center shadow-md"
+                          >
+                            <span className="material-symbols-outlined text-[12px]">close</span>
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Submit Buttons */}
+                  <div className="flex gap-2.5 pt-2 max-[480px]:flex-col-reverse">
+                    <button
+                      type="button"
+                      onClick={() => setShowForm(false)}
+                      className="flex-1 px-4 py-3.5 max-[480px]:py-3 rounded-2xl border-2 border-slate-200 font-bold hover:bg-slate-50 transition-all text-sm"
+                    >
+                      Отмена
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={uploading}
+                      className="flex-1 gradient-bg py-3.5 max-[480px]:py-3 rounded-2xl text-white font-black text-base max-[480px]:text-sm tracking-wide shadow-xl shadow-accent-purple/30 hover:shadow-2xl hover:shadow-accent-purple/40 hover:-translate-y-1 transition-all disabled:opacity-50 disabled:hover:translate-y-0"
+                    >
+                      {uploading ? "ОТПРАВКА..." : "ОТПРАВИТЬ"}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
           </div>
         </div>
       )}
