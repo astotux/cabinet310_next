@@ -61,7 +61,11 @@ export default function Footer() {
 
       <div className="max-w-7xl mx-auto px-6 max-[480px]:px-4 max-[320px]:px-3 border-t border-slate-800 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500">
         <p>© 2026 Кабинет 310. Все права защищены.</p>
-        <p>С любовью к вашей красоте ✨</p>
+        <div className="flex items-center gap-4">
+          <Link href="/privacy" className="hover:text-white transition-colors">Политика конфиденциальности</Link>
+          <span className="hidden md:inline">•</span>
+          <p>С любовью к вашей красоте ✨</p>
+        </div>
       </div>
     </footer>
   );

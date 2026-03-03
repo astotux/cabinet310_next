@@ -31,6 +31,7 @@ export default function BookingPage() {
   const [clientName, setClientName] = useState("");
   const [clientPhone, setClientPhone] = useState("");
   const [clientComment, setClientComment] = useState("");
+  const [privacyConsent, setPrivacyConsent] = useState(true);
   const [bookingError, setBookingError] = useState<string>("");
   const [bookingSuccess, setBookingSuccess] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -589,14 +590,35 @@ export default function BookingPage() {
 
                     <button
                       type="submit"
-                      disabled={!clientName || !clientPhone || submitting}
+                      disabled={!clientName || !clientPhone || !privacyConsent || submitting}
                       className={`w-full gradient-bg py-5 max-[480px]:py-4 max-[320px]:py-3.5 rounded-2xl text-white font-black text-xl max-[480px]:text-lg max-[320px]:text-base shadow-xl shadow-primary/30 transition-all flex items-center justify-center gap-3 ${
-                        !clientName || !clientPhone || submitting ? "opacity-50 cursor-not-allowed" : "hover:scale-[1.01] active:scale-[0.99]"
+                        !clientName || !clientPhone || !privacyConsent || submitting ? "opacity-50 cursor-not-allowed" : "hover:scale-[1.01] active:scale-[0.99]"
                       }`}
                     >
                       {submitting ? "Отправка..." : "Подтвердить запись"}
                       {!submitting && <span className="material-symbols-outlined">check_circle</span>}
                     </button>
+
+                    <div className="flex items-start gap-2 mt-4">
+                      <input
+                        type="checkbox"
+                        id="privacy-consent"
+                        checked={privacyConsent}
+                        onChange={(e) => setPrivacyConsent(e.target.checked)}
+                        className="mt-0.5 size-3.5 rounded border-slate-300 text-primary focus:ring-primary/20 cursor-pointer"
+                        required
+                      />
+                      <label htmlFor="privacy-consent" className="text-xs text-slate-500 cursor-pointer leading-relaxed">
+                        Я согласен(на) на{" "}
+                        <a 
+                          href="/privacy" 
+                          target="_blank"
+                          className="text-primary hover:underline"
+                        >
+                          обработку персональных данных
+                        </a>
+                      </label>
+                    </div>
                   </form>
 
                   <button
