@@ -31,12 +31,21 @@ model BlockedSlot {
 }
 
 model Review {
-  id        Int      @id @default(autoincrement())
+  id        Int           @id @default(autoincrement())
   name      String
   rating    Int
   text      String
-  approved  Boolean  @default(false)
+  approved  Boolean       @default(false)
+  createdAt DateTime      @default(now())
+  photos    ReviewPhoto[]
+}
+
+model ReviewPhoto {
+  id        Int      @id @default(autoincrement())
+  reviewId  Int
+  imageUrl  String
   createdAt DateTime @default(now())
+  review    Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
 }
 
 model Price {

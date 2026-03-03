@@ -5,6 +5,9 @@ export async function GET() {
   try {
     const reviews = await prisma.review.findMany({
       orderBy: { createdAt: "desc" },
+      include: {
+        photos: true,
+      },
     });
     return NextResponse.json(reviews);
   } catch (error) {

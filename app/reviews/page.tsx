@@ -10,6 +10,8 @@ export default function ReviewsPage() {
   const [name, setName] = useState("");
   const [rating, setRating] = useState(5);
   const [text, setText] = useState("");
+  const [photos, setPhotos] = useState<File[]>([]);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     fetchReviews();
@@ -23,21 +25,62 @@ export default function ReviewsPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    const response = await fetch("/api/reviews", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, rating, text }),
-    });
+    setUploading(true);
 
-    if (response.ok) {
-      alert("Отзыв отправлен на модерацию!");
-      setShowForm(false);
-      setName("");
-      setRating(5);
-      setText("");
-      fetchReviews();
+    try {
+      // Сначала загружаем фото, если они есть
+      const photoUrls: string[] = [];
+      
+      if (photos.length > 0) {
+        for (const photo of photos) {
+          const formData = new FormData();
+          formData.append("file", photo);
+
+          const uploadResponse = await fetch("/api/upload", {
+            method: "POST",
+            body: formData,
+          });
+
+          if (uploadResponse.ok) {
+            const uploadData = await uploadResponse.json();
+            photoUrls.push(uploadData.filename); // Используем filename вместо url
+          }
+        }
+      }
+
+      // Затем создаем отзыв с фото
+      const response = await fetch("/api/reviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, rating, text, photos: photoUrls }),
+      });
+
+      if (response.ok) {
+        alert("Отзыв отправлен на модерацию!");
+        setShowForm(false);
+        setName("");
+        setRating(5);
+        setText("");
+        setPhotos([]);
+        fetchReviews();
+      }
+    } catch (error) {
+      alert("Ошибка при отправке отзыва");
+    } finally {
+      setUploading(false);
     }
+  };
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const filesArray = Array.from(e.target.files);
+      // Ограничиваем до 5 фото
+      setPhotos(prev => [...prev, ...filesArray].slice(0, 5));
+    }
+  };
+
+  const removePhoto = (index: number) => {
+    setPhotos(prev => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -131,9 +174,26 @@ export default function ReviewsPage() {
                   </span>
                 ))}
               </div>
-              <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed">
+              <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed mb-3">
                 {review.text}
               </p>
+              
+              {review.photos && review.photos.length > 0 && (
+                <div className={`grid gap-2 mt-4 ${
+                  review.photos.length === 1 ? 'grid-cols-1' :
+                  review.photos.length === 2 ? 'grid-cols-2' :
+                  'grid-cols-2'
+                }`}>
+                  {review.photos.map((photo: any) => (
+                    <img
+                      key={photo.id}
+                      src={photo.imageUrl}
+                      alt="Фото отзыва"
+                      className="w-full h-32 object-cover rounded-xl"
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -176,6 +236,42 @@ export default function ReviewsPage() {
                   className="w-full p-3 rounded-xl border dark:bg-slate-800 dark:border-slate-700 dark:text-white"
                 />
               </div>
+              
+              <div>
+                <label className="block text-sm font-bold mb-2 dark:text-white">
+                  Фото (необязательно, до 5 шт)
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handlePhotoChange}
+                  disabled={photos.length >= 5}
+                  className="w-full p-3 rounded-xl border dark:bg-slate-800 dark:border-slate-700 dark:text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary/90"
+                />
+                
+                {photos.length > 0 && (
+                  <div className="mt-3 grid grid-cols-3 gap-2">
+                    {photos.map((photo, index) => (
+                      <div key={index} className="relative group">
+                        <img
+                          src={URL.createObjectURL(photo)}
+                          alt={`Preview ${index + 1}`}
+                          className="w-full h-20 object-cover rounded-lg"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removePhoto(index)}
+                          className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <span className="material-symbols-outlined text-sm">close</span>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              
               <div className="flex gap-3">
                 <button
                   type="button"
@@ -186,9 +282,10 @@ export default function ReviewsPage() {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 gradient-bg px-6 py-3 rounded-xl text-white font-bold"
+                  disabled={uploading}
+                  className="flex-1 gradient-bg px-6 py-3 rounded-xl text-white font-bold disabled:opacity-50"
                 >
-                  Отправить
+                  {uploading ? "Отправка..." : "Отправить"}
                 </button>
               </div>
             </form>

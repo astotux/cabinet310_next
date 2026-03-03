@@ -6,6 +6,9 @@ export async function GET() {
     const reviews = await prisma.review.findMany({
       where: { approved: true },
       orderBy: { createdAt: "desc" },
+      include: {
+        photos: true,
+      },
     });
     return NextResponse.json(reviews);
   } catch (error) {
@@ -19,7 +22,9 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, rating, text } = body;
+    const { name, rating, text, photos = [] } = body;
+
+    console.log('Creating review:', { name, rating, text, photosCount: photos.length });
 
     const review = await prisma.review.create({
       data: {
@@ -27,13 +32,20 @@ export async function POST(request: NextRequest) {
         rating,
         text,
         approved: false,
+        photos: {
+          create: photos.filter((url: string) => url).map((url: string) => ({ imageUrl: url })),
+        },
+      },
+      include: {
+        photos: true,
       },
     });
 
     return NextResponse.json(review, { status: 201 });
   } catch (error) {
+    console.error('Error creating review:', error);
     return NextResponse.json(
-      { error: "Ошибка создания отзыва" },
+      { error: "Ошибка создания отзыва", details: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     );
   }

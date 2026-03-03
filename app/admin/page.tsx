@@ -1295,6 +1295,23 @@ export default function AdminPage() {
                         <span className="text-xs max-[480px]:text-[10px] font-bold text-slate-400">{review.name}</span>
                       </div>
                       <p className="font-bold text-sm max-[480px]:text-xs mb-1">{review.text.substring(0, 50)}...</p>
+                      {review.photos && review.photos.length > 0 && (
+                        <div className="flex gap-1 mb-2">
+                          {review.photos.slice(0, 3).map((photo: any) => (
+                            <img
+                              key={photo.id}
+                              src={photo.imageUrl}
+                              alt="Фото"
+                              className="w-12 h-12 object-cover rounded"
+                            />
+                          ))}
+                          {review.photos.length > 3 && (
+                            <div className="w-12 h-12 bg-slate-200 rounded flex items-center justify-center text-xs font-bold">
+                              +{review.photos.length - 3}
+                            </div>
+                          )}
+                        </div>
+                      )}
                       <button
                         onClick={() => approveReview(review.id)}
                         className="text-xs max-[480px]:text-[10px] text-primary font-bold hover:underline"
