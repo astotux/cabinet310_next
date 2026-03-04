@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Перманентный макияж губ — Кабинет 310 в Сыктывкаре",
     description: "Естественные и красивые губы на годы. Акварельная техника, контур, полное заполнение. Записывайтесь к лучшим мастерам Сыктывкара.",
-    images: ['/og-permanent-lips.jpg'],
+    images: ['/og-image.jpg'],
     type: 'website',
     locale: 'ru_RU',
     url: 'https://cabinet310.ru/services/permanent-lips',
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Перманентный макияж губ — Кабинет 310 в Сыктывкаре',
     description: 'Естественные и красивые губы на годы. Акварельная техника, контур, полное заполнение.',
-    images: ['/og-permanent-lips.jpg'],
+    images: ['/og-image.jpg'],
   },
   alternates: {
     canonical: 'https://cabinet310.ru/services/permanent-lips',
@@ -217,28 +217,28 @@ export default function PermanentLipsPage() {
                     <div className="size-10 md:size-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-3">
                       <span className="material-symbols-outlined text-xl md:text-2xl">schedule</span>
                     </div>
-                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Длительность</p>
+                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1 max-[320px]:text-[9px]">Длительность</p>
                     <p className="text-lg md:text-xl font-black">1-2 часа</p>
                   </div>
                   <div className="glass rounded-2xl p-4 md:p-6">
                     <div className="size-10 md:size-12 rounded-xl bg-accent-pink/15 text-accent-pink flex items-center justify-center mb-3">
                       <span className="material-symbols-outlined text-xl md:text-2xl">healing</span>
                     </div>
-                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Заживление</p>
+                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1 max-[320px]:text-[9px]">Заживление</p>
                     <p className="text-lg md:text-xl font-black">7-10 дней</p>
                   </div>
                   <div className="glass rounded-2xl p-4 md:p-6">
                     <div className="size-10 md:size-12 rounded-xl bg-accent-purple/15 text-accent-purple flex items-center justify-center mb-3">
                       <span className="material-symbols-outlined text-xl md:text-2xl">event</span>
                     </div>
-                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Результат</p>
+                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1 max-[320px]:text-[9px]">Результат</p>
                     <p className="text-lg md:text-xl font-black text-primary">1-2 года</p>
                   </div>
                   <div className="glass rounded-2xl p-4 md:p-6">
                     <div className="size-10 md:size-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-3">
                       <span className="material-symbols-outlined text-xl md:text-2xl">payments</span>
                     </div>
-                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Стоимость</p>
+                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1 max-[320px]:text-[9px]">Стоимость</p>
                     <p className="text-lg md:text-xl font-black">от 4000₽</p>
                   </div>
                 </div>

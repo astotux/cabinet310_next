@@ -354,17 +354,19 @@ export default function Home() {
             <div className="lg:col-span-5 space-y-6">
               <div className="glass rounded-3xl p-7 max-[480px]:p-6 max-[320px]:p-5 border border-white/50 shadow-xl">
                 <h3 className="text-xl font-black mb-3  ">Не нашли ответ?</h3>
-                <p className="text-sm text-slate-600   mb-6">Свяжитесь с нами любым удобным способом — мы всегда на связи!</p>
+                <p className="text-sm text-slate-600   mb-6">Свяжитесь с нами — мы всегда на связи!</p>
                 <div className="space-y-4">
-                  <Link href="/contacts" className="flex items-center gap-3 p-4 rounded-2xl bg-white/50 hover:bg-white/80 transition-all group">
-                    <div className="size-10 rounded-xl bg-accent-pink/15 text-accent-pink flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <span className="material-symbols-outlined text-lg">chat</span>
+                  <a href="https://vk.com/cabinet_310" className="flex items-center gap-3 p-4 rounded-2xl bg-white/50 hover:bg-white/80 transition-all group">
+                    <div className="size-11 max-[480px]:size-11 rounded-xl bg-[#0077FF] flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                      <svg className="w-7 h-7 max-[480px]:w-6 max-[480px]:h-6 text-white" width="804" height="481" viewBox="0 0 804 481" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9.25306 5.61565C-27.5469 20.0157 50.8531 201.616 148.453 329.616C218.853 421.616 297.253 469.616 390.053 477.616C461.253 483.216 470.853 474.416 470.853 400.016C470.853 369.616 474.853 342.416 479.653 340.016C498.853 328.016 533.253 348.816 599.653 412.816L669.253 480.016H729.253C813.253 480.016 822.853 464.816 775.653 400.016C764.453 384.816 734.853 350.416 709.253 324.016C683.653 297.616 662.853 268.816 662.853 260.816C662.853 252.016 683.653 212.816 710.053 172.816C781.253 61.6156 797.253 25.6157 780.453 8.81565C770.853 -0.784346 681.253 -3.18435 659.653 4.81565C652.453 7.21565 628.453 44.8157 606.053 88.0156C566.853 164.016 507.653 236.016 485.253 236.016C477.253 236.016 474.053 210.416 472.453 128.816C471.653 64.0156 466.853 16.8157 461.253 10.4157C454.853 2.41565 431.653 0.0156536 371.653 1.61565C301.253 4.01565 290.853 5.61565 288.453 18.4157C286.853 26.4157 292.453 40.8157 300.453 49.6157C312.453 63.2156 315.653 82.4156 317.253 164.816C319.653 253.616 318.853 264.816 306.053 269.616C278.053 280.016 209.253 178.416 162.053 56.0157C141.253 1.61565 138.853 0.0156536 75.6531 0.815654C44.4531 0.815654 14.0531 3.21565 9.25306 5.61565Z" fill="white"/>
+                      </svg>
                     </div>
                     <div>
                       <p className="text-xs text-slate-500  ">Написать</p>
                       <p className="font-bold text-sm  ">В ВК</p>
                     </div>
-                  </Link>
+                  </a>
                 </div>
               </div>
               <div className="glass rounded-3xl p-7 max-[480px]:p-6 max-[320px]:p-5 border border-white/50 shadow-xl">

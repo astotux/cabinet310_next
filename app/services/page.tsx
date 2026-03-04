@@ -8,8 +8,8 @@ export const metadata: Metadata = {
   title: "Услуги студии красоты",
   description: "Полный спектр услуг студии красоты Кабинет 310 в Сыктывкаре: перманентный макияж бровей, губ, межреснички, маникюр, ламинирование ресниц. Профессиональные мастера, современное оборудование.",
   keywords: [
+    "салон красоты сыктывкар",
     "услуги красоты сыктывкар",
-    "кабинет 310 прайс",
     "перманентный макияж цены",
     "маникюр цены сыктывкар",
     "ламинирование ресниц цена"
@@ -96,10 +96,6 @@ export default function ServicesPage() {
         {/* Hero Section */}
         <section className="mb-24 md:mb-28 lg:mb-32 max-[480px]:mb-16 relative min-h-[60vh] flex items-center">
           <div className="w-full text-center space-y-6 md:space-y-8 max-[480px]:space-y-5">
-            <Breadcrumbs items={[
-              { label: "Главная", href: "/" },
-              { label: "Услуги" }
-            ]} />
             
             <div className="inline-flex items-center gap-2 px-4 md:px-5 py-2 md:py-2.5 rounded-full gradient-animated text-white text-[10px] md:text-xs font-bold uppercase tracking-widest shadow-lg">
               <span className="material-symbols-outlined text-xs md:text-sm">spa</span>
@@ -167,7 +163,7 @@ export default function ServicesPage() {
                     <div className="text-lg md:text-xl max-[480px]:text-sm font-black text-primary">{service.price}</div>
                   </div>
                   <div className="flex items-center gap-2 text-primary font-bold text-sm md:text-base group-hover:gap-4 transition-all">
-                    Записаться
+                    Подробнее
                     <span className="material-symbols-outlined">arrow_forward</span>
                   </div>
                 </div>

@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Перманентный макияж межресничка — Кабинет 310 в Сыктывкаре",
     description: "Выразительный взгляд без макияжа. Межресничка, стрелки. Записывайтесь к лучшим мастерам Сыктывкара.",
-    images: ['/og-eyeliner.jpg'],
+    images: ['/og-image.jpg'],
     type: 'website',
     locale: 'ru_RU',
     url: 'https://cabinet310.ru/services/eyeliner',
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Перманентный макияж межресничка — Кабинет 310 в Сыктывкаре',
     description: 'Выразительный взгляд без макияжа. Межресничка, стрелки.',
-    images: ['/og-eyeliner.jpg'],
+    images: ['/og-image.jpg'],
   },
   alternates: {
     canonical: 'https://cabinet310.ru/services/eyeliner',
@@ -216,28 +216,28 @@ export default function EyelinerPage() {
                     <div className="size-10 md:size-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-3">
                       <span className="material-symbols-outlined text-xl md:text-2xl">schedule</span>
                     </div>
-                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Длительность</p>
+                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1 max-[320px]:text-[9px]">Длительность</p>
                     <p className="text-lg md:text-xl font-black">0.5-1.5 часа</p>
                   </div>
                   <div className="glass rounded-2xl p-4 md:p-6">
                     <div className="size-10 md:size-12 rounded-xl bg-accent-pink/15 text-accent-pink flex items-center justify-center mb-3">
                       <span className="material-symbols-outlined text-xl md:text-2xl">healing</span>
                     </div>
-                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Заживление</p>
+                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1 max-[320px]:text-[9px]">Заживление</p>
                     <p className="text-lg md:text-xl font-black">5-7 дней</p>
                   </div>
                   <div className="glass rounded-2xl p-4 md:p-6">
                     <div className="size-10 md:size-12 rounded-xl bg-accent-purple/15 text-accent-purple flex items-center justify-center mb-3">
                       <span className="material-symbols-outlined text-xl md:text-2xl">event</span>
                     </div>
-                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Результат</p>
+                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1 max-[320px]:text-[9px]">Результат</p>
                     <p className="text-lg md:text-xl font-black text-primary">1-2 года</p>
                   </div>
                   <div className="glass rounded-2xl p-4 md:p-6">
                     <div className="size-10 md:size-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-3">
                       <span className="material-symbols-outlined text-xl md:text-2xl">payments</span>
                     </div>
-                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Стоимость</p>
+                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1 max-[320px]:text-[9px]">Стоимость</p>
                     <p className="text-lg md:text-xl font-black">от 3500₽</p>
                   </div>
                 </div>

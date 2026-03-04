@@ -5,7 +5,7 @@
   "provider": {
     "@type": "BeautySalon",
     "name": "Кабинет 310",
-    "image": "https://cabinet310.ru/og-eyeliner.jpg",
+    "image": "https://cabinet310.ru/og-image.jpg",
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "Кабинет 310",

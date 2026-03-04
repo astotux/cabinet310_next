@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Ламинирование ресниц — Кабинет 310 в Сыктывкаре",
     description: "Выразительный взгляд без наращивания. Ламинирование и ботокс ресниц. Записывайтесь к лучшим мастерам Сыктывкара.",
-    images: ['/og-lash-lamination.jpg'],
+    images: ['/og-image.jpg'],
     type: 'website',
     locale: 'ru_RU',
     url: 'https://cabinet310.ru/services/lash-lamination',
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Ламинирование ресниц — Кабинет 310 в Сыктывкаре',
     description: 'Выразительный взгляд без наращивания. Ламинирование и ботокс ресниц.',
-    images: ['/og-lash-lamination.jpg'],
+    images: ['/og-image.jpg'],
   },
   alternates: {
     canonical: 'https://cabinet310.ru/services/lash-lamination',
@@ -216,28 +216,28 @@ export default function LashLaminationPage() {
                     <div className="size-10 md:size-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-3">
                       <span className="material-symbols-outlined text-xl md:text-2xl">schedule</span>
                     </div>
-                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Длительность</p>
+                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1 max-[320px]:text-[9px]">Длительность</p>
                     <p className="text-lg md:text-xl font-black">1-1.5 часа</p>
                   </div>
                   <div className="glass rounded-2xl p-4 md:p-6">
                     <div className="size-10 md:size-12 rounded-xl bg-accent-pink/15 text-accent-pink flex items-center justify-center mb-3">
                       <span className="material-symbols-outlined text-xl md:text-2xl">spa</span>
                     </div>
-                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Комфорт</p>
+                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1 max-[320px]:text-[9px]">Комфорт</p>
                     <p className="text-lg md:text-xl font-black">Безболезненно</p>
                   </div>
                   <div className="glass rounded-2xl p-4 md:p-6">
                     <div className="size-10 md:size-12 rounded-xl bg-accent-purple/15 text-accent-purple flex items-center justify-center mb-3">
                       <span className="material-symbols-outlined text-xl md:text-2xl">event</span>
                     </div>
-                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Эффект</p>
+                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1 max-[320px]:text-[9px]">Эффект</p>
                     <p className="text-lg md:text-xl font-black text-primary">6-8 недель</p>
                   </div>
                   <div className="glass rounded-2xl p-4 md:p-6">
                     <div className="size-10 md:size-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-3">
                       <span className="material-symbols-outlined text-xl md:text-2xl">payments</span>
                     </div>
-                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Стоимость</p>
+                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1 max-[320px]:text-[9px]">Стоимость</p>
                     <p className="text-lg md:text-xl font-black">от 1200₽</p>
                   </div>
                 </div>

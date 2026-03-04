@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Маникюр — Кабинет 310 в Сыктывкаре",
     description: "Профессиональный комплексный маникюр с покрытием гель-лак. Аппаратная обработка кутикулы и укрепление гелем. Записывайтесь к лучшим мастерам Сыктывкара.",
-    images: ['/og-manicure.jpg'],
+    images: ['/og-image.jpg'],
     type: 'website',
     locale: 'ru_RU',
     url: 'https://cabinet310.ru/services/manicure',
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Маникюр — Кабинет 310 в Сыктывкаре',
     description: 'Профессиональный комплексный маникюр с покрытием гель-лак. Аппаратная обработка кутикулы и укрепление гелем.',
-    images: ['/og-manicure.jpg'],
+    images: ['/og-image.jpg'],
   },
   alternates: {
     canonical: 'https://cabinet310.ru/services/manicure',
@@ -228,21 +228,21 @@ export default function ManicurePage() {
                     <div className="size-10 md:size-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-3">
                       <span className="material-symbols-outlined text-xl md:text-2xl">schedule</span>
                     </div>
-                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Длительность</p>
+                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1 max-[320px]:text-[9px]">Длительность</p>
                     <p className="text-lg md:text-xl font-black">1.5 часа</p>
                   </div>
                   <div className="glass rounded-2xl p-4 md:p-6">
                     <div className="size-10 md:size-12 rounded-xl bg-accent-pink/15 text-accent-pink flex items-center justify-center mb-3">
                       <span className="material-symbols-outlined text-xl md:text-2xl">event</span>
                     </div>
-                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Носка</p>
+                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1 max-[320px]:text-[9px]">Носка</p>
                     <p className="text-lg md:text-xl font-black">2-3 недели</p>
                   </div>
                   <div className="glass rounded-2xl p-4 md:p-6 col-span-2">
                     <div className="size-10 md:size-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-3">
                       <span className="material-symbols-outlined text-xl md:text-2xl">payments</span>
                     </div>
-                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Стоимость</p>
+                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1 max-[320px]:text-[9px]">Стоимость</p>
                     <p className="text-lg md:text-xl font-black">от 1500₽</p>
                   </div>
                 </div>

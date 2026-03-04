@@ -254,15 +254,18 @@ export default function BookingPage() {
               </a>
             </div>
             <nav className="flex items-center gap-6 lg:gap-10">
-              <a className="text-xs lg:text-sm font-semibold hover:text-primary transition-colors" href="/">
+              <Link className="text-xs lg:text-sm font-semibold hover:text-primary transition-colors" href="/">
                 Главная
-              </a>
-              <a className="text-xs lg:text-sm font-semibold hover:text-primary transition-colors" href="/reviews">
+              </Link>
+              <Link className="text-xs lg:text-sm font-semibold hover:text-primary transition-colors" href="/services">
+                Услуги
+              </Link>
+              <Link className="text-xs lg:text-sm font-semibold hover:text-primary transition-colors" href="/reviews">
                 Отзывы
-              </a>
-              <a className="text-xs lg:text-sm font-semibold hover:text-primary transition-colors" href="/contacts">
+              </Link>
+              <Link className="text-xs lg:text-sm font-semibold hover:text-primary transition-colors" href="/contacts">
                 Контакты
-              </a>
+              </Link>
             </nav>
           </div>
         </div>

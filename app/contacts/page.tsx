@@ -21,7 +21,7 @@ export default function ContactsPage() {
       <section className="mb-16 max-[480px]:mb-12 max-[320px]:mb-10 relative rounded-3xl overflow-hidden min-h-[320px] flex items-center p-10 max-[480px]:p-6 max-[320px]:p-5 bg-slate-900">
         <div 
           className="absolute inset-0 opacity-35 bg-center bg-cover"
-          style={{backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuB5o8dJxHaU2afrjR1saDcd58EmcGKvCRm3rYCwoCj6t5n-XPM9DJyTozPbuvLnde9I0M67EUlxxTx9loPtnuUjvG3ZSNqRLfit5p5ir8X4gfJaA47kdDEEylwqEXsJ7QQzuj4mAwoISCVv9IoD3MpF0gSE9rK3607pEQekTts3nRCwPYxWWhPPpN3UjXwEKFVd8ayko_qT73AMdOlmHG_XHawcwjRThozQb7uSYLJz-Sw5LddB-3cyVyn-X4NKz8wicVGne1dMQXs')"}}
+          style={{backgroundImage: "url('/map.png')"}}
         />
         <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/50 to-transparent" />
 
@@ -48,7 +48,7 @@ export default function ContactsPage() {
             <span className="material-symbols-outlined text-sm">location_on</span>
             Как нас найти
           </div>
-          <h1 className="text-5xl max-[480px]:text-3xl max-[320px]:text-2xl font-black leading-[1.1] tracking-tight mb-5">
+          <h1 className="text-5xl max-[480px]:text-3xl max-[320px]:text-3xl font-black leading-[1.1] tracking-tight mb-5">
             Контакты <span className="text-gradient">Кабинет 310</span>
           </h1>
           <p className="text-slate-100/90 text-lg max-[480px]:text-base leading-relaxed max-w-xl">
@@ -69,8 +69,8 @@ export default function ContactsPage() {
                 </div>
                 <div>
                   <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Адрес</p>
-                  <p className="font-bold  ">Ваш город, адрес студии</p>
-                  <p className="text-sm text-slate-500  ">Ориентир: ТЦ/метро/улица (по желанию)</p>
+                  <p className="font-bold">г. Сыктывкар, ул. Куратова, д. 4</p>
+                  <p className="text-sm text-slate-500  ">Кабинет 310</p>
                 </div>
               </div>
 
@@ -80,7 +80,7 @@ export default function ContactsPage() {
                 </div>
                 <div>
                   <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Телефон</p>
-                  <a className="font-bold hover:text-primary transition-colors" href="tel:+70000000000">+7 (___) ___-__-__</a>
+                  <a className="font-bold hover:text-primary transition-colors" href="tel:+70000000000">+7 (908) 695-49-04</a>
                   <p className="text-sm text-slate-500  ">Можно писать в мессенджеры</p>
                 </div>
               </div>
@@ -91,7 +91,7 @@ export default function ContactsPage() {
                 </div>
                 <div>
                   <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">График</p>
-                  <p className="font-bold  ">Ежедневно: 10:00 — 21:00</p>
+                  <p className="font-bold  ">Ежедневно: 9:00 — 20:00</p>
                   <p className="text-sm text-slate-500  ">По предварительной записи</p>
                 </div>
               </div>
@@ -105,6 +105,11 @@ export default function ContactsPage() {
                   className="flex items-center justify-between gap-3 px-5 py-4 rounded-2xl bg-white/60   border border-slate-200/60   hover:border-primary/30 transition-colors"
                 >
                   <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
+                      <svg className="w-7 h-7 max-[480px]:w-6 max-[480px]:h-6 text-slate-400" width="804" height="481" viewBox="0 0 804 481" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9.25306 5.61565C-27.5469 20.0157 50.8531 201.616 148.453 329.616C218.853 421.616 297.253 469.616 390.053 477.616C461.253 483.216 470.853 474.416 470.853 400.016C470.853 369.616 474.853 342.416 479.653 340.016C498.853 328.016 533.253 348.816 599.653 412.816L669.253 480.016H729.253C813.253 480.016 822.853 464.816 775.653 400.016C764.453 384.816 734.853 350.416 709.253 324.016C683.653 297.616 662.853 268.816 662.853 260.816C662.853 252.016 683.653 212.816 710.053 172.816C781.253 61.6156 797.253 25.6157 780.453 8.81565C770.853 -0.784346 681.253 -3.18435 659.653 4.81565C652.453 7.21565 628.453 44.8157 606.053 88.0156C566.853 164.016 507.653 236.016 485.253 236.016C477.253 236.016 474.053 210.416 472.453 128.816C471.653 64.0156 466.853 16.8157 461.253 10.4157C454.853 2.41565 431.653 0.0156536 371.653 1.61565C301.253 4.01565 290.853 5.61565 288.453 18.4157C286.853 26.4157 292.453 40.8157 300.453 49.6157C312.453 63.2156 315.653 82.4156 317.253 164.816C319.653 253.616 318.853 264.816 306.053 269.616C278.053 280.016 209.253 178.416 162.053 56.0157C141.253 1.61565 138.853 0.0156536 75.6531 0.815654C44.4531 0.815654 14.0531 3.21565 9.25306 5.61565Z" fill="lab(65.5349% -2.25151 -14.5072)"/>
+                      </svg>
+                    </div>
                     <div>
                       <p className="font-bold   leading-tight">Вконтакте</p>
                       <p className="text-xs text-slate-500   leading-tight">@cabinet310</p>
@@ -112,20 +117,6 @@ export default function ContactsPage() {
                   </div>
                   <span className="material-symbols-outlined text-slate-400">arrow_forward</span>
                 </a>
-              </div>
-            </div>
-          </div>
-
-          <div className="service-card-glass rounded-3xl p-8 max-[480px]:p-6 max-[320px]:p-5">
-            <div className="flex items-start justify-between gap-6">
-              <div>
-                <h3 className="text-xl font-black mb-2  ">Как добраться</h3>
-                <p className="text-sm text-slate-500   leading-relaxed">
-                  Добавь сюда пару подсказок: подъезд/этаж, где парковка, как пройти от метро.
-                </p>
-              </div>
-              <div className="size-12 rounded-2xl gradient-bg text-white flex items-center justify-center shrink-0">
-                <span className="material-symbols-outlined">directions</span>
               </div>
             </div>
           </div>
