@@ -81,12 +81,12 @@ export default function LashLaminationPage() {
     };
 
     const portfolioPhotos = [
-        { image: "/photo1.png", title: "Естественный изгиб", description: "Красивое подкручивание" },
-        { image: "/photo2.png", title: "Выразительный взгляд", description: "Эффект открытых глаз" },
-        { image: "/photo3.png", title: "До и после", description: "Видимый результат" },
-        { image: "/photo4.png", title: "Укрепление", description: "Здоровые ресницы" },
-        { image: "/photo5.png", title: "Стойкий эффект", description: "Красота на недели" },
-        { image: "/photo6.png", title: "Профессиональная работа", description: "Опытные мастера" }
+        { image: "/photo42.png", title: "Естественный изгиб", description: "Красивое подкручивание" },
+        { image: "/photo43.png", title: "Выразительный взгляд", description: "Эффект открытых глаз" },
+        { image: "/photo45.png", title: "Ламинирование", description: "Видимый результат" },
+        { image: "/photo44.png", title: "Укрепление", description: "Здоровые ресницы" },
+        { image: "/photo47.png", title: "Стойкий эффект", description: "Красота на недели" },
+        { image: "/photo48.png", title: "Профессиональная работа", description: "Опытные мастера" }
     ];
 
     const faqItems = [
@@ -203,18 +203,18 @@ export default function LashLaminationPage() {
                             <div className="absolute inset-0 grid grid-cols-2 gap-3 md:gap-4">
                                 <div className="space-y-3 md:space-y-4 floating">
                                     <div className="bento-card h-32 md:h-40 lg:h-48 rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl">
-                                        <Image src="/photo1.png" alt="Ламинирование ресниц" width={400} height={300} className="w-full h-full object-cover" />
+                                        <Image src="/photo45.png" alt="Ламинирование ресниц" width={400} height={300} className="w-full h-full object-cover" />
                                     </div>
                                     <div className="bento-card h-44 md:h-56 lg:h-64 rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl">
-                                        <Image src="/photo3.png" alt="Результат ламинирования" width={400} height={500} className="w-full h-full object-cover" />
+                                        <Image src="/photo43.png" alt="Результат ламинирования" width={400} height={500} className="w-full h-full object-cover" />
                                     </div>
                                 </div>
                                 <div className="space-y-3 md:space-y-4 pt-8 md:pt-12 floating-undi">
                                     <div className="bento-card h-44 md:h-56 lg:h-64 rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl">
-                                        <Image src="/photo4.png" alt="Красивые ресницы" width={400} height={500} className="w-full h-full object-cover" />
+                                        <Image src="/photo42.png" alt="Красивые ресницы" width={400} height={500} className="w-full h-full object-cover" />
                                     </div>
                                     <div className="bento-card h-32 md:h-40 lg:h-48 rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl">
-                                        <Image src="/photo2.png" alt="Кабинет мастера" width={400} height={300} className="w-full h-full object-cover" />
+                                        <Image src="/photo44.png" alt="Кабинет мастера" width={400} height={300} className="w-full h-full object-cover" />
                                     </div>
                                 </div>
                             </div>
@@ -405,7 +405,7 @@ export default function LashLaminationPage() {
                             <Image
                                 alt="Мастер за работой в Кабинет 310"
                                 className="rounded-2xl md:rounded-[2.5rem] relative z-10 w-full object-cover aspect-[4/5]"
-                                src="/photo5.png"
+                                src="/photo46.png"
                                 width={600}
                                 height={750}
                             />
@@ -426,7 +426,7 @@ export default function LashLaminationPage() {
                                     </div>
                                     <div>
                                         <h3 className="font-black text-base md:text-lg mb-1 md:mb-2">Премиальные составы</h3>
-                                        <p className="text-sm md:text-base text-slate-600">Работаем с профессиональными брендами: LVL Lashes, Thuya, Dolly's Lash</p>
+                                        <p className="text-sm md:text-base text-slate-600">Работаем с профессиональными брендами</p>
                                     </div>
                                 </div>
                                 <div className="flex gap-4 md:gap-6 items-start group">
@@ -509,9 +509,9 @@ export default function LashLaminationPage() {
                                     Записаться на ламинирование
                                     <span className="material-symbols-outlined">arrow_forward</span>
                                 </Link>
-                                <Link href="/contacts" className="bg-white/10 backdrop-blur-md text-white border border-white/20 px-10 md:px-12 py-4 md:py-5 rounded-xl md:rounded-2xl font-bold text-lg hover:bg-white/20 transition-all">
+                                <a href="https://vk.com/cabinet_310" className="bg-white/10 backdrop-blur-md text-white border border-white/20 px-10 md:px-12 py-4 md:py-5 rounded-xl md:rounded-2xl font-bold text-lg hover:bg-white/20 transition-all">
                                     Задать вопрос
-                                </Link>
+                                </a>
                             </div>
                             <div className="flex items-center justify-center max-[480px]:flex-col gap-8 pt-6 text-white/80">
                                 <div className="text-center">

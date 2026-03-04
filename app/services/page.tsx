@@ -25,6 +25,28 @@ export const metadata: Metadata = {
 export default function ServicesPage() {
   const services = [
     {
+      name: "Ламинирование ресниц",
+      description: "Подкручивание и укрепление натуральных ресниц. Эффект на 6-8 недель.",
+      icon: "visibility",
+      gradient: "from-accent-purple to-accent-pink",
+      price: "от 1200₽",
+      duration: "1-1.5 часа",
+      link: "/services/lash-lamination",
+      image: "/photo2.png",
+      features: ["Ламинирование", "Ботокс ресниц", "Окрашивание"]
+    },
+    {
+      name: "Маникюр",
+      description: "Комплексный маникюр с покрытием гель-лак. Аппаратная обработка кутикулы и укрепление гелем.",
+      icon: "back_hand",
+      gradient: "from-primary to-accent-pink",
+      price: "от 1500₽",
+      duration: "1-1.5 часа",
+      link: "/services/manicure",
+      image: "/photo5.png",
+      features: ["Аппаратная обработка", "Укрепление гелем", "Гель-лак"]
+    },
+    {
       name: "Перманентный макияж бровей",
       description: "Пудровые брови. Надежно, надолго. Естественная красота на 1-2 года.",
       icon: "face_3",
@@ -47,7 +69,7 @@ export default function ServicesPage() {
       features: ["Акварельные губы"]
     },
     {
-      name: "Межресничка",
+      name: "Перманентный макияж межреснички",
       description: "Подчеркивание линии роста ресниц. Выразительный взгляд без макияжа.",
       icon: "visibility",
       gradient: "from-accent-purple to-primary",
@@ -56,28 +78,6 @@ export default function ServicesPage() {
       link: "/services/eyeliner",
       image: "/photo4.png",
       features: ["Верхнее веко"]
-    },
-    {
-      name: "Маникюр",
-      description: "Комплексный маникюр с покрытием гель-лак. Аппаратная обработка кутикулы и укрепление гелем.",
-      icon: "back_hand",
-      gradient: "from-primary to-accent-pink",
-      price: "от 1500₽",
-      duration: "1-1.5 часа",
-      link: "/services/manicure",
-      image: "/photo5.png",
-      features: ["Аппаратная обработка", "Укрепление гелем", "Гель-лак"]
-    },
-    {
-      name: "Ламинирование ресниц",
-      description: "Подкручивание и укрепление натуральных ресниц. Эффект на 6-8 недель.",
-      icon: "visibility",
-      gradient: "from-accent-purple to-accent-pink",
-      price: "от 1200₽",
-      duration: "1-1.5 часа",
-      link: "/services/lash-lamination",
-      image: "/photo2.png",
-      features: ["Ламинирование", "Ботокс ресниц", "Окрашивание"]
     }
   ];
 
@@ -131,7 +131,7 @@ export default function ServicesPage() {
             </h1>
             
             <p className="text-lg sm:text-xl md:text-2xl font-light text-slate-600 leading-relaxed max-w-3xl mx-auto">
-              От перманентного макияжа до маникюра — все для вашей красоты в одном месте. Профессиональные мастера, современное оборудование, индивидуальный подход.
+              От перманентного макияжа до маникюра — все для вашей красоты в одном месте.
             </p>
             
             <div className="flex flex-col sm:flex-row flex-wrap gap-3 md:gap-4 pt-2 md:pt-4 justify-center">
@@ -139,9 +139,9 @@ export default function ServicesPage() {
                 Записаться сейчас
                 <span className="material-symbols-outlined">arrow_forward</span>
               </Link>
-              <Link href="https://vk.com/cabinet_310" className="glass px-8 md:px-10 py-4 md:py-5 rounded-xl md:rounded-2xl font-bold text-base md:text-lg hover:bg-white/80 transition-all text-center">
+              <a href="https://vk.com/cabinet_310" className="glass px-8 md:px-10 py-4 md:py-5 rounded-xl md:rounded-2xl font-bold text-base md:text-lg hover:bg-white/80 transition-all text-center">
                 Задать вопрос в ВК
-              </Link>
+              </a>
             </div>
           </div>
         </section>

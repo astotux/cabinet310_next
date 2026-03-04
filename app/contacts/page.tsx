@@ -62,10 +62,6 @@ export default function ContactsPage() {
       <Header />
       <main className="max-w-7xl mx-auto px-6 max-[480px]:px-4 max-[320px]:px-3 py-12 max-[480px]:py-8 max-[320px]:py-6 max-[767px]:pb-32">
         <section className="mb-16 max-[480px]:mb-12 max-[320px]:mb-10 relative rounded-3xl overflow-hidden min-h-[320px] flex items-center p-10 max-[480px]:p-6 max-[320px]:p-5 bg-slate-900">
-          <div
-            className="absolute inset-0 opacity-35 bg-center bg-cover"
-            style={{ backgroundImage: "url('/map.png')" }}
-          />
           <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/50 to-transparent" />
 
           <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
@@ -123,7 +119,7 @@ export default function ContactsPage() {
                   </div>
                   <div>
                     <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Телефон</p>
-                    <a className="font-bold hover:text-primary transition-colors" href="tel:+70000000000">+7 (908) 695-49-04</a>
+                    <a className="font-bold hover:text-primary transition-colors" href="tel:+79086954904">+7 (908) 695-49-04</a>
                     <p className="text-sm text-slate-500  ">Можно писать в мессенджеры</p>
                   </div>
                 </div>

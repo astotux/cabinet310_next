@@ -34,7 +34,7 @@ export default function BookingPage() {
   const [clientName, setClientName] = useState("");
   const [clientPhone, setClientPhone] = useState("");
   const [clientComment, setClientComment] = useState("");
-  const [privacyConsent, setPrivacyConsent] = useState(true);
+  const [privacyConsent, setPrivacyConsent] = useState(false);
   const [bookingError, setBookingError] = useState<string>("");
   const [bookingSuccess, setBookingSuccess] = useState(false);
   const [submitting, setSubmitting] = useState(false);

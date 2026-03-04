@@ -36,7 +36,7 @@ export default function Footer() {
             </div>
             <div className="flex items-center gap-2">
               <span className="material-symbols-outlined text-base">phone</span>
-              <a href="tel:+79991234567" className="hover:text-white transition-colors">+7 (908) 695-49-04</a>
+              <a href="tel:+79086954904" className="hover:text-white transition-colors">+7 (908) 695-49-04</a>
             </div>
             <div className="flex items-center gap-2">
               <svg className="w-7 h-7 max-[480px]:w-6 max-[480px]:h-6 text-slate-400" width="804" height="481" viewBox="0 0 804 481" fill="none" xmlns="http://www.w3.org/2000/svg">

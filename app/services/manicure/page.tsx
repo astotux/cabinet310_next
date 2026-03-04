@@ -8,7 +8,7 @@ import structuredData from "./structured-data.json";
 
 export const metadata: Metadata = {
   title: "Маникюр в Сыктывкаре — Кабинет 310 | Гель-лак + укрепление от 1500₽",
-  description: "Маникюр в Сыктывкаре | Аппаратная обработка | Укрепление гелем | Гель-лак | Цена от 1500₽ | Стерильность 100% | Запись онлайн в Кабинет 310. Держится 2-3 недели!",
+  description: "Маникюр в Сыктывкаре | Аппаратная обработка | Укрепление гелем | Гель-лак | Цена от 1500₽ | Стерильность 100% | Запись онлайн в Кабинет 310. Держится 3-4 недели!",
   keywords: [
     "маникюр сыктывкар",
     "ногти сыктывкар",
@@ -52,7 +52,7 @@ export default function ManicurePage() {
         "name": "Как долго держится гель-лак?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "При правильном уходе гель-лак держится 2-3 недели. Срок носки зависит от скорости роста ногтей и соблюдения рекомендаций мастера."
+          "text": "При правильном уходе гель-лак держится 3-4 недели. Срок носки зависит от скорости роста ногтей и соблюдения рекомендаций мастера."
         }
       },
       {
@@ -76,7 +76,7 @@ export default function ManicurePage() {
         "name": "Как часто нужно обновлять маникюр?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Рекомендуется обновлять маникюр каждые 2-3 недели, когда гель-лак начинает отрастать. Это поддерживает ухоженный вид и здоровье ногтей."
+          "text": "Рекомендуется обновлять маникюр каждые 3-4 недели, когда гель-лак начинает отрастать. Это поддерживает ухоженный вид и здоровье ногтей."
         }
       }
     ]
@@ -84,11 +84,11 @@ export default function ManicurePage() {
 
   const portfolioPhotos = [
     { image: "/photo1.png", title: "Классический дизайн", description: "Элегантность и стиль" },
-    { image: "/photo2.png", title: "Френч", description: "Вечная классика" },
-    { image: "/photo3.png", title: "Яркий дизайн", description: "Смелые решения" },
-    { image: "/photo4.png", title: "Минимализм", description: "Сдержанная красота" },
-    { image: "/photo5.png", title: "Укрепление гелем", description: "Здоровые ногти" },
-    { image: "/photo6.png", title: "Нюдовый маникюр", description: "Естественная красота" }
+    { image: "/photo10.png", title: "Френч", description: "Вечная классика" },
+    { image: "/photo7.png", title: "Яркий дизайн", description: "Смелые решения" },
+    { image: "/photo16.png", title: "Минимализм", description: "Сдержанная красота" },
+    { image: "/photo17.png", title: "Укрепление гелем", description: "Здоровые ногти" },
+    { image: "/photo18.png", title: "Нюдовый маникюр", description: "Естественная красота" }
   ];
 
   const services = [
@@ -104,7 +104,7 @@ export default function ManicurePage() {
   const faqItems = [
     {
       question: "Как долго держится гель-лак?",
-      answer: "При правильном уходе гель-лак держится 2-3 недели. Срок носки зависит от скорости роста ногтей и соблюдения рекомендаций мастера.",
+      answer: "При правильном уходе гель-лак держится 3-4 недели. Срок носки зависит от скорости роста ногтей и соблюдения рекомендаций мастера.",
       icon: "schedule"
     },
     {
@@ -119,7 +119,7 @@ export default function ManicurePage() {
     },
     {
       question: "Как часто нужно обновлять маникюр?",
-      answer: "Рекомендуется обновлять маникюр каждые 2-3 недели, когда гель-лак начинает отрастать. Это поддерживает ухоженный вид и здоровье ногтей.",
+      answer: "Рекомендуется обновлять маникюр каждые 3-4 недели, когда гель-лак начинает отрастать. Это поддерживает ухоженный вид и здоровье ногтей.",
       icon: "tune"
     }
   ];
@@ -197,7 +197,7 @@ export default function ManicurePage() {
               </h1>
 
               <p className="text-lg sm:text-xl md:text-2xl font-light text-slate-600 leading-relaxed max-w-lg">
-                Профессиональный комплексный маникюр в Сыктывкаре. Аппаратная обработка кутикулы, укрепление ногтей гелем и покрытие гель-лак. Качественные материалы и опытные мастера.
+                Профессиональный комплексный маникюр в Сыктывкаре. Аппаратная обработка кутикулы, укрепление ногтей гелем и покрытие гель-лак.
               </p>
 
               <div className="flex flex-col sm:flex-row flex-wrap gap-3 md:gap-4 pt-2 md:pt-4">
@@ -218,15 +218,15 @@ export default function ManicurePage() {
                     <Image src="/photo1.png" alt="Маникюр" width={400} height={300} className="w-full h-full object-cover" />
                   </div>
                   <div className="bento-card h-44 md:h-56 lg:h-64 rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl">
-                    <Image src="/photo3.png" alt="Дизайн ногтей" width={400} height={500} className="w-full h-full object-cover" />
+                    <Image src="/photo10.png" alt="Дизайн ногтей" width={400} height={500} className="w-full h-full object-cover" />
                   </div>
                 </div>
                 <div className="space-y-3 md:space-y-4 pt-8 md:pt-12 floating-undi">
                   <div className="bento-card h-44 md:h-56 lg:h-64 rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl">
-                    <Image src="/photo4.png" alt="Результат маникюра" width={400} height={500} className="w-full h-full object-cover" />
+                    <Image src="/photo7.png" alt="Результат маникюра" width={400} height={500} className="w-full h-full object-cover" />
                   </div>
                   <div className="bento-card h-32 md:h-40 lg:h-48 rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl">
-                    <Image src="/photo2.png" alt="Кабинет мастера" width={400} height={300} className="w-full h-full object-cover" />
+                    <Image src="/photo5.png" alt="Кабинет мастера" width={400} height={300} className="w-full h-full object-cover" />
                   </div>
                 </div>
               </div>
@@ -259,14 +259,14 @@ export default function ManicurePage() {
                       <span className="material-symbols-outlined text-xl md:text-2xl">schedule</span>
                     </div>
                     <p className="text-xs text-slate-500 uppercase tracking-wider mb-1 max-[320px]:text-[9px]">Длительность</p>
-                    <p className="text-lg md:text-xl font-black">1.5 часа</p>
+                    <p className="text-lg md:text-xl font-black">1.5-2 часа</p>
                   </div>
                   <div className="glass rounded-2xl p-4 md:p-6">
                     <div className="size-10 md:size-12 rounded-xl bg-accent-pink/15 text-accent-pink flex items-center justify-center mb-3">
                       <span className="material-symbols-outlined text-xl md:text-2xl">event</span>
                     </div>
                     <p className="text-xs text-slate-500 uppercase tracking-wider mb-1 max-[320px]:text-[9px]">Носка</p>
-                    <p className="text-lg md:text-xl font-black">2-3 недели</p>
+                    <p className="text-lg md:text-xl font-black">3-4 недели</p>
                   </div>
                   <div className="glass rounded-2xl p-4 md:p-6 col-span-2">
                     <div className="size-10 md:size-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-3">
@@ -323,7 +323,7 @@ export default function ManicurePage() {
                     { icon: "cleaning_services", title: "Обработка кутикулы", desc: "Аккуратное удаление или отодвигание" },
                     { icon: "content_cut", title: "Коррекция формы", desc: "Придание желаемой формы ногтям" },
                     { icon: "spa", title: "Полировка", desc: "Выравнивание ногтевой пластины" },
-                    { icon: "brush", title: "Покрытие гель-лак", desc: "Стойкое покрытие на 2-3 недели" },
+                    { icon: "brush", title: "Покрытие гель-лак", desc: "Стойкое покрытие на 3-4 недели" },
                     { icon: "palette", title: "Дизайн", desc: "По желанию: френч, рисунки, декор" },
                     { icon: "self_improvement", title: "Уход за кожей рук", desc: "Увлажнение и массаж" }
                   ].map((item, idx) => (
@@ -350,7 +350,7 @@ export default function ManicurePage() {
                       </div>
                       <div>
                         <p className="font-bold mb-1">Премиальные гель-лаки</p>
-                        <p className="text-sm text-slate-600">CND, OPI, Luxio — стойкость и безопасность</p>
+                        <p className="text-sm text-slate-600">стойкость и безопасность</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
@@ -426,7 +426,7 @@ export default function ManicurePage() {
               <Image
                 alt="Мастер за работой в Кабинет 310"
                 className="rounded-2xl md:rounded-[2.5rem] relative z-10 w-full object-cover aspect-[4/5]"
-                src="/photo5.png"
+                src="/photo9.png"
                 width={600}
                 height={750}
               />
@@ -447,7 +447,7 @@ export default function ManicurePage() {
                   </div>
                   <div>
                     <h3 className="font-black text-base md:text-lg mb-1 md:mb-2">Премиальные материалы</h3>
-                    <p className="text-sm md:text-base text-slate-600">Работаем только с люксовыми брендами гель-лаков: CND, OPI, Luxio</p>
+                    <p className="text-sm md:text-base text-slate-600">Работаем только с люксовыми брендами гель-лаков</p>
                   </div>
                 </div>
                 <div className="flex gap-4 md:gap-6 items-start group">
@@ -530,9 +530,9 @@ export default function ManicurePage() {
                   Записаться на маникюр
                   <span className="material-symbols-outlined">arrow_forward</span>
                 </Link>
-                <Link href="/contacts" className="bg-white/10 backdrop-blur-md text-white border border-white/20 px-10 md:px-12 py-4 md:py-5 rounded-xl md:rounded-2xl font-bold text-lg hover:bg-white/20 transition-all">
+                <a href="https://vk.com/cabinet_310" className="bg-white/10 backdrop-blur-md text-white border border-white/20 px-10 md:px-12 py-4 md:py-5 rounded-xl md:rounded-2xl font-bold text-lg hover:bg-white/20 transition-all">
                   Задать вопрос
-                </Link>
+                </a>
               </div>
               <div className="flex items-center justify-center max-[480px]:flex-col gap-8 pt-6 text-white/80">
                 <div className="text-center">
@@ -544,7 +544,7 @@ export default function ManicurePage() {
                   <p className="text-sm">Длительность</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-2xl font-black text-white">2-3 недели</p>
+                  <p className="text-2xl font-black text-white">3-4 недели</p>
                   <p className="text-sm">Держится покрытие</p>
                 </div>
               </div>

@@ -82,12 +82,12 @@ export default function PermanentLipsPage() {
   };
 
   const portfolioPhotos = [
-    { image: "/photo1.png", title: "Натуральный оттенок", description: "Естественный цвет губ" },
-    { image: "/photo2.png", title: "Идеальный контур", description: "Четкая форма губ" },
-    { image: "/photo3.png", title: "Акварельная техника", description: "Мягкая растушевка" },
-    { image: "/photo4.png", title: "Коррекция формы", description: "Индивидуальный подход" },
-    { image: "/photo5.png", title: "Стойкий результат", description: "Красота на годы" },
-    { image: "/photo6.png", title: "Профессиональная работа", description: "Опыт и мастерство" }
+    { image: "/photo2.png", title: "Натуральный оттенок", description: "Естественный цвет губ" },
+    { image: "/photo22.png", title: "Идеальный контур", description: "Четкая форма губ" },
+    { image: "/photo19.png", title: "Акварельная техника", description: "Мягкая растушевка" },
+    { image: "/photo21.png", title: "Коррекция формы", description: "Индивидуальный подход" },
+    { image: "/photo24.png", title: "Стойкий результат", description: "Красота на годы" },
+    { image: "/photo23.png", title: "Готовая работа", description: "Опыт и мастерство" }
   ];
 
   const faqItems = [
@@ -108,7 +108,7 @@ export default function PermanentLipsPage() {
     },
     {
       question: "Какие противопоказания к процедуре?",
-      answer: "Беременность, лактация, герпес в активной фазе, острые воспалительные процессы, прием антикоагулянтов. Подробную консультацию проводит мастер.",
+      answer: "Беременность, лактация, герпес в активной фазе, острые воспалительные процессы, прием антикоагулянтов, онкологические заболевания. Подробную консультацию проводит мастер.",
       icon: "warning"
     }
   ];
@@ -186,7 +186,7 @@ export default function PermanentLipsPage() {
               </h1>
 
               <p className="text-lg sm:text-xl md:text-2xl font-light text-slate-600 leading-relaxed max-w-lg">
-                Профессиональный перманентный макияж губ в Сыктывкаре. Акварельная техника для естественного результата от опытных мастеров.
+                Профессиональный перманентный макияж губ в Сыктывкаре. Акварельная техника для естественного результата.
               </p>
 
               <div className="flex flex-col sm:flex-row flex-wrap gap-3 md:gap-4 pt-2 md:pt-4">
@@ -204,18 +204,18 @@ export default function PermanentLipsPage() {
               <div className="absolute inset-0 grid grid-cols-2 gap-3 md:gap-4">
                 <div className="space-y-3 md:space-y-4 floating">
                   <div className="bento-card h-32 md:h-40 lg:h-48 rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl">
-                    <Image src="/photo1.png" alt="Перманент губ" width={400} height={300} className="w-full h-full object-cover" />
+                    <Image src="/photo2.png" alt="Перманент губ" width={400} height={300} className="w-full h-full object-cover" />
                   </div>
                   <div className="bento-card h-44 md:h-56 lg:h-64 rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl">
-                    <Image src="/photo3.png" alt="Акварельные губы" width={400} height={500} className="w-full h-full object-cover" />
+                    <Image src="/photo19.png" alt="Акварельные губы" width={400} height={500} className="w-full h-full object-cover" />
                   </div>
                 </div>
                 <div className="space-y-3 md:space-y-4 pt-8 md:pt-12 floating-undi">
                   <div className="bento-card h-44 md:h-56 lg:h-64 rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl">
-                    <Image src="/photo4.png" alt="Результат перманента губ" width={400} height={500} className="w-full h-full object-cover" />
+                    <Image src="/photo20.png" alt="Результат перманента губ" width={400} height={500} className="w-full h-full object-cover" />
                   </div>
                   <div className="bento-card h-32 md:h-40 lg:h-48 rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl">
-                    <Image src="/photo2.png" alt="Кабинет мастера" width={400} height={300} className="w-full h-full object-cover" />
+                    <Image src="/photo24.png" alt="Кабинет мастера" width={400} height={300} className="w-full h-full object-cover" />
                   </div>
                 </div>
               </div>
@@ -255,7 +255,7 @@ export default function PermanentLipsPage() {
                       <span className="material-symbols-outlined text-xl md:text-2xl">healing</span>
                     </div>
                     <p className="text-xs text-slate-500 uppercase tracking-wider mb-1 max-[320px]:text-[9px]">Заживление</p>
-                    <p className="text-lg md:text-xl font-black">7-10 дней</p>
+                    <p className="text-lg md:text-xl font-black">15-20 дней</p>
                   </div>
                   <div className="glass rounded-2xl p-4 md:p-6">
                     <div className="size-10 md:size-12 rounded-xl bg-accent-purple/15 text-accent-purple flex items-center justify-center mb-3">
@@ -405,7 +405,7 @@ export default function PermanentLipsPage() {
               <Image
                 alt="Мастер за работой в Кабинет 310"
                 className="rounded-2xl md:rounded-[2.5rem] relative z-10 w-full object-cover aspect-[4/5]"
-                src="/photo5.png"
+                src="/photo25.png"
                 width={600}
                 height={750}
               />
@@ -509,9 +509,9 @@ export default function PermanentLipsPage() {
                   Записаться на губы
                   <span className="material-symbols-outlined">arrow_forward</span>
                 </Link>
-                <Link href="/contacts" className="bg-white/10 backdrop-blur-md text-white border border-white/20 px-10 md:px-12 py-4 md:py-5 rounded-xl md:rounded-2xl font-bold text-lg hover:bg-white/20 transition-all">
+                <a href="https://vk.com/cabinet_310" className="bg-white/10 backdrop-blur-md text-white border border-white/20 px-10 md:px-12 py-4 md:py-5 rounded-xl md:rounded-2xl font-bold text-lg hover:bg-white/20 transition-all">
                   Задать вопрос
-                </Link>
+                </a>
               </div>
               <div className="flex items-center justify-center max-[480px]:flex-col gap-8 pt-6 text-white/80">
                 <div className="text-center">

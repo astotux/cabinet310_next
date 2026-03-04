@@ -107,7 +107,7 @@ export default function PrivacyPage() {
                 <ul className="list-disc pl-6 space-y-2">
                   <li>Получать информацию о наличии и содержании ваших персональных данных</li>
                   <li>Требовать уточнения, обновления или удаления ваших персональных данных</li>
-                  <li>Отозвать согласие на обработку персональных данных</li>
+                  <li>Отозвать согласие на обработку персональных данных, направив письмо по электронной почте: suhanova.eug@yandex.ru</li>
                   <li>Обжаловать действия или бездействие Оператора в уполномоченный орган по защите прав субъектов персональных данных</li>
                 </ul>
                 <p className="mt-4">
@@ -149,13 +149,12 @@ export default function PrivacyPage() {
                 </p>
                 <ul className="list-none space-y-2">
                   <li>По телефону, указанному на странице <a href="/contacts" className="text-primary hover:underline">Контакты</a></li>
-                  <li>Через форму обратной связи на сайте</li>
                 </ul>
               </section>
 
               <section className="pt-8 border-t border-slate-200">
                 <p className="text-sm text-slate-500">
-                  Дата последнего обновления: {new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  Дата последнего обновления: 4 марта 2026 г.
                 </p>
               </section>
             </div>

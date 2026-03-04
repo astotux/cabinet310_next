@@ -81,22 +81,22 @@ export default function EyelinerPage() {
   };
 
   const portfolioPhotos = [
-    { image: "/photo1.png", title: "Естественная межресничка", description: "Деликатное подчеркивание" },
-    { image: "/photo2.png", title: "Выразительный взгляд", description: "Идеальная линия" },
+    { image: "/photo41.png", title: "Естественная межресничка", description: "Деликатное подчеркивание" },
+    { image: "/photo37.png", title: "Выразительный взгляд", description: "Идеальная линия" },
     { image: "/photo3.png", title: "Классическая стрелка", description: "Элегантность и стиль" },
-    { image: "/photo4.png", title: "Тонкая работа", description: "Профессиональное исполнение" },
-    { image: "/photo5.png", title: "Стойкий результат", description: "Красота на годы" },
-    { image: "/photo6.png", title: "Индивидуальный подход", description: "Учет особенностей глаз" }
+    { image: "/photo40.png", title: "Тонкая работа", description: "Профессиональное исполнение" },
+    { image: "/photo27.png", title: "Стойкий результат", description: "Красота на годы" },
+    { image: "/photo39.png", title: "Индивидуальный подход", description: "Учет особенностей глаз" }
   ];
 
   const faqItems = [
     {
-      question: "Больно ли делать перманентный макияж межресничка?",
+      question: "Больно ли делать перманентный макияж межреснички?",
       answer: "Веки — чувствительная зона, но мы используем качественную анестезию. Процедура проходит комфортно, большинство клиентов отмечают терпимые ощущения.",
       icon: "healing"
     },
     {
-      question: "Сколько держится перманентный макияж межресничка?",
+      question: "Сколько держится перманентный макияж межреснички?",
       answer: "В зависимости от индивидуальных особенностей кожи — от 1 до 2 лет. Жирная кожа век требует более частого обновления.",
       icon: "schedule"
     },
@@ -107,7 +107,7 @@ export default function EyelinerPage() {
     },
     {
       question: "Какие противопоказания к процедуре?",
-      answer: "Беременность, лактация, конъюнктивит, воспалительные заболевания глаз, прием антикоагулянтов. Подробную консультацию проводит мастер.",
+      answer: "Беременность, лактация, конъюнктивит, воспалительные заболевания глаз, прием антикоагулянтов, онкологические заболевания. Подробную консультацию проводит мастер.",
       icon: "warning"
     }
   ];
@@ -185,7 +185,7 @@ export default function EyelinerPage() {
               </h1>
 
               <p className="text-lg sm:text-xl md:text-2xl font-light text-slate-600 leading-relaxed max-w-lg">
-                Профессиональный перманентный макияж межресничка в Сыктывкаре. Естественное подчеркивание линии роста ресниц от опытных мастеров.
+                Профессиональный перманентный макияж межресничка в Сыктывкаре. Естественное подчеркивание линии роста ресниц.
               </p>
 
               <div className="flex flex-col sm:flex-row flex-wrap gap-3 md:gap-4 pt-2 md:pt-4">
@@ -203,7 +203,7 @@ export default function EyelinerPage() {
               <div className="absolute inset-0 grid grid-cols-2 gap-3 md:gap-4">
                 <div className="space-y-3 md:space-y-4 floating">
                   <div className="bento-card h-32 md:h-40 lg:h-48 rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl">
-                    <Image src="/photo1.png" alt="Межресничка" width={400} height={300} className="w-full h-full object-cover" />
+                    <Image src="/photo39.png" alt="Межресничка" width={400} height={300} className="w-full h-full object-cover" />
                   </div>
                   <div className="bento-card h-44 md:h-56 lg:h-64 rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl">
                     <Image src="/photo3.png" alt="Перманентная стрелка" width={400} height={500} className="w-full h-full object-cover" />
@@ -211,10 +211,10 @@ export default function EyelinerPage() {
                 </div>
                 <div className="space-y-3 md:space-y-4 pt-8 md:pt-12 floating-undi">
                   <div className="bento-card h-44 md:h-56 lg:h-64 rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl">
-                    <Image src="/photo4.png" alt="Результат межреснички" width={400} height={500} className="w-full h-full object-cover" />
+                    <Image src="/photo27.png" alt="Результат межреснички" width={400} height={500} className="w-full h-full object-cover" />
                   </div>
                   <div className="bento-card h-32 md:h-40 lg:h-48 rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl">
-                    <Image src="/photo2.png" alt="Кабинет мастера" width={400} height={300} className="w-full h-full object-cover" />
+                    <Image src="/photo40.png" alt="Кабинет мастера" width={400} height={300} className="w-full h-full object-cover" />
                   </div>
                 </div>
               </div>
@@ -371,7 +371,7 @@ export default function EyelinerPage() {
               Наши работы
             </div>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-black">Портфолио</h2>
-            <p className="text-slate-500 max-w-2xl mx-auto text-base md:text-lg px-4">Примеры наших работ по перманентному макияжу межресничка</p>
+            <p className="text-slate-500 max-w-2xl mx-auto text-base md:text-lg px-4">Примеры наших работ по перманентному макияжу межреснички</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
@@ -404,7 +404,7 @@ export default function EyelinerPage() {
               <Image
                 alt="Мастер за работой в Кабинет 310"
                 className="rounded-2xl md:rounded-[2.5rem] relative z-10 w-full object-cover aspect-[4/5]"
-                src="/photo5.png"
+                src="/photo27.png"
                 width={600}
                 height={750}
               />
@@ -508,9 +508,9 @@ export default function EyelinerPage() {
                   Записаться на межресничку
                   <span className="material-symbols-outlined">arrow_forward</span>
                 </Link>
-                <Link href="/contacts" className="bg-white/10 backdrop-blur-md text-white border border-white/20 px-10 md:px-12 py-4 md:py-5 rounded-xl md:rounded-2xl font-bold text-lg hover:bg-white/20 transition-all">
+                <a href="https://vk.com/cabinet_310" className="bg-white/10 backdrop-blur-md text-white border border-white/20 px-10 md:px-12 py-4 md:py-5 rounded-xl md:rounded-2xl font-bold text-lg hover:bg-white/20 transition-all">
                   Задать вопрос
-                </Link>
+                </a>
               </div>
               <div className="flex items-center justify-center max-[480px]:flex-col gap-8 pt-6 text-white/80">
                 <div className="text-center">

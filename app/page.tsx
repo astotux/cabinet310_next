@@ -251,7 +251,7 @@ export default function Home() {
                 <Image
                   alt="Сервис в студии Cabinet 310"
                   className="rounded-2xl md:rounded-[2.5rem] relative z-10 w-full object-cover aspect-[4/5]"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbP5eqjUkfFVfIH8HFT1kh5hhEQTlJ3PRPBbLYXlyRu8ZdO2Ee2jpZ0Bi5pWllFY2zrpra9G6p3yAt59h8WvJLxmWnO9dWTullMcWFxos6JpWSWRUqGYWM_c1s4fo6stJ-IKDAJvf6Mnt-qOo6oKjYH2O_7KJCZZutaTg4IehYKV32vHLlyjxpdlBA4_5G3t3-BC9YNVusFBdxTz-8l2H_Az5Zs3ak40bxVP7iF9AMaEynjIJz_lBvYT3g0lBybHAtIqGfN7T3wbc"
+                  src="/photo15.png"
                   width={600}
                   height={750}
                 />

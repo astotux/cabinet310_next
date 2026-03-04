@@ -185,10 +185,6 @@ export default function ReviewsPage() {
 
       <main className="max-w-7xl mx-auto w-full px-6 max-[480px]:px-4 max-[320px]:px-3 py-12 max-[480px]:py-8 max-[320px]:py-6 max-[767px]:pb-32">
         <section className="mb-16 max-[480px]:mb-12 max-[320px]:mb-10 relative rounded-3xl overflow-hidden min-h-[400px] flex flex-col items-center justify-center text-center p-8 max-[480px]:p-6 max-[320px]:p-5 bg-slate-900">
-          <div
-            className="absolute inset-0 opacity-40 bg-center bg-cover"
-            style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBuFC3sfNL9nkEvXHoOc6khcMlyJxnd3Q4IaL1VTFJ2V--cLdbbn_12JWZAIKsk-U96_hdVB-3C4gfu_JUChPm16au1hENg_XQtfFFYY9tgbjzKErBMmLzXAiJjcagEuyDue9rV1nf99Zo8v707-m8K6Cgme-Ty6GJBz8evE70t2QtkJG2r2BABHn6XV_QCBIjKyJxRTL3Acl4devfIoRWBnxjTNWMgYG6pmTd3tcn7pGa0Ey_eJFPYiCxK02UYYQV7RiHHZX9cNO4')" }}
-          />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent" />
 
           <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
