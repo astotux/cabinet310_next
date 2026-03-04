@@ -1,11 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
 export default function Header() {
   const [isMenuVisible, setIsMenuVisible] = useState(true);
+
+  // Загружаем состояние меню из localStorage при монтировании
+  useEffect(() => {
+    const savedState = localStorage.getItem('mobileMenuVisible');
+    if (savedState !== null) {
+      setIsMenuVisible(savedState === 'true');
+    }
+  }, []);
+
+  // Сохраняем состояние меню в localStorage при изменении
+  const toggleMenu = () => {
+    const newState = !isMenuVisible;
+    setIsMenuVisible(newState);
+    localStorage.setItem('mobileMenuVisible', String(newState));
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full">
@@ -50,7 +65,7 @@ export default function Header() {
           </Link>
         </div>
         <button
-          onClick={() => setIsMenuVisible(!isMenuVisible)}
+          onClick={toggleMenu}
           className="glass rounded-xl p-2 flex items-center justify-center hover:bg-white/80 transition-colors"
           aria-label={isMenuVisible ? "Скрыть меню" : "Показать меню"}
         >

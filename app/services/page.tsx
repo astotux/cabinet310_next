@@ -115,8 +115,8 @@ export default function ServicesPage() {
                 Записаться сейчас
                 <span className="material-symbols-outlined">arrow_forward</span>
               </Link>
-              <Link href="/contacts" className="glass px-8 md:px-10 py-4 md:py-5 rounded-xl md:rounded-2xl font-bold text-base md:text-lg hover:bg-white/80 transition-all text-center">
-                Задать вопрос
+              <Link href="https://vk.com/cabinet_310" className="glass px-8 md:px-10 py-4 md:py-5 rounded-xl md:rounded-2xl font-bold text-base md:text-lg hover:bg-white/80 transition-all text-center">
+                Задать вопрос в ВК
               </Link>
             </div>
           </div>
@@ -182,19 +182,19 @@ export default function ServicesPage() {
                 Запись открыта
               </div>
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white leading-tight">
-                Не знаете, что выбрать?
+                Кабинет 310
               </h2>
               <p className="text-slate-200 text-lg md:text-xl leading-relaxed max-w-2xl mx-auto">
-                Запишитесь на бесплатную консультацию, и наши мастера помогут подобрать идеальные процедуры именно для вас.
+                Территория, где искусство встречается с красотой. Перманентный макияж бровей, губ и межреснички, маникюр, ламинирование ресниц в Сыктывкаре.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
                 <Link href="/booking" className="gradient-animated px-10 md:px-12 py-4 md:py-5 rounded-xl md:rounded-2xl text-white font-bold text-lg flex items-center justify-center gap-3 shadow-2xl hover:scale-105 transition-transform max-[480px]:text-base">
-                  Записаться на консультацию
+                  Записаться
                   <span className="material-symbols-outlined">arrow_forward</span>
                 </Link>
-                <Link href="/contacts" className="bg-white/10 backdrop-blur-md text-white border border-white/20 px-10 md:px-12 py-4 md:py-5 rounded-xl md:rounded-2xl font-bold text-lg hover:bg-white/20 transition-all max-[480px]:text-base">
-                  Задать вопрос
-                </Link>
+                <a href="https://vk.com/cabinet_310" className="bg-white/10 backdrop-blur-md text-white border border-white/20 px-10 md:px-12 py-4 md:py-5 rounded-xl md:rounded-2xl font-bold text-lg hover:bg-white/20 transition-all max-[480px]:text-base">
+                  Задать вопрос в ВК
+                </a>
               </div>
             </div>
           </div>

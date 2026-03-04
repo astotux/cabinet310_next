@@ -41,6 +41,12 @@ export default function BookingPage() {
 
   useEffect(() => {
     fetchServices();
+    
+    // Загружаем состояние меню из localStorage
+    const savedState = localStorage.getItem('mobileMenuVisible');
+    if (savedState !== null) {
+      setIsMenuVisible(savedState === 'true');
+    }
   }, []);
 
   // Проверка существующей записи из куки после загрузки услуг
@@ -119,6 +125,13 @@ export default function BookingPage() {
       return () => clearInterval(checkInterval);
     }
   }, [bookingSuccess]);
+
+  // Функция для переключения меню с сохранением в localStorage
+  const toggleMenu = () => {
+    const newState = !isMenuVisible;
+    setIsMenuVisible(newState);
+    localStorage.setItem('mobileMenuVisible', String(newState));
+  };
 
   const fetchServices = async () => {
     try {
@@ -281,7 +294,7 @@ export default function BookingPage() {
           </div>
 
           <button
-            onClick={() => setIsMenuVisible(!isMenuVisible)}
+            onClick={toggleMenu}
             className="glass rounded-xl p-2 flex items-center justify-center hover:bg-white/80 transition-colors"
             aria-label={isMenuVisible ? "Скрыть меню" : "Показать меню"}
           >
