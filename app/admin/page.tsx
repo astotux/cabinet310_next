@@ -45,6 +45,7 @@ export default function AdminPage() {
     image: "",
   });
   const [uploading, setUploading] = useState(false);
+  const [isUnauthorized, setIsUnauthorized] = useState(false);
   
   // Состояние для модального окна записи
   const [showBookingModal, setShowBookingModal] = useState(false);
@@ -236,7 +237,7 @@ export default function AdminPage() {
   useEffect(() => {
     const token = localStorage.getItem("adminToken");
     if (!token) {
-      router.push("/admin/login");
+      setIsUnauthorized(true);
       return;
     }
     
@@ -401,7 +402,7 @@ export default function AdminPage() {
   const handleLogout = async () => {
     await fetch('/api/admin/logout', { method: 'POST' });
     localStorage.removeItem("adminToken");
-    window.location.href = "/admin/login";
+    window.location.href = "/admin/secure-entry";
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1043,6 +1044,23 @@ export default function AdminPage() {
     };
     return date.toLocaleDateString('ru-RU', options);
   };
+
+  // Показываем 404 для неавторизованных пользователей
+  if (isUnauthorized) {
+    return (
+      <div className="font-display bg-background-light text-slate-900 min-h-screen overflow-x-hidden flex items-center justify-center p-6">
+        <div className="text-center space-y-6 max-w-md">
+          <div className="text-9xl font-black text-gradient">404</div>
+          <h1 className="text-3xl font-black">Страница не найдена</h1>
+          <p className="text-slate-600">Запрашиваемая страница не существует или была удалена.</p>
+          <Link href="/" className="inline-flex items-center gap-2 gradient-animated px-8 py-4 rounded-xl text-white font-bold shadow-xl hover:scale-105 transition-transform">
+            <span className="material-symbols-outlined">home</span>
+            На главную
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="font-display bg-background-light text-slate-900 min-h-screen overflow-x-hidden">
