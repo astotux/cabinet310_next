@@ -5,6 +5,7 @@ import { IMaskInput } from 'react-imask';
 import Footer from "@/components/Footer";
 import BookingCalendar from "./components/BookingCalendar";
 import Cookies from 'js-cookie';
+import Link from "next/link";
 
 interface Service {
   id: number;
@@ -25,6 +26,7 @@ export default function BookingPage() {
   const [selectedServices, setSelectedServices] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
   const [step, setStep] = useState<BookingStep>(1);
+  const [isMenuVisible, setIsMenuVisible] = useState(true);
   
   // Данные бронирования
   const [selectedDate, setSelectedDate] = useState<string>("");
@@ -265,28 +267,48 @@ export default function BookingPage() {
           </div>
         </div>
 
-        <div className="md:hidden p-3 w-full flex justify-center">
+        <div className="md:hidden p-3 w-full flex justify-between items-center">
+          
+          <div className="w-10"></div>
+          
           <div className="glass rounded-2xl px-4 py-3 inline-flex items-center justify-center">
             <a href="/">
               <img src="/logo.svg" className="w-24" alt="Logo" />
             </a>
           </div>
+
+          <button
+            onClick={() => setIsMenuVisible(!isMenuVisible)}
+            className="glass rounded-xl p-2 flex items-center justify-center hover:bg-white/80 transition-colors"
+            aria-label={isMenuVisible ? "Скрыть меню" : "Показать меню"}
+          >
+            <span className="material-symbols-outlined text-xl text-primary">
+              {isMenuVisible ? "expand_more" : "expand_less"}
+            </span>
+          </button>
+
         </div>
 
-        <div className="md:hidden fixed bottom-0 left-0 right-0 z-50">
+        <div className={`md:hidden fixed bottom-0 left-0 right-0 z-50 transition-transform duration-300 ${
+          isMenuVisible ? 'translate-y-0' : 'translate-y-full'
+        }`}>
           <nav className="glass rounded-2xl px-4 py-3 flex items-center justify-around m-3">
-            <a className="flex flex-col items-center gap-1 text-xs font-semibold hover:text-primary transition-colors" href="/reviews">
-              <span className="material-symbols-outlined text-xl">star</span>
-              <span>Отзывы</span>
-            </a>
-            <a className="flex flex-col items-center gap-1 text-xs font-semibold hover:text-primary transition-colors" href="/">
+            <Link className="flex flex-col items-center gap-1 text-xs font-semibold hover:text-primary transition-colors" href="/">
               <span className="material-symbols-outlined text-xl">home</span>
               <span>Главная</span>
-            </a>
-            <a className="flex flex-col items-center gap-1 text-xs font-semibold hover:text-primary transition-colors" href="/contacts">
+            </Link>
+            <Link className="flex flex-col items-center gap-1 text-xs font-semibold hover:text-primary transition-colors" href="/services">
+              <span className="material-symbols-outlined text-xl">spa</span>
+              <span>Услуги</span>
+            </Link>
+            <Link className="flex flex-col items-center gap-1 text-xs font-semibold hover:text-primary transition-colors" href="/reviews">
+              <span className="material-symbols-outlined text-xl">star</span>
+              <span>Отзывы</span>
+            </Link>
+            <Link className="flex flex-col items-center gap-1 text-xs font-semibold hover:text-primary transition-colors" href="/contacts">
               <span className="material-symbols-outlined text-xl">account_box</span>
               <span>Контакты</span>
-            </a>
+            </Link>
           </nav>
         </div>
       </header>
@@ -353,13 +375,13 @@ export default function BookingPage() {
 
                 {/* Кнопка на главную */}
                 <div className="flex gap-4 max-[480px]:flex-col">
-                  <a
+                  <Link
                     href="/"
                     className="inline-flex items-center justify-center gap-3 gradient-bg px-10 max-[480px]:px-8 py-4 max-[480px]:py-3.5 rounded-2xl text-white font-bold text-lg max-[480px]:text-base shadow-xl shadow-primary/30 hover:scale-[1.02] transition-transform"
                   >
                     <span className="material-symbols-outlined">home</span>
                     Вернуться на главную
-                  </a>
+                  </Link>
                   <button
                     onClick={() => {
                       Cookies.remove('activeBooking');
@@ -712,13 +734,13 @@ export default function BookingPage() {
                       />
                       <label htmlFor="privacy-consent" className="text-xs text-slate-500 cursor-pointer leading-relaxed">
                         Я согласен(на) на{" "}
-                        <a 
+                        <Link 
                           href="/privacy" 
                           target="_blank"
                           className="text-primary hover:underline"
                         >
                           обработку персональных данных
-                        </a>
+                        </Link>
                       </label>
                     </div>
                   </form>
