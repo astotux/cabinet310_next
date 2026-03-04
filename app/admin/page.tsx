@@ -89,15 +89,14 @@ export default function AdminPage() {
   const [statsViewMode, setStatsViewMode] = useState<'bookings' | 'revenue'>('bookings');
   const [statsMasterFilter, setStatsMasterFilter] = useState<'all' | 'Лиза' | 'Женя'>('all');
   
+  // Фильтр для экспорта записей
+  const [exportMasterFilter, setExportMasterFilter] = useState<'all' | 'Лиза' | 'Женя'>('all');
+  
   const router = useRouter();
   
   // Состояние для календаря
   const [viewMode, setViewMode] = useState<'day' | 'week' | 'month'>('day');
-  const [currentDate, setCurrentDate] = useState(() => {
-    const now = new Date();
-    // Создаем дату в полдень, чтобы избежать проблем с часовыми поясами
-    return new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12, 0, 0);
-  });
+  const [currentDate, setCurrentDate] = useState<Date | null>(null);
   
   // Функция для форматирования даты
   const formatDate = (date: Date): string => {
@@ -146,6 +145,7 @@ export default function AdminPage() {
   
   // Навигация по календарю
   const navigatePrevious = () => {
+    if (!currentDate) return;
     const newDate = new Date(currentDate);
     if (viewMode === 'day') {
       newDate.setDate(newDate.getDate() - 1);
@@ -158,6 +158,7 @@ export default function AdminPage() {
   };
   
   const navigateNext = () => {
+    if (!currentDate) return;
     const newDate = new Date(currentDate);
     if (viewMode === 'day') {
       newDate.setDate(newDate.getDate() + 1);
@@ -178,6 +179,8 @@ export default function AdminPage() {
   
   // Фильтрация записей по текущей дате/неделе/месяцу
   const getFilteredBookings = () => {
+    if (!currentDate) return [];
+    
     if (viewMode === 'day') {
       // Форматируем дату вручную, избегая проблем с часовыми поясами
       const year = currentDate.getFullYear();
@@ -236,6 +239,14 @@ export default function AdminPage() {
       router.push("/admin/login");
       return;
     }
+    
+    // Инициализируем currentDate на клиенте
+    if (!currentDate) {
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12, 0, 0);
+      setCurrentDate(today);
+    }
+    
     fetchData();
   }, []);
 
@@ -851,14 +862,20 @@ export default function AdminPage() {
       const currentYear = now.getFullYear();
 
       // Фильтруем записи за текущий месяц
-      const monthBookings = bookings.filter(booking => {
+      let monthBookings = bookings.filter(booking => {
         // Парсим дату как локальную
         const [year, month] = booking.date.split('-').map(Number);
         return month - 1 === currentMonth && year === currentYear;
       });
 
+      // Применяем фильтр по мастеру
+      if (exportMasterFilter !== 'all') {
+        monthBookings = monthBookings.filter(booking => booking.master === exportMasterFilter);
+      }
+
       if (monthBookings.length === 0) {
-        alert('Нет записей за текущий месяц');
+        const masterText = exportMasterFilter === 'all' ? '' : ` (${exportMasterFilter})`;
+        alert(`Нет записей за текущий месяц${masterText}`);
         return;
       }
 
@@ -916,13 +933,14 @@ export default function AdminPage() {
       ];
 
       // Определяем документ
+      const masterFilterText = exportMasterFilter === 'all' ? '' : ` (${exportMasterFilter})`;
       const docDefinition: any = {
         pageSize: 'A4',
         pageOrientation: 'landscape',
         pageMargins: [40, 60, 40, 60],
         content: [
           {
-            text: `Записи за ${monthNames[currentMonth]} ${currentYear}`,
+            text: `Записи за ${monthNames[currentMonth]} ${currentYear}${masterFilterText}`,
             style: 'header',
             alignment: 'center',
             margin: [0, 0, 0, 10]
@@ -1004,7 +1022,8 @@ export default function AdminPage() {
       };
 
       // Создаем и скачиваем PDF
-      const fileName = `записи_${monthNames[currentMonth]}_${currentYear}.pdf`;
+      const masterSuffix = exportMasterFilter === 'all' ? '' : `_${exportMasterFilter}`;
+      const fileName = `записи_${monthNames[currentMonth]}_${currentYear}${masterSuffix}.pdf`;
       (pdfMake as any).createPdf(docDefinition).download(fileName);
 
     } catch (error) {
@@ -1194,7 +1213,7 @@ export default function AdminPage() {
                     <span className="material-symbols-outlined max-[480px]:text-lg">chevron_left</span>
                   </button>
                   <h3 className="text-lg max-[480px]:text-sm font-bold min-w-[200px] max-[480px]:min-w-[150px] text-center">
-                    {viewMode === 'day' ? formatDate(currentDate) : viewMode === 'week' ? formatWeekRange(currentDate) : formatMonth(currentDate)}
+                    {currentDate ? (viewMode === 'day' ? formatDate(currentDate) : viewMode === 'week' ? formatWeekRange(currentDate) : formatMonth(currentDate)) : '...'}
                   </h3>
                   <button 
                     onClick={navigateNext}
@@ -1290,14 +1309,57 @@ export default function AdminPage() {
 
                 <button 
                   onClick={handleExportPDF}
-                  className="w-full p-4 max-[480px]:p-3 rounded-2xl bg-white/60 border border-slate-200/60 hover:border-primary transition-colors flex items-center gap-3"
+                  className="w-full p-4 max-[480px]:p-3 rounded-2xl bg-white/60 border border-slate-200/60 hover:border-primary transition-colors"
                 >
-                  <div className="size-10 max-[480px]:size-9 rounded-xl bg-accent-purple/20 text-accent-purple flex items-center justify-center">
-                    <span className="material-symbols-outlined max-[480px]:text-lg">download</span>
+                  <div className="flex items-center gap-3">
+                    <div className="size-10 max-[480px]:size-9 rounded-xl bg-accent-purple/20 text-accent-purple flex items-center justify-center">
+                      <span className="material-symbols-outlined max-[480px]:text-lg">download</span>
+                    </div>
+                    <div className="text-left flex-1">
+                      <p className="font-bold text-sm max-[480px]:text-xs">Экспорт записей</p>
+                      <p className="text-xs max-[480px]:text-[10px] text-slate-500">За текущий месяц</p>
+                    </div>
                   </div>
-                  <div className="text-left flex-1">
-                    <p className="font-bold text-sm max-[480px]:text-xs">Экспорт записей</p>
-                    <p className="text-xs max-[480px]:text-[10px] text-slate-500">За текущий месяц</p>
+                  <div className="flex gap-1 bg-slate-50 rounded-lg p-1 mt-3">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setExportMasterFilter('all');
+                      }}
+                      className={`flex-1 px-3 py-1.5 rounded text-xs font-semibold transition-all ${
+                        exportMasterFilter === 'all'
+                          ? 'bg-gradient-to-r from-accent-pink to-accent-purple text-white'
+                          : 'text-slate-400 hover:text-slate-600'
+                      }`}
+                    >
+                      Все
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setExportMasterFilter('Лиза');
+                      }}
+                      className={`flex-1 px-3 py-1.5 rounded text-xs font-semibold transition-all ${
+                        exportMasterFilter === 'Лиза'
+                          ? 'bg-gradient-to-r from-accent-pink to-accent-purple text-white'
+                          : 'text-slate-400 hover:text-slate-600'
+                      }`}
+                    >
+                      Лиза
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setExportMasterFilter('Женя');
+                      }}
+                      className={`flex-1 px-3 py-1.5 rounded text-xs font-semibold transition-all ${
+                        exportMasterFilter === 'Женя'
+                          ? 'bg-gradient-to-r from-accent-pink to-accent-purple text-white'
+                          : 'text-slate-400 hover:text-slate-600'
+                      }`}
+                    >
+                      Женя
+                    </button>
                   </div>
                 </button>
               </div>
