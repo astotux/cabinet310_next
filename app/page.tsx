@@ -17,6 +17,37 @@ export default function Home() {
         <div className="absolute top-[3700px] right-[12%] size-[500px] bg-accent-purple/50 blur-[105px] rounded-full -z-10"></div>
         <div className="absolute top-[4200px] left-[8%] size-[400px] bg-accent-pink/70 blur-[105px] rounded-full -z-10"></div>
         <div className="absolute top-[4900px] right-[5%] size-[380px] bg-accent-purple/50 blur-[105px] rounded-full -z-10"></div>
+        
+        {/* Декоративные линии */}
+        <Image src="/line.png" alt="" width={800} height={400} className="absolute top-[100px] left-[-10%] w-[600px] md:w-[800px] opacity-30 -z-20 max-md:w-[400px]" />
+        <Image src="/line.png" alt="" width={800} height={400} className="absolute top-[600px] right-[-15%] w-[700px] md:w-[900px] opacity-25 -z-20 rotate-180 max-md:w-[450px]" />
+        <Image src="/line.png" alt="" width={800} height={400} className="absolute top-[1200px] left-[-5%] w-[550px] md:w-[750px] opacity-20 -z-20 max-md:w-[350px]" />
+        <Image src="/line.png" alt="" width={800} height={400} className="absolute top-[2000px] right-[-10%] w-[650px] md:w-[850px] opacity-30 -z-20 rotate-180 max-md:w-[400px]" />
+        <Image src="/line.png" alt="" width={800} height={400} className="absolute top-[2800px] left-[-8%] w-[600px] md:w-[800px] opacity-25 -z-20 max-md:w-[380px]" />
+        <Image src="/line.png" alt="" width={800} height={400} className="absolute top-[3500px] right-[-12%] w-[700px] md:w-[900px] opacity-20 -z-20 rotate-180 max-md:w-[420px]" />
+        <Image src="/line.png" alt="" width={800} height={400} className="absolute top-[4300px] left-[-10%] w-[650px] md:w-[850px] opacity-30 -z-20 max-md:w-[400px]" />
+        
+        {/* Декоративные звёздочки */}
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[150px] left-[15%] w-6 md:w-8 opacity-40 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[280px] right-[20%] w-4 md:w-5 opacity-30 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[450px] left-[8%] w-5 md:w-6 opacity-35 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[720px] right-[12%] w-7 md:w-9 opacity-25 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[950px] left-[25%] w-4 md:w-5 opacity-40 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[1100px] right-[18%] w-6 md:w-7 opacity-30 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[1350px] left-[12%] w-5 md:w-6 opacity-35 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[1600px] right-[25%] w-4 md:w-5 opacity-40 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[1850px] left-[18%] w-6 md:w-8 opacity-25 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[2100px] right-[15%] w-5 md:w-6 opacity-35 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[2450px] left-[22%] w-7 md:w-9 opacity-30 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[2700px] right-[10%] w-4 md:w-5 opacity-40 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[2950px] left-[16%] w-6 md:w-7 opacity-25 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[3200px] right-[22%] w-5 md:w-6 opacity-35 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[3550px] left-[10%] w-4 md:w-5 opacity-30 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[3850px] right-[16%] w-6 md:w-8 opacity-40 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[4100px] left-[20%] w-5 md:w-6 opacity-25 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[4400px] right-[14%] w-7 md:w-9 opacity-35 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[4700px] left-[14%] w-4 md:w-5 opacity-30 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[5000px] right-[20%] w-6 md:w-7 opacity-40 -z-20" />
       </div>
       
       <Header />
