@@ -7,13 +7,13 @@ import Image from "next/image";
 import structuredData from "./structured-data.json";
 
 export const metadata: Metadata = {
-  title: "Перманентный макияж бровей в Сыктывкаре — Кабинет 310",
-  description: "Профессиональный перманентный макияж бровей в Сыктывкаре. Пудровые брови, волосковая техника, коррекция формы. Опытные мастера, стерильность 100%, гарантия результата.",
+  title: "Перманентный макияж бровей в Сыктывкаре — Кабинет 310 | Пудровые брови от 4000₽",
+  description: "Перманентный макияж бровей в Сыктывкаре | Пудровые брови | Опытные мастера | Стерильность 100% | Цена от 4000₽ | Запись онлайн в Кабинет 310. Результат 1-2 года!",
   keywords: [
     "перманентный макияж бровей сыктывкар",
     "пудровые брови сыктывкар", 
     "татуаж бровей сыктывкар",
-    "волосковая техника бровей",
+    "перманент бровей бровей",
     "коррекция бровей сыктывкар",
     "кабинет 310 брови",
     "перманент бровей цена сыктывкар"
@@ -43,6 +43,45 @@ export const metadata: Metadata = {
 };
 
 export default function PermanentBrowsPage() {
+  const faqStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Больно ли делать перманентный макияж бровей?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Мы используем качественную анестезию, поэтому процедура проходит комфортно. Большинство клиентов отмечают лишь легкий дискомфорт."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Сколько держится перманентный макияж бровей?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "В зависимости от техники и индивидуальных особенностей кожи — от 1 до 2 лет. Пудровые брови держатся дольше волосковой техники."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Нужна ли коррекция после процедуры?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Да, коррекция проводится через 4-6 недель после первой процедуры. Она необходима для идеального результата."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Какие противопоказания к процедуре?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Беременность, лактация, острые воспалительные процессы, прием антикоагулянтов, склонность к келоидным рубцам. Подробную консультацию проводит мастер."
+        }
+      }
+    ]
+  };
+
   const techniques = [
     {
       name: "Пудровые брови",
@@ -91,6 +130,10 @@ export default function PermanentBrowsPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqStructuredData) }}
       />
       
       <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">

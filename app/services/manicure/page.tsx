@@ -4,12 +4,14 @@ import Footer from "@/components/Footer";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import Link from "next/link";
 import Image from "next/image";
+import structuredData from "./structured-data.json";
 
 export const metadata: Metadata = {
-  title: "Маникюр в Сыктывкаре — Кабинет 310",
-  description: "Профессиональный комплексный маникюр в Сыктывкаре. Аппаратная обработка кутикулы, укрепление ногтей гелем, покрытие гель-лак. Опытные мастера, стерильность 100%, качественные материалы.",
+  title: "Маникюр в Сыктывкаре — Кабинет 310 | Гель-лак + укрепление от 1500₽",
+  description: "Маникюр в Сыктывкаре | Аппаратная обработка | Укрепление гелем | Гель-лак | Цена от 1500₽ | Стерильность 100% | Запись онлайн в Кабинет 310. Держится 2-3 недели!",
   keywords: [
     "маникюр сыктывкар",
+    "ногти сыктывкар",
     "аппаратный маникюр сыктывкар",
     "укрепление ногтей",
     "гель-лак сыктывкар",
@@ -41,6 +43,45 @@ export const metadata: Metadata = {
 };
 
 export default function ManicurePage() {
+  const faqStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Как долго держится гель-лак?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "При правильном уходе гель-лак держится 2-3 недели. Срок носки зависит от скорости роста ногтей и соблюдения рекомендаций мастера."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Что такое укрепление ногтей гелем?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Укрепление гелем — это нанесение тонкого слоя геля на натуральные ногти для их защиты и предотвращения ломкости. Это безопасная процедура, которая помогает отрастить здоровые ногти."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Можно ли делать маникюр при грибке?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Нет, при грибковых заболеваниях необходимо сначала пройти лечение. Мы работаем только со здоровыми ногтями."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Как часто нужно обновлять маникюр?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Рекомендуется обновлять маникюр каждые 2-3 недели, когда гель-лак начинает отрастать. Это поддерживает ухоженный вид и здоровье ногтей."
+        }
+      }
+    ]
+  };
+
   const portfolioPhotos = [
     { image: "/photo1.png", title: "Классический дизайн", description: "Элегантность и стиль" },
     { image: "/photo2.png", title: "Френч", description: "Вечная классика" },
@@ -85,6 +126,15 @@ export default function ManicurePage() {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqStructuredData) }}
+      />
+      
       <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
         <div className="absolute top-[200px] right-[10%] size-[500px] bg-accent-purple/50 blur-[120px] rounded-full -z-10"></div>
         <div className="absolute top-[800px] left-[5%] size-[420px] bg-accent-pink/70 blur-[110px] rounded-full -z-10"></div>

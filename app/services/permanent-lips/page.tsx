@@ -4,15 +4,16 @@ import Footer from "@/components/Footer";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import Link from "next/link";
 import Image from "next/image";
+import structuredData from "./structured-data.json";
 
 export const metadata: Metadata = {
-  title: "Перманентный макияж губ в Сыктывкаре — Кабинет 310",
-  description: "Профессиональный перманентный макияж губ в Сыктывкаре. Акварельные губы, контур, полное заполнение. Опытные мастера, стерильность 100%, гарантия результата.",
+  title: "Перманентный макияж губ в Сыктывкаре — Кабинет 310 | Акварельные губы от 4000₽",
+  description: "Перманентный макияж губ в Сыктывкаре | Акварельная техника | Опытные мастера | Стерильность 100% | Цена от 4000₽ | Запись онлайн в Кабинет 310. Результат 1-2 года!",
   keywords: [
     "перманентный макияж губ сыктывкар",
     "акварельные губы сыктывкар",
     "татуаж губ сыктывкар",
-    "контур губ перманент",
+    "перманент губ перманент",
     "кабинет 310 губы",
     "перманент губ цена сыктывкар"
   ],
@@ -41,6 +42,45 @@ export const metadata: Metadata = {
 };
 
 export default function PermanentLipsPage() {
+  const faqStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Больно ли делать перманентный макияж губ?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Губы — чувствительная зона, но мы используем качественную анестезию. Процедура проходит комфортно, клиенты отмечают терпимые ощущения."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Сколько держится перманентный макияж губ?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "В зависимости от индивидуальных особенностей кожи и образа жизни — от 1 до 2 лет. Яркие оттенки выцветают быстрее натуральных."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Нужна ли коррекция после процедуры?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Да, коррекция проводится через 4-6 недель после первой процедуры. Она необходима для закрепления цвета и идеального результата."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Какие противопоказания к процедуре?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Беременность, лактация, герпес в активной фазе, острые воспалительные процессы, прием антикоагулянтов. Подробную консультацию проводит мастер."
+        }
+      }
+    ]
+  };
+
   const portfolioPhotos = [
     { image: "/photo1.png", title: "Натуральный оттенок", description: "Естественный цвет губ" },
     { image: "/photo2.png", title: "Идеальный контур", description: "Четкая форма губ" },
@@ -75,6 +115,15 @@ export default function PermanentLipsPage() {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqStructuredData) }}
+      />
+      
       <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
         <div className="absolute top-[200px] right-[10%] size-[500px] bg-accent-purple/50 blur-[120px] rounded-full -z-10"></div>
         <div className="absolute top-[800px] left-[5%] size-[420px] bg-accent-pink/70 blur-[110px] rounded-full -z-10"></div>

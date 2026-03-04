@@ -9,7 +9,7 @@
     "name": "Кабинет 310",
     "description": "Студия красоты в Сыктывкаре",
     "url": "https://cabinet310.ru",
-    "telephone": "+7-XXX-XXX-XX-XX",
+    "telephone": "+7-908-695-49-04",
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "Ваш адрес",
@@ -42,31 +42,7 @@
           "name": "Пудровые брови",
           "description": "Мягкая растушевка, создающая эффект подкрашенных тенями бровей"
         },
-        "price": "8000",
-        "priceCurrency": "RUB",
-        "priceValidUntil": "2025-12-31",
-        "availability": "https://schema.org/InStock"
-      },
-      {
-        "@type": "Offer",
-        "itemOffered": {
-          "@type": "Service",
-          "name": "Волосковая техника",
-          "description": "Прорисовка отдельных волосков для максимально естественного вида"
-        },
-        "price": "9000",
-        "priceCurrency": "RUB",
-        "priceValidUntil": "2025-12-31",
-        "availability": "https://schema.org/InStock"
-      },
-      {
-        "@type": "Offer",
-        "itemOffered": {
-          "@type": "Service",
-          "name": "Комбинированная техника",
-          "description": "Сочетание волосков и растушевки для объемного и естественного эффекта"
-        },
-        "price": "10000",
+        "price": "4000",
         "priceCurrency": "RUB",
         "priceValidUntil": "2025-12-31",
         "availability": "https://schema.org/InStock"

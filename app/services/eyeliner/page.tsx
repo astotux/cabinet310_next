@@ -4,14 +4,15 @@ import Footer from "@/components/Footer";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import Link from "next/link";
 import Image from "next/image";
+import structuredData from "./structured-data.json";
 
 export const metadata: Metadata = {
-  title: "Перманентный макияж межресничка в Сыктывкаре — Кабинет 310",
-  description: "Профессиональный перманентный макияж межресничка в Сыктывкаре. Подчеркивание линии роста ресниц, стрелки. Опытные мастера, стерильность 100%, гарантия результата.",
+  title: "Перманентный макияж межресничка в Сыктывкаре — Кабинет 310 | От 3500₽",
+  description: "Межресничка в Сыктывкаре | Перманентный макияж глаз | Стрелки | Цена от 3500₽ | Результат 1-2 года | Стерильность 100% | Запись онлайн в Кабинет 310. Выразительный взгляд!",
   keywords: [
     "перманентный макияж межресничка сыктывкар",
     "татуаж межресничка сыктывкар",
-    "перманентная стрелка",
+    "перманент межресничка сыктывкар",
     "межресничка цена сыктывкар",
     "кабинет 310 межресничка"
   ],
@@ -40,6 +41,45 @@ export const metadata: Metadata = {
 };
 
 export default function EyelinerPage() {
+  const faqStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Больно ли делать перманентный макияж межресничка?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Веки — чувствительная зона, но мы используем качественную анестезию. Процедура проходит комфортно, большинство клиентов отмечают терпимые ощущения."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Сколько держится перманентный макияж межресничка?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "В зависимости от индивидуальных особенностей кожи — от 1 до 2 лет. Жирная кожа век требует более частого обновления."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Можно ли носить контактные линзы после процедуры?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Рекомендуется воздержаться от ношения линз в течение 3-5 дней после процедуры. Затем можно вернуться к обычному режиму."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Какие противопоказания к процедуре?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Беременность, лактация, конъюнктивит, воспалительные заболевания глаз, прием антикоагулянтов. Подробную консультацию проводит мастер."
+        }
+      }
+    ]
+  };
+
   const portfolioPhotos = [
     { image: "/photo1.png", title: "Естественная межресничка", description: "Деликатное подчеркивание" },
     { image: "/photo2.png", title: "Выразительный взгляд", description: "Идеальная линия" },
@@ -74,6 +114,15 @@ export default function EyelinerPage() {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqStructuredData) }}
+      />
+      
       <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
         <div className="absolute top-[200px] right-[10%] size-[500px] bg-accent-purple/50 blur-[120px] rounded-full -z-10"></div>
         <div className="absolute top-[800px] left-[5%] size-[420px] bg-accent-pink/70 blur-[110px] rounded-full -z-10"></div>

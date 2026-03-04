@@ -1,0 +1,42 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "serviceType": "Ламинирование ресниц",
+  "provider": {
+    "@type": "BeautySalon",
+    "name": "Кабинет 310",
+    "image": "https://cabinet310.ru/og-lash-lamination.jpg",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Кабинет 310",
+      "addressLocality": "Сыктывкар",
+      "addressRegion": "Республика Коми",
+      "addressCountry": "RU"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": "61.6681",
+      "longitude": "50.8372"
+    },
+    "url": "https://cabinet310.ru",
+    "telephone": "+7-908-695-49-04",
+    "priceRange": "₽₽"
+  },
+  "areaServed": {
+    "@type": "City",
+    "name": "Сыктывкар"
+  },
+  "offers": {
+    "@type": "Offer",
+    "price": "1200",
+    "priceCurrency": "RUB",
+    "availability": "https://schema.org/InStock",
+    "url": "https://cabinet310.ru/services/lash-lamination"
+  },
+  "description": "Профессиональное ламинирование ресниц в Сыктывкаре. Подкручивание, укрепление и окрашивание натуральных ресниц. Эффект на 6-8 недель.",
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "5",
+    "reviewCount": "45"
+  }
+}

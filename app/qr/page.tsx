@@ -16,7 +16,9 @@ export default function QRPage() {
       <div className="w-full max-w-md relative z-10">
         {/* Logo */}
         <div className="text-center mb-6 max-[480px]:mb-4">
-          <img src="/logo.svg" style={{ width: '100px' }} alt="Cabinet 310" className="mx-auto mb-4 max-[480px]:mb-3" />
+          <a href="/">
+            <img src="/logo.svg" style={{ width: '100px' }} alt="Cabinet 310" className="mx-auto mb-4 max-[480px]:mb-3" />
+          </a>
           <h1 className="text-3xl max-[480px]:text-2xl font-black tracking-tight mb-2">
             Оставьте отзыв
           </h1>
@@ -50,9 +52,34 @@ export default function QRPage() {
             </span>
           </a>
 
+          {/* Yandex Maps Review */}
+          <a
+            href="https://yandex.ru/profile/72948536986?lang=ru"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="glass rounded-2xl p-4 max-[480px]:p-3.5 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-3 group hover:scale-[1.02]"
+          >
+            <div className="size-12 max-[480px]:size-11 rounded-xl bg-[#FC3F1D] flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+              <svg className="w-7 h-7 max-[480px]:w-6 max-[480px]:h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+              </svg>
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="font-black text-base max-[480px]:text-sm text-slate-900 mb-0.5">
+                На Яндекс Картах
+              </h3>
+              <p className="text-xs max-[480px]:text-[11px] text-slate-600 truncate">
+                Оцените нас на картах
+              </p>
+            </div>
+            <span className="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors text-xl">
+              arrow_forward
+            </span>
+          </a>
+
           {/* VK Review */}
           <a
-            href="https://vk.com/club235192928"
+            href="https://vk.com/cabinet_310"
             target="_blank"
             rel="noopener noreferrer"
             className="glass rounded-2xl p-4 max-[480px]:p-3.5 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-3 group hover:scale-[1.02]"
@@ -75,30 +102,6 @@ export default function QRPage() {
             </span>
           </a>
 
-          {/* Yandex Maps Review */}
-          <a
-            href="https://yandex.ru/maps/org/cabinet_310/1234567890"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="glass rounded-2xl p-4 max-[480px]:p-3.5 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-3 group hover:scale-[1.02]"
-          >
-            <div className="size-12 max-[480px]:size-11 rounded-xl bg-[#FC3F1D] flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-              <svg className="w-7 h-7 max-[480px]:w-6 max-[480px]:h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-              </svg>
-            </div>
-            <div className="flex-1 min-w-0">
-              <h3 className="font-black text-base max-[480px]:text-sm text-slate-900 mb-0.5">
-                На Яндекс Картах
-              </h3>
-              <p className="text-xs max-[480px]:text-[11px] text-slate-600 truncate">
-                Оцените нас на картах
-              </p>
-            </div>
-            <span className="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors text-xl">
-              arrow_forward
-            </span>
-          </a>
         </div>
 
         {/* Footer Note */}

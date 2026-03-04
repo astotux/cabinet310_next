@@ -4,10 +4,11 @@ import Footer from "@/components/Footer";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import Link from "next/link";
 import Image from "next/image";
+import structuredData from "./structured-data.json";
 
 export const metadata: Metadata = {
-  title: "Ламинирование ресниц в Сыктывкаре — Кабинет 310",
-  description: "Профессиональное ламинирование ресниц в Сыктывкаре. Подкручивание, укрепление и окрашивание натуральных ресниц. Эффект на 6-8 недель. Опытные мастера, безопасные составы.",
+  title: "Ламинирование ресниц в Сыктывкаре — Кабинет 310 | Эффект 6-8 недель от 1200₽",
+  description: "Ламинирование ресниц в Сыктывкаре | Подкручивание + укрепление | Ботокс ресниц | Цена от 1200₽ | Эффект 6-8 недель | Запись онлайн в Кабинет 310. Безопасные составы!",
   keywords: [
     "ламинирование ресниц сыктывкар",
     "ботокс ресниц сыктывкар",
@@ -40,6 +41,45 @@ export const metadata: Metadata = {
 };
 
 export default function LashLaminationPage() {
+  const faqStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Как долго держится ламинирование ресниц?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Эффект ламинирования держится 6-8 недель в зависимости от индивидуальных особенностей и скорости обновления ресниц. После этого процедуру можно повторить."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Вредно ли ламинирование для ресниц?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Нет, ламинирование не вредит ресницам. Наоборот, составы содержат кератин и питательные компоненты, которые укрепляют и восстанавливают структуру ресниц."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Можно ли красить ресницы после ламинирования?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Да, но обычно в этом нет необходимости, так как в процедуру входит окрашивание. Если хотите использовать тушь, выбирайте составы без масел."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Какие противопоказания к процедуре?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Беременность и лактация (по желанию клиента), воспалительные заболевания глаз, аллергия на компоненты состава, недавние операции на глазах."
+        }
+      }
+    ]
+  };
+
   const portfolioPhotos = [
     { image: "/photo1.png", title: "Естественный изгиб", description: "Красивое подкручивание" },
     { image: "/photo2.png", title: "Выразительный взгляд", description: "Эффект открытых глаз" },
@@ -74,6 +114,15 @@ export default function LashLaminationPage() {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqStructuredData) }}
+      />
+      
       <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
         <div className="absolute top-[200px] right-[10%] size-[500px] bg-accent-purple/50 blur-[120px] rounded-full -z-10"></div>
         <div className="absolute top-[800px] left-[5%] size-[420px] bg-accent-pink/70 blur-[110px] rounded-full -z-10"></div>
