@@ -123,19 +123,49 @@ export default function PermanentLipsPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqStructuredData) }}
       />
-      
+
       <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
         <div className="absolute top-[200px] right-[10%] size-[500px] bg-accent-purple/50 blur-[120px] rounded-full -z-10"></div>
         <div className="absolute top-[800px] left-[5%] size-[420px] bg-accent-pink/70 blur-[110px] rounded-full -z-10"></div>
         <div className="absolute top-[1400px] right-[8%] size-[460px] bg-accent-purple/50 blur-[115px] rounded-full -z-10"></div>
         <div className="absolute top-[2000px] left-[12%] size-[380px] bg-accent-pink/70 blur-[105px] rounded-full -z-10"></div>
         <div className="absolute top-[2600px] right-[15%] size-[450px] bg-accent-purple/50 blur-[110px] rounded-full -z-10"></div>
+        {/* Декоративные линии */}
+        <Image src="/line.png" alt="" width={800} height={400} className="absolute top-[100px] left-[-10%] w-[600px] md:w-[800px] opacity-30 -z-20 max-md:w-[400px]" />
+        <Image src="/line.png" alt="" width={800} height={400} className="absolute top-[600px] right-[-15%] w-[700px] md:w-[900px] opacity-25 -z-20 rotate-180 max-md:w-[450px]" />
+        <Image src="/line.png" alt="" width={800} height={400} className="absolute top-[1200px] left-[-5%] w-[550px] md:w-[750px] opacity-20 -z-20 max-md:w-[350px]" />
+        <Image src="/line.png" alt="" width={800} height={400} className="absolute top-[2000px] right-[-10%] w-[650px] md:w-[850px] opacity-30 -z-20 rotate-180 max-md:w-[400px]" />
+        <Image src="/line.png" alt="" width={800} height={400} className="absolute top-[2800px] left-[-8%] w-[600px] md:w-[800px] opacity-25 -z-20 max-md:w-[380px]" />
+        <Image src="/line.png" alt="" width={800} height={400} className="absolute top-[3500px] right-[-12%] w-[700px] md:w-[900px] opacity-20 -z-20 rotate-180 max-md:w-[420px]" />
+        <Image src="/line.png" alt="" width={800} height={400} className="absolute top-[4300px] left-[-10%] w-[650px] md:w-[850px] opacity-30 -z-20 max-md:w-[400px]" />
+
+        {/* Декоративные звёздочки */}
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[150px] left-[15%] w-6 md:w-8 opacity-40 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[280px] right-[20%] w-4 md:w-5 opacity-30 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[450px] left-[8%] w-5 md:w-6 opacity-35 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[720px] right-[12%] w-7 md:w-9 opacity-25 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[950px] left-[25%] w-4 md:w-5 opacity-40 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[1100px] right-[18%] w-6 md:w-7 opacity-30 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[1350px] left-[12%] w-5 md:w-6 opacity-35 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[1600px] right-[25%] w-4 md:w-5 opacity-40 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[1850px] left-[18%] w-6 md:w-8 opacity-25 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[2100px] right-[15%] w-5 md:w-6 opacity-35 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[2450px] left-[22%] w-7 md:w-9 opacity-30 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[2700px] right-[10%] w-4 md:w-5 opacity-40 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[2950px] left-[16%] w-6 md:w-7 opacity-25 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[3200px] right-[22%] w-5 md:w-6 opacity-35 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[3550px] left-[10%] w-4 md:w-5 opacity-30 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[3850px] right-[16%] w-6 md:w-8 opacity-40 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[4100px] left-[20%] w-5 md:w-6 opacity-25 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[4400px] right-[14%] w-7 md:w-9 opacity-35 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[4700px] left-[14%] w-4 md:w-5 opacity-30 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[5000px] right-[20%] w-6 md:w-7 opacity-40 -z-20" />
       </div>
 
       <Header />
-      
+
       <main className="max-w-7xl mx-auto px-6 md:px-8 lg:px-6 max-[480px]:px-4 max-[320px]:px-3 py-12 md:py-16 max-[480px]:py-8 max-[320px]:py-6 max-[767px]:pb-32 overflow-hidden">
-        
+
         {/* Hero Section */}
         <section className="mb-24 md:mb-28 lg:mb-32 max-[480px]:mb-16 relative min-h-[85vh] md:min-h-[75vh] max-[480px]:min-h-[auto] flex items-center">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-center w-full">
@@ -145,20 +175,20 @@ export default function PermanentLipsPage() {
                 { label: "Услуги", href: "/services" },
                 { label: "Перманентный макияж губ" }
               ]} />
-              
+
               <div className="inline-flex items-center gap-2 px-4 md:px-5 py-2 md:py-2.5 rounded-full gradient-animated text-white text-[10px] md:text-xs font-bold uppercase tracking-widest shadow-lg">
                 <span className="material-symbols-outlined text-xs md:text-sm">face_3</span>
                 Перманентный макияж
               </div>
-              
+
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-[0.95] tracking-tight">
                 Идеальные <span className="text-gradient">губы</span> на годы
               </h1>
-              
+
               <p className="text-lg sm:text-xl md:text-2xl font-light text-slate-600 leading-relaxed max-w-lg">
                 Профессиональный перманентный макияж губ в Сыктывкаре. Акварельная техника для естественного результата от опытных мастеров.
               </p>
-              
+
               <div className="flex flex-col sm:flex-row flex-wrap gap-3 md:gap-4 pt-2 md:pt-4">
                 <Link href="/booking" className="gradient-animated px-8 md:px-10 py-4 md:py-5 rounded-xl md:rounded-2xl text-white font-bold text-base md:text-lg flex items-center justify-center gap-2 md:gap-3 shadow-2xl hover:scale-105 transition-transform">
                   Записаться на губы
@@ -169,7 +199,7 @@ export default function PermanentLipsPage() {
                 </a>
               </div>
             </div>
-            
+
             <div className="relative lg:h-[600px] md:h-[500px] h-[350px] max-[480px]:h-[300px]">
               <div className="absolute inset-0 grid grid-cols-2 gap-3 md:gap-4">
                 <div className="space-y-3 md:space-y-4 floating">
@@ -200,7 +230,7 @@ export default function PermanentLipsPage() {
           <div className="relative rounded-2xl md:rounded-[3rem] overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100 p-8 md:p-12 lg:p-16 max-[480px]:p-6">
             <div className="absolute top-0 right-0 size-64 md:size-96 bg-accent-purple/40 blur-[80px] md:blur-[120px] rounded-full"></div>
             <div className="absolute bottom-0 left-0 size-64 md:size-96 bg-accent-pink/70 blur-[80px] md:blur-[120px] rounded-full"></div>
-            
+
             <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-12 items-center">
               <div className="space-y-6 md:space-y-8">
                 <div className="inline-flex items-center gap-2 px-4 md:px-5 py-2 rounded-full bg-primary/10 text-primary text-[10px] md:text-xs font-bold uppercase tracking-widest">
@@ -211,7 +241,7 @@ export default function PermanentLipsPage() {
                 <p className="text-lg md:text-xl text-slate-600 leading-relaxed">
                   Мягкая растушевка с естественным оттенком. Создаем эффект натурального цвета губ с легким акцентом. Подходит для всех типов кожи.
                 </p>
-                
+
                 <div className="grid grid-cols-2 gap-4 md:gap-6">
                   <div className="glass rounded-2xl p-4 md:p-6">
                     <div className="size-10 md:size-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-3">
@@ -243,7 +273,7 @@ export default function PermanentLipsPage() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="relative">
                 <div className="glass rounded-2xl md:rounded-3xl p-6 md:p-8 space-y-4">
                   <h3 className="text-xl md:text-2xl font-black mb-4">Что входит в процедуру</h3>
@@ -272,7 +302,7 @@ export default function PermanentLipsPage() {
           <div className="relative rounded-2xl md:rounded-[3rem] overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100 p-8 md:p-12 lg:p-16 max-[480px]:p-6">
             <div className="absolute top-0 right-0 size-64 md:size-96 bg-accent-purple/40 blur-[80px] md:blur-[120px] rounded-full"></div>
             <div className="absolute bottom-0 left-0 size-64 md:size-96 bg-accent-pink/70 blur-[80px] md:blur-[120px] rounded-full"></div>
-            
+
             <div className="relative text-center mb-12 md:mb-16 space-y-3 md:space-y-4">
               <div className="inline-flex items-center gap-2 px-4 md:px-5 py-2 rounded-full bg-primary/10 text-primary text-[10px] md:text-xs font-bold uppercase tracking-widest">
                 <span className="material-symbols-outlined text-xs md:text-sm">timeline</span>
@@ -292,7 +322,7 @@ export default function PermanentLipsPage() {
                   duration: "15-20 мин"
                 },
                 {
-                  step: "02", 
+                  step: "02",
                   title: "Эскиз и согласование",
                   description: "Рисуем контур губ, корректируем форму до идеального результата",
                   icon: "draw",
@@ -349,12 +379,12 @@ export default function PermanentLipsPage() {
             {portfolioPhotos.map((photo, index) => (
               <div key={index} className="service-card-glass rounded-2xl md:rounded-3xl overflow-hidden group cursor-pointer">
                 <div className="relative aspect-square overflow-hidden">
-                  <Image 
-                    src={photo.image} 
-                    alt={photo.title} 
-                    width={400} 
-                    height={400} 
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                  <Image
+                    src={photo.image}
+                    alt={photo.title}
+                    width={400}
+                    height={400}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 translate-y-full group-hover:translate-y-0 transition-transform duration-300">

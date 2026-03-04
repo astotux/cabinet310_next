@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ReviewPhotosCarousel from "@/components/ReviewPhotosCarousel";
+import Image from "next/image";
 
 export default function ReviewsPage() {
   const [reviews, setReviews] = useState<any[]>([]);
@@ -37,10 +38,10 @@ export default function ReviewsPage() {
     if (selectedFilter === "Все услуги") {
       return reviews;
     }
-    
+
     return reviews.filter(review => {
       if (!review.service) return false;
-      
+
       switch (selectedFilter) {
         case "Перманент":
           return review.service.includes("Перманент") || review.service.includes("Межресничка");
@@ -71,7 +72,7 @@ export default function ReviewsPage() {
     try {
       // Сначала загружаем фото, если они есть
       const photoUrls: string[] = [];
-      
+
       if (photos.length > 0) {
         for (const photo of photos) {
           const formData = new FormData();
@@ -99,17 +100,17 @@ export default function ReviewsPage() {
       if (response.ok) {
         // Показываем успешное уведомление
         setShowSuccess(true);
-        
+
         // Очищаем форму
         setName("");
         setRating(5);
         setText("");
         setService("");
         setPhotos([]);
-        
+
         // Обновляем список отзывов
         fetchReviews();
-        
+
         // Через 3 секунды закрываем модальное окно
         setTimeout(() => {
           setShowSuccess(false);
@@ -137,15 +138,59 @@ export default function ReviewsPage() {
 
   return (
     <>
+      <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+        <div className="absolute top-[200px] right-[10%] size-[500px] bg-accent-purple/50 blur-[120px] rounded-full -z-10"></div>
+        <div className="absolute top-[800px] left-[5%] size-[420px] bg-accent-pink/70 blur-[110px] rounded-full -z-10"></div>
+        <div className="absolute top-[1400px] left-[5%] size-[400px] bg-accent-purple/50 blur-[100px] rounded-full -z-10"></div>
+        <div className="absolute top-[1800px] right-[8%] size-[460px] bg-accent-purple/50 blur-[115px] rounded-full -z-10"></div>
+        <div className="absolute top-[2400px] right-[15%] size-[450px] bg-accent-pink/70 blur-[110px] rounded-full -z-10"></div>
+        <div className="absolute top-[3000px] left-[12%] size-[380px] bg-accent-purple/50 blur-[105px] rounded-full -z-10"></div>
+        <div className="absolute top-[3700px] right-[12%] size-[500px] bg-accent-purple/50 blur-[105px] rounded-full -z-10"></div>
+        <div className="absolute top-[4200px] left-[8%] size-[400px] bg-accent-pink/70 blur-[105px] rounded-full -z-10"></div>
+        <div className="absolute top-[4900px] right-[5%] size-[380px] bg-accent-purple/50 blur-[105px] rounded-full -z-10"></div>
+
+        {/* Декоративные линии */}
+        <Image src="/line.png" alt="" width={800} height={400} className="absolute top-[100px] left-[-10%] w-[600px] md:w-[800px] opacity-30 -z-20 max-md:w-[400px]" />
+        <Image src="/line.png" alt="" width={800} height={400} className="absolute top-[600px] right-[-15%] w-[700px] md:w-[900px] opacity-25 -z-20 rotate-180 max-md:w-[450px]" />
+        <Image src="/line.png" alt="" width={800} height={400} className="absolute top-[1200px] left-[-5%] w-[550px] md:w-[750px] opacity-20 -z-20 max-md:w-[350px]" />
+        <Image src="/line.png" alt="" width={800} height={400} className="absolute top-[2000px] right-[-10%] w-[650px] md:w-[850px] opacity-30 -z-20 rotate-180 max-md:w-[400px]" />
+        <Image src="/line.png" alt="" width={800} height={400} className="absolute top-[2800px] left-[-8%] w-[600px] md:w-[800px] opacity-25 -z-20 max-md:w-[380px]" />
+        <Image src="/line.png" alt="" width={800} height={400} className="absolute top-[3500px] right-[-12%] w-[700px] md:w-[900px] opacity-20 -z-20 rotate-180 max-md:w-[420px]" />
+        <Image src="/line.png" alt="" width={800} height={400} className="absolute top-[4300px] left-[-10%] w-[650px] md:w-[850px] opacity-30 -z-20 max-md:w-[400px]" />
+
+        {/* Декоративные звёздочки */}
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[150px] left-[15%] w-6 md:w-8 opacity-40 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[280px] right-[20%] w-4 md:w-5 opacity-30 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[450px] left-[8%] w-5 md:w-6 opacity-35 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[720px] right-[12%] w-7 md:w-9 opacity-25 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[950px] left-[25%] w-4 md:w-5 opacity-40 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[1100px] right-[18%] w-6 md:w-7 opacity-30 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[1350px] left-[12%] w-5 md:w-6 opacity-35 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[1600px] right-[25%] w-4 md:w-5 opacity-40 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[1850px] left-[18%] w-6 md:w-8 opacity-25 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[2100px] right-[15%] w-5 md:w-6 opacity-35 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[2450px] left-[22%] w-7 md:w-9 opacity-30 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[2700px] right-[10%] w-4 md:w-5 opacity-40 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[2950px] left-[16%] w-6 md:w-7 opacity-25 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[3200px] right-[22%] w-5 md:w-6 opacity-35 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[3550px] left-[10%] w-4 md:w-5 opacity-30 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[3850px] right-[16%] w-6 md:w-8 opacity-40 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[4100px] left-[20%] w-5 md:w-6 opacity-25 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[4400px] right-[14%] w-7 md:w-9 opacity-35 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[4700px] left-[14%] w-4 md:w-5 opacity-30 -z-20" />
+        <Image src="/star.svg" alt="" width={24} height={24} className="absolute top-[5000px] right-[20%] w-6 md:w-7 opacity-40 -z-20" />
+      </div>
+
       <Header />
+
       <main className="max-w-7xl mx-auto w-full px-6 max-[480px]:px-4 max-[320px]:px-3 py-12 max-[480px]:py-8 max-[320px]:py-6 max-[767px]:pb-32">
         <section className="mb-16 max-[480px]:mb-12 max-[320px]:mb-10 relative rounded-3xl overflow-hidden min-h-[400px] flex flex-col items-center justify-center text-center p-8 max-[480px]:p-6 max-[320px]:p-5 bg-slate-900">
-          <div 
+          <div
             className="absolute inset-0 opacity-40 bg-center bg-cover"
-            style={{backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBuFC3sfNL9nkEvXHoOc6khcMlyJxnd3Q4IaL1VTFJ2V--cLdbbn_12JWZAIKsk-U96_hdVB-3C4gfu_JUChPm16au1hENg_XQtfFFYY9tgbjzKErBMmLzXAiJjcagEuyDue9rV1nf99Zo8v707-m8K6Cgme-Ty6GJBz8evE70t2QtkJG2r2BABHn6XV_QCBIjKyJxRTL3Acl4devfIoRWBnxjTNWMgYG6pmTd3tcn7pGa0Ey_eJFPYiCxK02UYYQV7RiHHZX9cNO4')"}}
+            style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBuFC3sfNL9nkEvXHoOc6khcMlyJxnd3Q4IaL1VTFJ2V--cLdbbn_12JWZAIKsk-U96_hdVB-3C4gfu_JUChPm16au1hENg_XQtfFFYY9tgbjzKErBMmLzXAiJjcagEuyDue9rV1nf99Zo8v707-m8K6Cgme-Ty6GJBz8evE70t2QtkJG2r2BABHn6XV_QCBIjKyJxRTL3Acl4devfIoRWBnxjTNWMgYG6pmTd3tcn7pGa0Ey_eJFPYiCxK02UYYQV7RiHHZX9cNO4')" }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent" />
-          
+
           <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
             <img src="/star.svg" alt="" className="absolute left-6 top-10 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 opacity-25 mix-blend-screen" />
             <img src="/star.svg" alt="" className="absolute right-6 top-16 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 opacity-20 mix-blend-screen" />
@@ -154,13 +199,7 @@ export default function ReviewsPage() {
           </div>
 
           <div className="relative z-10 max-w-2xl px-2 max-[480px]:px-1">
-            <div className="flex justify-center gap-1 mb-6 animate-pulse">
-              <span className="material-symbols-outlined text-accent-pink text-4xl" style={{fontVariationSettings: "'FILL' 1", textShadow: "0 0 15px rgba(122, 31, 249, 0.4)"}}>star</span>
-              <span className="material-symbols-outlined text-accent-pink text-4xl" style={{fontVariationSettings: "'FILL' 1", textShadow: "0 0 15px rgba(122, 31, 249, 0.4)"}}>star</span>
-              <span className="material-symbols-outlined text-accent-pink text-4xl" style={{fontVariationSettings: "'FILL' 1", textShadow: "0 0 15px rgba(122, 31, 249, 0.4)"}}>star</span>
-              <span className="material-symbols-outlined text-accent-pink text-4xl" style={{fontVariationSettings: "'FILL' 1", textShadow: "0 0 15px rgba(122, 31, 249, 0.4)"}}>star</span>
-              <span className="material-symbols-outlined text-accent-pink text-4xl" style={{fontVariationSettings: "'FILL' 1", textShadow: "0 0 15px rgba(122, 31, 249, 0.4)"}}>star</span>
-            </div>
+
             <h2 className="text-white text-5xl max-[480px]:text-3xl max-[320px]:text-2xl lg:text-7xl font-black mb-4 tracking-tight">
               Истории вашего <br /> преображения
             </h2>
@@ -171,7 +210,7 @@ export default function ReviewsPage() {
               <button className="gradient-bg text-white px-10 max-[480px]:px-8 max-[320px]:px-6 py-4 max-[480px]:py-3.5 rounded-2xl font-bold text-lg max-[480px]:text-base shadow-xl shadow-primary/30 hover:shadow-2xl hover:scale-[1.02] transition-all">
                 Читать отзывы
               </button>
-              <button 
+              <button
                 onClick={() => setShowForm(true)}
                 className="bg-white/10 backdrop-blur-md text-white border border-white/20 px-10 max-[480px]:px-8 max-[320px]:px-6 py-4 max-[480px]:py-3.5 rounded-2xl font-bold text-lg max-[480px]:text-base hover:bg-white/20 transition-all"
               >
@@ -187,11 +226,10 @@ export default function ReviewsPage() {
               <button
                 key={category}
                 onClick={() => setSelectedFilter(category)}
-                className={`px-6 py-2.5 rounded-xl font-semibold text-sm shadow-md transition-all ${
-                  selectedFilter === category
-                    ? "gradient-bg text-white"
-                    : "glass text-slate-600 hover:bg-white"
-                }`}
+                className={`px-6 py-2.5 rounded-xl font-semibold text-sm shadow-md transition-all ${selectedFilter === category
+                  ? "gradient-bg text-white"
+                  : "glass text-slate-600 hover:bg-white"
+                  }`}
               >
                 {category}
               </button>
@@ -200,14 +238,6 @@ export default function ReviewsPage() {
         </div>
 
         <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6 relative overflow-hidden">
-          <div className="pointer-events-none absolute inset-0 overflow-hidden z-20" aria-hidden="true">
-            <img src="/star.svg" alt="" className="absolute left-2 top-6 w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 opacity-20" />
-            <img src="/star.svg" alt="" className="absolute right-2 top-16 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 opacity-20" />
-            <img src="/star.svg" alt="" className="hidden md:block absolute left-2 top-1/2 w-8 h-8 md:w-10 md:h-10 opacity-15" />
-            <img src="/star.svg" alt="" className="hidden md:block absolute right-2 top-2/3 w-8 h-8 md:w-10 md:h-10 opacity-15" />
-            <img src="/star.svg" alt="" className="absolute left-2 bottom-6 w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 opacity-12 hidden sm:block" />
-            <img src="/star.svg" alt="" className="absolute right-2 bottom-10 w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 opacity-12" />
-          </div>
 
           {getFilteredReviews().map((review) => (
             <div key={review.id} className="break-inside-avoid glass rounded-3xl p-6 max-[480px]:p-5 max-[320px]:p-4 shadow-sm hover:shadow-xl transition-all duration-300">
@@ -220,20 +250,20 @@ export default function ReviewsPage() {
                   <p className="text-xs text-slate-500">{new Date(review.createdAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
                 </div>
               </div>
-              
+
               {review.service && (
                 <div className="mb-3 inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold">
                   <span className="material-symbols-outlined text-sm">spa</span>
                   {review.service}
                 </div>
               )}
-              
+
               <div className="flex gap-0.5 mb-3 text-primary">
                 {[...Array(5)].map((_, i) => (
                   <span
                     key={i}
                     className="material-symbols-outlined text-sm"
-                    style={{fontVariationSettings: i < review.rating ? "'FILL' 1" : "'FILL' 0"}}
+                    style={{ fontVariationSettings: i < review.rating ? "'FILL' 1" : "'FILL' 0" }}
                   >
                     star
                   </span>
@@ -242,7 +272,7 @@ export default function ReviewsPage() {
               <p className="text-slate-700 text-sm leading-relaxed mb-3">
                 {review.text}
               </p>
-              
+
               <ReviewPhotosCarousel photos={review.photos || []} reviewId={review.id} />
             </div>
           ))}
@@ -257,20 +287,20 @@ export default function ReviewsPage() {
               <div className="text-center py-12 max-[480px]:py-8">
                 <div className="mb-6 relative">
                   <div className="size-24 max-[480px]:size-20 mx-auto rounded-full gradient-bg flex items-center justify-center">
-                    <span className="material-symbols-outlined text-white text-5xl max-[480px]:text-4xl" style={{fontVariationSettings: "'FILL' 1"}}>
+                    <span className="material-symbols-outlined text-white text-5xl max-[480px]:text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>
                       check_circle
                     </span>
                   </div>
                 </div>
-                
+
                 <h3 className="text-3xl max-[480px]:text-2xl font-black text-slate-900 mb-3 tracking-tight">
                   Спасибо за отзыв!
                 </h3>
-                
+
                 <p className="text-slate-600 text-lg max-[480px]:text-base mb-2 max-w-md mx-auto">
                   Ваш отзыв отправлен на модерацию
                 </p>
-                
+
                 <p className="text-slate-500 text-sm max-[480px]:text-xs max-w-sm mx-auto">
                   После проверки он появится на странице. Обычно это занимает несколько минут.
                 </p>
@@ -324,11 +354,10 @@ export default function ReviewsPage() {
                           key={option.name}
                           type="button"
                           onClick={() => setService(option.name)}
-                          className={`flex flex-col items-center justify-center p-3 max-[480px]:p-2.5 rounded-2xl border-2 transition-all shadow-sm ${
-                            service === option.name
-                              ? "bg-primary/5 border-primary text-primary"
-                              : "bg-white border-slate-200 hover:border-primary hover:text-primary"
-                          }`}
+                          className={`flex flex-col items-center justify-center p-3 max-[480px]:p-2.5 rounded-2xl border-2 transition-all shadow-sm ${service === option.name
+                            ? "bg-primary/5 border-primary text-primary"
+                            : "bg-white border-slate-200 hover:border-primary hover:text-primary"
+                            }`}
                         >
                           <span className="material-symbols-outlined mb-1 text-xl max-[480px]:text-lg">{option.icon}</span>
                           <span className="text-xs max-[480px]:text-[10px] font-semibold text-center leading-tight">{option.name}</span>
@@ -346,9 +375,8 @@ export default function ReviewsPage() {
                           key={star}
                           type="button"
                           onClick={() => setRating(star)}
-                          className={`transition-all hover:scale-110 ${
-                            star <= rating ? "text-primary" : "text-slate-300"
-                          }`}
+                          className={`transition-all hover:scale-110 ${star <= rating ? "text-primary" : "text-slate-300"
+                            }`}
                         >
                           <span
                             className="material-symbols-outlined text-3xl max-[480px]:text-2xl"
@@ -392,7 +420,7 @@ export default function ReviewsPage() {
                           className="hidden"
                         />
                       </label>
-                      
+
                       {photos.map((photo, index) => (
                         <div key={index} className="relative group">
                           <div className="w-14 h-14 rounded-xl overflow-hidden border border-slate-200">
@@ -437,7 +465,7 @@ export default function ReviewsPage() {
           </div>
         </div>
       )}
-      
+
       <Footer />
     </>
   );

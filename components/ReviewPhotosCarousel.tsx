@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import Image from 'next/image';
 
 interface ReviewPhotosCarouselProps {
   photos: { id: number; imageUrl: string }[];
@@ -44,8 +45,10 @@ export default function ReviewPhotosCarousel({ photos, reviewId }: ReviewPhotosC
           {photos.map((photo) => (
             <div key={photo.id} className="swiper-slide">
               <div className="relative overflow-hidden rounded-xl aspect-[4/3] w-full">
-                <img 
+                <Image 
                   src={photo.imageUrl} 
+                  width={400}
+                  height={400}
                   alt="Фото отзыва" 
                   className="w-full h-full object-cover" 
                 />
