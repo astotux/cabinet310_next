@@ -255,18 +255,32 @@ export default function AdminPage() {
     try {
       const bookingsRes = await fetch("/api/bookings");
       const bookingsData = await bookingsRes.json();
-      setBookings(Array.isArray(bookingsData) ? bookingsData : []);
 
       const reviewsRes = await fetch("/api/admin/reviews");
       const reviewsData = await reviewsRes.json();
-      setReviews(Array.isArray(reviewsData) ? reviewsData : []);
 
       const servicesRes = await fetch("/api/services");
       const servicesData = await servicesRes.json();
+      
+      // Обогащаем bookings ценами из services
+      const enrichedBookings = Array.isArray(bookingsData) 
+        ? bookingsData.map((booking: any) => {
+            const service = servicesData.find((s: any) => 
+              s.service === booking.service && s.master === booking.master
+            );
+            return {
+              ...booking,
+              price: service?.price || null
+            };
+          })
+        : [];
+      
+      setBookings(enrichedBookings);
+      setReviews(Array.isArray(reviewsData) ? reviewsData : []);
       setServices(Array.isArray(servicesData) ? servicesData : []);
       
       // Подсчет статистики
-      calculateStats(bookingsData, reviewsData, servicesData);
+      calculateStats(enrichedBookings, reviewsData, servicesData);
     } catch (error) {
       console.error("Ошибка загрузки данных:", error);
       setBookings([]);
@@ -909,6 +923,7 @@ export default function AdminPage() {
           { text: 'Дата', style: 'tableHeader' },
           { text: 'Время', style: 'tableHeader' },
           { text: 'Услуга', style: 'tableHeader' },
+          { text: 'Цена', style: 'tableHeader' },
           { text: 'Мастер', style: 'tableHeader' },
           { text: 'Клиент', style: 'tableHeader' },
           { text: 'Телефон', style: 'tableHeader' },
@@ -924,10 +939,11 @@ export default function AdminPage() {
           return [
             { text: formattedDate, alignment: 'center' },
             { text: booking.time, alignment: 'center' },
-            booking.service,
+            { text: booking.service, alignment: 'center' },
+            { text: booking.price ? `${booking.price}₽` : '-', alignment: 'center' },
             { text: booking.master, alignment: 'center' },
-            booking.clientName,
-            booking.clientPhone,
+            { text: booking.clientName, alignment: 'center' },
+            { text: booking.clientPhone, alignment: 'center' },
             booking.comment || '-'
           ];
         })
@@ -961,12 +977,12 @@ export default function AdminPage() {
           {
             table: {
               headerRows: 1,
-              widths: [50, 45, '*', 60, 80, 75, 80],
+              widths: [45, 40, "*", 45, 45, 100, 80, "*"],
               body: tableBody
             },
             layout: {
               fillColor: function (rowIndex: number) {
-                return rowIndex === 0 ? '#9333ea' : (rowIndex % 2 === 0 ? '#f9fafb' : null);
+                return rowIndex === 0 ? '#CD92F0' : (rowIndex % 2 === 0 ? '#f9fafb' : null);
               },
               hLineWidth: function () { return 0.5; },
               vLineWidth: function () { return 0.5; },
@@ -1325,11 +1341,8 @@ export default function AdminPage() {
                   </div>
                 </button>
 
-                <button 
-                  onClick={handleExportPDF}
-                  className="w-full p-4 max-[480px]:p-3 rounded-2xl bg-white/60 border border-slate-200/60 hover:border-primary transition-colors"
-                >
-                  <div className="flex items-center gap-3">
+                <div className="w-full p-4 max-[480px]:p-3 rounded-2xl bg-white/60 border border-slate-200/60">
+                  <div className="flex items-center gap-3 mb-3">
                     <div className="size-10 max-[480px]:size-9 rounded-xl bg-accent-purple/20 text-accent-purple flex items-center justify-center">
                       <span className="material-symbols-outlined max-[480px]:text-lg">download</span>
                     </div>
@@ -1338,12 +1351,9 @@ export default function AdminPage() {
                       <p className="text-xs max-[480px]:text-[10px] text-slate-500">За текущий месяц</p>
                     </div>
                   </div>
-                  <div className="flex gap-1 bg-slate-50 rounded-lg p-1 mt-3">
+                  <div className="flex gap-1 bg-slate-50 rounded-lg p-1 mb-3">
                     <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setExportMasterFilter('all');
-                      }}
+                      onClick={() => setExportMasterFilter('all')}
                       className={`flex-1 px-3 py-1.5 rounded text-xs font-semibold transition-all ${
                         exportMasterFilter === 'all'
                           ? 'bg-gradient-to-r from-accent-pink to-accent-purple text-white'
@@ -1353,10 +1363,7 @@ export default function AdminPage() {
                       Все
                     </button>
                     <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setExportMasterFilter('Лиза');
-                      }}
+                      onClick={() => setExportMasterFilter('Лиза')}
                       className={`flex-1 px-3 py-1.5 rounded text-xs font-semibold transition-all ${
                         exportMasterFilter === 'Лиза'
                           ? 'bg-gradient-to-r from-accent-pink to-accent-purple text-white'
@@ -1366,10 +1373,7 @@ export default function AdminPage() {
                       Лиза
                     </button>
                     <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setExportMasterFilter('Женя');
-                      }}
+                      onClick={() => setExportMasterFilter('Женя')}
                       className={`flex-1 px-3 py-1.5 rounded text-xs font-semibold transition-all ${
                         exportMasterFilter === 'Женя'
                           ? 'bg-gradient-to-r from-accent-pink to-accent-purple text-white'
@@ -1379,7 +1383,13 @@ export default function AdminPage() {
                       Женя
                     </button>
                   </div>
-                </button>
+                  <button
+                    onClick={handleExportPDF}
+                    className="w-full px-4 py-2 rounded-xl bg-gradient-to-r from-accent-pink to-accent-purple text-white font-bold text-sm hover:scale-105 transition-transform"
+                  >
+                    Скачать PDF
+                  </button>
+                </div>
               </div>
             </div>
 
