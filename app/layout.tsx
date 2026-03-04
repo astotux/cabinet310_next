@@ -9,8 +9,58 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Кабинет 310 — Студия красоты",
-  description: "Перманентный макияж и нейл-сервис нового уровня",
+  metadataBase: new URL('https://cabinet310.ru'),
+  title: {
+    default: "Кабинет 310 — Студия красоты в Сыктывкаре | Перманентный макияж и маникюр",
+    template: "%s | Кабинет 310"
+  },
+  description: "Студия красоты премиум-класса в Сыктывкаре. Перманентный макияж бровей, губ и межреснички, маникюр, ламинирование ресниц. 5+ лет опыта, 500+ довольных клиентов. Запись онлайн.",
+  keywords: ["перманентный макияж сыктывкар", "пудровые брови сыктывкар", "татуаж губ сыктывкар", "межресничка сыктывкар", "маникюр сыктывкар", "ламинирование ресниц сыктывкар", "студия красоты сыктывкар", "кабинет 310", "перманент бровей", "акварельные губы"],
+  authors: [{ name: "Кабинет 310" }],
+  creator: "Кабинет 310",
+  publisher: "Кабинет 310",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'ru_RU',
+    url: 'https://cabinet310.ru',
+    siteName: 'Кабинет 310',
+    title: 'Кабинет 310 — Студия красоты премиум-класса в Сыктывкаре',
+    description: 'Перманентный макияж бровей, губ и межреснички, маникюр, ламинирование ресниц. 5+ лет опыта, премиальные материалы, 100% стерильность.',
+    images: [
+      {
+        url: '/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Кабинет 310 — Студия красоты в Сыктывкаре',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Кабинет 310 — Студия красоты в Сыктывкаре',
+    description: 'Перманентный макияж бровей, губ и межреснички, маникюр, ламинирование ресниц',
+    images: ['/og-image.jpg'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    google: 'your-google-verification-code',
+    yandex: 'your-yandex-verification-code',
+  },
 };
 
 export default function RootLayout({
@@ -21,11 +71,102 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <head>
+        <link rel="canonical" href="https://cabinet310.ru" />
         <link
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
           rel="stylesheet"
         />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "BeautySalon",
+              "name": "Кабинет 310",
+              "description": "Студия красоты премиум-класса в Сыктывкаре. Перманентный макияж бровей, губ и межреснички, маникюр, ламинирование ресниц.",
+              "url": "https://cabinet310.ru",
+              "telephone": "+7-XXX-XXX-XX-XX",
+              "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "Ваш адрес",
+                "addressLocality": "Сыктывкар",
+                "addressRegion": "Республика Коми",
+                "postalCode": "167000",
+                "addressCountry": "RU"
+              },
+              "geo": {
+                "@type": "GeoCoordinates",
+                "latitude": "61.6681",
+                "longitude": "50.8372"
+              },
+              "openingHoursSpecification": [
+                {
+                  "@type": "OpeningHoursSpecification",
+                  "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+                  "opens": "09:00",
+                  "closes": "20:00"
+                }
+              ],
+              "priceRange": "$$",
+              "image": "https://cabinet310.ru/og-image.jpg",
+              "aggregateRating": {
+                "@type": "AggregateRating",
+                "ratingValue": "5",
+                "reviewCount": "500"
+              },
+              "hasOfferCatalog": {
+                "@type": "OfferCatalog",
+                "name": "Услуги студии красоты",
+                "itemListElement": [
+                  {
+                    "@type": "Offer",
+                    "itemOffered": {
+                      "@type": "Service",
+                      "name": "Перманентный макияж бровей",
+                      "description": "Пудровые брови, естественный эффект"
+                    }
+                  },
+                  {
+                    "@type": "Offer",
+                    "itemOffered": {
+                      "@type": "Service",
+                      "name": "Перманентный макияж губ",
+                      "description": "Акварельные губы, контур и заполнение"
+                    }
+                  },
+                  {
+                    "@type": "Offer",
+                    "itemOffered": {
+                      "@type": "Service",
+                      "name": "Межресничка",
+                      "description": "Перманентный макияж межресничного пространства"
+                    }
+                  },
+                  {
+                    "@type": "Offer",
+                    "itemOffered": {
+                      "@type": "Service",
+                      "name": "Маникюр",
+                      "description": "Укрепление, наращивание, дизайн ногтей"
+                    }
+                  },
+                  {
+                    "@type": "Offer",
+                    "itemOffered": {
+                      "@type": "Service",
+                      "name": "Ламинирование ресниц",
+                      "description": "Оформление и ламинирование ресниц"
+                    }
+                  }
+                ]
+              },
+              "sameAs": [
+                "https://vk.com/cabinet310"
+              ]
+            })
+          }}
+        />
         <style dangerouslySetInnerHTML={{__html: `
           .swiper-pagination-bullet {
             background: linear-gradient(135deg, #FEB9E5 0%, #9F6DFC 100%) !important;

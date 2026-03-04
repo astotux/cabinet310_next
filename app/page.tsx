@@ -35,7 +35,7 @@ export default function Home() {
                 Кабинет <span className="text-gradient">310</span>
               </h1>
               <p className="text-lg sm:text-xl md:text-2xl font-light text-slate-600   leading-relaxed max-w-lg">
-                Территория, где искусство встречается с красотой. Перманентный макияж и нейл-сервис нового уровня.
+                Территория, где искусство встречается с красотой. Перманентный макияж бровей, губ и межреснички, маникюр, ламинирование ресниц в Сыктывкаре.
               </p>
               <div className="flex flex-col sm:flex-row flex-wrap gap-3 md:gap-4 pt-2 md:pt-4">
                 <Link href="/booking" className="gradient-animated px-8 md:px-10 py-4 md:py-5 rounded-xl md:rounded-2xl text-white font-bold text-base md:text-lg flex items-center justify-center gap-2 md:gap-3 shadow-2xl hover:scale-105 transition-transform">
@@ -167,7 +167,7 @@ export default function Home() {
                 <span className="material-symbols-outlined text-3xl md:text-4xl">face_3</span>
               </div>
               <h4 className="text-xl md:text-2xl font-black mb-3 md:mb-4   group-hover:text-primary transition-colors">Перманентный макияж</h4>
-              <p className="text-sm md:text-base text-slate-600   mb-5 md:mb-6 leading-relaxed">Пудровые брови, акварельные губы, межресничка. Естественная красота на годы.</p>
+              <p className="text-sm md:text-base text-slate-600   mb-5 md:mb-6 leading-relaxed">Пудровые брови, акварельные губы, межресничка в Сыктывкаре. Естественная красота на годы.</p>
               <div className="flex items-center gap-2 text-primary font-bold text-sm md:text-base group-hover:gap-4 transition-all">
                 Записаться
                 <span className="material-symbols-outlined">arrow_forward</span>
@@ -188,8 +188,8 @@ export default function Home() {
               <div className="size-14 md:size-16 rounded-xl md:rounded-2xl gradient-animated text-white flex items-center justify-center mb-5 md:mb-6 shadow-xl group-hover:scale-110 transition-transform">
                 <span className="material-symbols-outlined text-3xl md:text-4xl">visibility</span>
               </div>
-              <h4 className="text-xl md:text-2xl font-black mb-3 md:mb-4   group-hover:text-primary transition-colors">Ресницы</h4>
-              <p className="text-sm md:text-base text-slate-600   mb-5 md:mb-6 leading-relaxed">Ламинирование, оформление. Выразительный взгляд без макияжа.</p>
+              <h4 className="text-xl md:text-2xl font-black mb-3 md:mb-4   group-hover:text-primary transition-colors">Ламинирование ресниц</h4>
+              <p className="text-sm md:text-base text-slate-600   mb-5 md:mb-6 leading-relaxed">Ламинирование и оформление ресниц в Сыктывкаре. Выразительный взгляд без макияжа.</p>
               <div className="flex items-center gap-2 text-primary font-bold text-sm md:text-base group-hover:gap-4 transition-all">
                 Записаться
                 <span className="material-symbols-outlined">arrow_forward</span>

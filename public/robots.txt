@@ -1,0 +1,26 @@
+# Robots.txt для Кабинет 310
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /qr/
+
+# Crawl-delay для вежливых ботов
+Crawl-delay: 1
+
+# Специфичные правила для Яндекса
+User-agent: Yandex
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /qr/
+Clean-param: utm_source&utm_medium&utm_campaign
+
+# Специфичные правила для Google
+User-agent: Googlebot
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /qr/
+
+Sitemap: https://cabinet310.ru/sitemap.xml
