@@ -159,12 +159,12 @@ export default function ServicesPage() {
                 </div>
                 
                 <div className="flex items-center justify-between pt-4 border-t border-slate-200/70">
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-1 text-xs text-slate-500">
-                      <span className="material-symbols-outlined text-sm">schedule</span>
+                  <div className="flex items-center gap-4 max-[320px]:gap-1">
+                    <div className="flex items-center gap-1 text-xs  text-slate-500">
+                      <span className="material-symbols-outlined text-sm max-[480px]:text-xs">schedule</span>
                       {service.duration}
                     </div>
-                    <div className="text-lg md:text-xl font-black text-primary">{service.price}</div>
+                    <div className="text-lg md:text-xl max-[480px]:text-sm font-black text-primary">{service.price}</div>
                   </div>
                   <div className="flex items-center gap-2 text-primary font-bold text-sm md:text-base group-hover:gap-4 transition-all">
                     Записаться
@@ -192,11 +192,11 @@ export default function ServicesPage() {
                 Запишитесь на бесплатную консультацию, и наши мастера помогут подобрать идеальные процедуры именно для вас.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-                <Link href="/booking" className="gradient-animated px-10 md:px-12 py-4 md:py-5 rounded-xl md:rounded-2xl text-white font-bold text-lg flex items-center justify-center gap-3 shadow-2xl hover:scale-105 transition-transform">
+                <Link href="/booking" className="gradient-animated px-10 md:px-12 py-4 md:py-5 rounded-xl md:rounded-2xl text-white font-bold text-lg flex items-center justify-center gap-3 shadow-2xl hover:scale-105 transition-transform max-[480px]:text-base">
                   Записаться на консультацию
                   <span className="material-symbols-outlined">arrow_forward</span>
                 </Link>
-                <Link href="/contacts" className="bg-white/10 backdrop-blur-md text-white border border-white/20 px-10 md:px-12 py-4 md:py-5 rounded-xl md:rounded-2xl font-bold text-lg hover:bg-white/20 transition-all">
+                <Link href="/contacts" className="bg-white/10 backdrop-blur-md text-white border border-white/20 px-10 md:px-12 py-4 md:py-5 rounded-xl md:rounded-2xl font-bold text-lg hover:bg-white/20 transition-all max-[480px]:text-base">
                   Задать вопрос
                 </Link>
               </div>

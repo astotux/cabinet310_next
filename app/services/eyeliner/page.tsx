@@ -433,7 +433,7 @@ export default function EyelinerPage() {
                   Задать вопрос
                 </Link>
               </div>
-              <div className="flex items-center justify-center gap-8 pt-6 text-white/80">
+              <div className="flex items-center justify-center max-[480px]:flex-col gap-8 pt-6 text-white/80">
                 <div className="text-center">
                   <p className="text-2xl font-black text-white">от 3500₽</p>
                   <p className="text-sm">Стоимость процедуры</p>
