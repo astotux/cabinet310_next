@@ -17,6 +17,9 @@ export default function Header() {
             <Link className="text-xs lg:text-sm font-semibold hover:text-primary transition-colors" href="/">
               Главная
             </Link>
+            <Link className="text-xs lg:text-sm font-semibold hover:text-primary transition-colors" href="/services">
+              Услуги
+            </Link>
             <Link className="text-xs lg:text-sm font-semibold hover:text-primary transition-colors" href="/reviews">
               Отзывы
             </Link>
@@ -52,6 +55,10 @@ export default function Header() {
         </Link>
 
         <nav className="glass rounded-2xl px-4 py-3 flex items-center justify-around">
+          <Link className="flex flex-col items-center gap-1 text-xs font-semibold hover:text-primary transition-colors" href="/services">
+            <span className="material-symbols-outlined text-xl">spa</span>
+            <span>Услуги</span>
+          </Link>
           <Link className="flex flex-col items-center gap-1 text-xs font-semibold hover:text-primary transition-colors" href="/reviews">
             <span className="material-symbols-outlined text-xl">star</span>
             <span>Отзывы</span>
