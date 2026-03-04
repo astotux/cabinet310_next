@@ -3,7 +3,6 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import Link from "next/link";
-import Image from "next/image";
 
 export const metadata: Metadata = {
   title: "Услуги студии красоты",
@@ -53,20 +52,20 @@ export default function ServicesPage() {
       gradient: "from-accent-purple to-primary",
       price: "от 3500₽",
       duration: "0.5-1.5 часа",
-      link: "/booking",
+      link: "/services/eyeliner",
       image: "/photo4.png",
       features: ["Верхнее веко"]
     },
     {
       name: "Маникюр",
-      description: "Классический и аппаратный маникюр с покрытием гель-лак. Укрепление и наращивание.",
+      description: "Комплексный маникюр с покрытием гель-лак. Аппаратная обработка кутикулы и укрепление гелем.",
       icon: "back_hand",
       gradient: "from-primary to-accent-pink",
       price: "от 1500₽",
       duration: "1-1.5 часа",
-      link: "/booking",
+      link: "/services/manicure",
       image: "/photo5.png",
-      features: ["Классический", "Аппаратный", "Укрепление"]
+      features: ["Аппаратная обработка", "Укрепление гелем", "Гель-лак"]
     },
     {
       name: "Ламинирование ресниц",
@@ -75,7 +74,7 @@ export default function ServicesPage() {
       gradient: "from-accent-purple to-accent-pink",
       price: "от 1200₽",
       duration: "1-1.5 часа",
-      link: "/booking",
+      link: "/services/lash-lamination",
       image: "/photo2.png",
       features: ["Ламинирование", "Ботокс ресниц", "Окрашивание"]
     }
