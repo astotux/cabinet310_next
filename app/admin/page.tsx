@@ -558,6 +558,8 @@ export default function AdminPage() {
         ...bookingForm,
         // Отправляем customPrice только если цена редактировалась
         customPrice: isEditingPrice ? bookingForm.customPrice : undefined,
+        // Пропускаем уведомление в VK при создании записи админом
+        skipNotification: true,
       };
 
       if (editingBooking) {

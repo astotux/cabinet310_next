@@ -21,7 +21,7 @@ import { notifyNewBooking } from "@/lib/vkNotifications";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { service, master, date, time, clientName, clientPhone, comment, customPrice } = body;
+    const { service, master, date, time, clientName, clientPhone, comment, customPrice, skipNotification } = body;
 
     const bookingData: BookingData = {
       service,
@@ -92,15 +92,18 @@ export async function POST(request: NextRequest) {
     });
 
     // Отправляем уведомление в VK (асинхронно, не блокируем ответ)
-    notifyNewBooking({
-      service,
-      master,
-      date,
-      time,
-      clientName,
-      clientPhone,
-      comment,
-    }).catch(err => console.error('Failed to send VK notification:', err));
+    // Пропускаем уведомление если skipNotification = true (создание админом)
+    if (!skipNotification) {
+      notifyNewBooking({
+        service,
+        master,
+        date,
+        time,
+        clientName,
+        clientPhone,
+        comment,
+      }).catch(err => console.error('Failed to send VK notification:', err));
+    }
 
     return NextResponse.json(booking, { status: 201 });
 
