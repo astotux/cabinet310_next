@@ -76,11 +76,11 @@ export default function RootLayout({
         <meta name="yandex-verification" content="050e9e29482539ba" />
         <Script id="yandex-metrika" strategy="afterInteractive">
           {`
-            (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(argu>
+            (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
             m[i].l=1*new Date();
-            for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].s>
-            k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.pare>
-            (window, document, "script", "https://mc.yandex.ru/metrika/tag.js?id=1071541>
+            for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+            k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+            (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
 
             ym(107154105, "init", {
                 clickmap:true,
@@ -91,7 +91,6 @@ export default function RootLayout({
             });
           `}
         </Script>
-
         <noscript>
           <div>
             <img

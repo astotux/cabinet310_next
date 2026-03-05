@@ -516,7 +516,7 @@ export default function BookingPage() {
                       className="service-card-glass p-6 max-[480px]:p-5 max-[320px]:p-4 rounded-3xl flex items-center justify-between gap-6 group max-[480px]:flex-col max-[480px]:items-stretch"
                     >
                       <div className="flex items-center gap-6 max-[480px]:gap-4">
-                        <div className="size-16 rounded-2xl bg-white shadow-inner flex items-center justify-center text-primary overflow-hidden">
+                        <div className="size-16 max-[480px]:size-14 rounded-2xl bg-white shadow-inner flex items-center justify-center text-primary overflow-hidden shrink-0">
                           {service.image ? (
                             <img alt={service.service} className="w-full h-full object-cover" src={service.image} />
                           ) : (
