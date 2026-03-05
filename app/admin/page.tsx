@@ -691,11 +691,13 @@ export default function AdminPage() {
     
     setLoadingSlots(true);
     try {
-      // Генерируем все возможные слоты (09:00 - 20:00 с шагом 60 минут)
+      // Генерируем все возможные слоты (09:00 - 20:00 с шагом 30 минут)
       const slots: string[] = [];
       for (let hour = 9; hour < 20; hour++) {
         slots.push(`${hour.toString().padStart(2, '0')}:00`);
+        slots.push(`${hour.toString().padStart(2, '0')}:30`);
       }
+      slots.push('20:00'); // Добавляем последний слот
       
       // Загружаем заблокированные слоты для выбранного мастера и даты
       const blockedRes = await fetch('/api/blocked-slots');

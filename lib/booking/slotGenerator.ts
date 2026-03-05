@@ -36,7 +36,7 @@ export function addMinutesToTime(time: Date, minutes: number): Date {
  * Генерирует список доступных временных слотов для указанной даты
  * 
  * Правила генерации:
- * - Слоты генерируются с шагом 60 минут (09:00, 10:00, 11:00, ...)
+ * - Слоты генерируются с шагом 30 минут (09:00, 09:30, 10:00, 10:30, ...)
  * - Услуга должна полностью помещаться в рабочие часы
  * - Слоты не генерируются для прошедших дат
  * - Для текущей даты не генерируются слоты для прошедших часов
@@ -53,7 +53,7 @@ export function addMinutesToTime(time: Date, minutes: number): Date {
  *   90,
  *   { start: '09:00', end: '20:00' }
  * );
- * // ['09:00', '10:00', '11:00', ..., '18:00']
+ * // ['09:00', '09:30', '10:00', '10:30', ..., '18:30']
  * // Слот 19:00 не включен, т.к. услуга закончится в 20:30 (за пределами рабочих часов)
  */
 export function generateTimeSlots(
@@ -84,17 +84,25 @@ export function generateTimeSlots(
     const currentHour = now.getHours();
     const currentMinute = now.getMinutes();
     
-    // Округляем текущее время вверх до следующего часа
-    const nextHour = currentMinute > 0 ? currentHour + 1 : currentHour;
-    const currentTime = setMinutes(setHours(targetDate, nextHour), 0);
-    
-    // Если текущее время позже начала рабочего дня, начинаем с текущего времени
-    if (isAfter(currentTime, workStart)) {
-      workStart = currentTime;
+    // Округляем текущее время вверх до следующего получаса
+    let nextMinute = 0;
+    if (currentMinute > 30) {
+      nextMinute = 0;
+      const nextHour = currentHour + 1;
+      const currentTime = setMinutes(setHours(targetDate, nextHour), nextMinute);
+      if (isAfter(currentTime, workStart)) {
+        workStart = currentTime;
+      }
+    } else if (currentMinute > 0) {
+      nextMinute = 30;
+      const currentTime = setMinutes(setHours(targetDate, currentHour), nextMinute);
+      if (isAfter(currentTime, workStart)) {
+        workStart = currentTime;
+      }
     }
   }
 
-  // Генерируем слоты с шагом 60 минут
+  // Генерируем слоты с шагом 30 минут
   let currentSlot = workStart;
   
   while (isBefore(currentSlot, workEnd) || currentSlot.getTime() === workEnd.getTime()) {
@@ -105,8 +113,8 @@ export function generateTimeSlots(
       slots.push(format(currentSlot, 'HH:mm'));
     }
     
-    // Переходим к следующему слоту (через 60 минут)
-    currentSlot = addMinutes(currentSlot, 60);
+    // Переходим к следующему слоту (через 30 минут)
+    currentSlot = addMinutes(currentSlot, 30);
   }
 
   return slots;
