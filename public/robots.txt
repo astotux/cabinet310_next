@@ -1,9 +1,11 @@
-# Robots.txt для Кабинет 310
 User-agent: *
 Allow: /
 Disallow: /admin/
 Disallow: /api/
 Disallow: /qr/
+Disallow: /admin
+Disallow: /api
+Disallow: /qr
 
 # Crawl-delay для вежливых ботов
 Crawl-delay: 1
@@ -22,5 +24,8 @@ Allow: /
 Disallow: /admin/
 Disallow: /api/
 Disallow: /qr/
+Disallow: /admin
+Disallow: /api
+Disallow: /qr
 
 Sitemap: https://cabinet310.ru/sitemap.xml

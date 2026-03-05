@@ -50,6 +50,7 @@ export default function AdminPage() {
   // Состояние для модального окна записи
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [editingBooking, setEditingBooking] = useState<any>(null);
+  const [isEditingPrice, setIsEditingPrice] = useState(false);
   const [bookingForm, setBookingForm] = useState({
     service: "",
     master: "",
@@ -58,6 +59,7 @@ export default function AdminPage() {
     clientName: "",
     clientPhone: "",
     comment: "",
+    customPrice: "",
   });
   
   // Состояние для модального окна блокировки времени
@@ -270,7 +272,8 @@ export default function AdminPage() {
             );
             return {
               ...booking,
-              price: service?.price || null
+              // Используем customPrice если есть, иначе стандартную цену услуги
+              price: booking.customPrice || service?.price || null
             };
           })
         : [];
@@ -315,8 +318,9 @@ export default function AdminPage() {
     const lizaRevenue = monthBookings
       .filter((booking: any) => booking.master === 'Лиза')
       .reduce((sum: number, booking: any) => {
-        const service = servicesData.find((s: any) => s.service === booking.service);
-        return sum + (service?.price || 0);
+        // Используем customPrice если есть, иначе стандартную цену услуги
+        const price = booking.customPrice || servicesData.find((s: any) => s.service === booking.service)?.price || 0;
+        return sum + price;
       }, 0);
     setMonthRevenueLiza(lizaRevenue);
 
@@ -324,8 +328,9 @@ export default function AdminPage() {
     const zhenyaRevenue = monthBookings
       .filter((booking: any) => booking.master === 'Женя')
       .reduce((sum: number, booking: any) => {
-        const service = servicesData.find((s: any) => s.service === booking.service);
-        return sum + (service?.price || 0);
+        // Используем customPrice если есть, иначе стандартную цену услуги
+        const price = booking.customPrice || servicesData.find((s: any) => s.service === booking.service)?.price || 0;
+        return sum + price;
       }, 0);
     setMonthRevenueZhenya(zhenyaRevenue);
 
@@ -364,8 +369,9 @@ export default function AdminPage() {
         });
       } else {
         const dayRevenue = dayBookings.reduce((sum: number, booking: any) => {
-          const service = services.find((s: any) => s.service === booking.service);
-          return sum + (service?.price || 0);
+          // Используем customPrice если есть, иначе стандартную цену услуги
+          const price = booking.customPrice || services.find((s: any) => s.service === booking.service)?.price || 0;
+          return sum + price;
         }, 0);
         data.push({
           day,
@@ -504,6 +510,7 @@ export default function AdminPage() {
   // Функции для работы с записями
   const openAddBookingModal = () => {
     setEditingBooking(null);
+    setIsEditingPrice(false);
     setBookingForm({
       service: "",
       master: "",
@@ -512,12 +519,15 @@ export default function AdminPage() {
       clientName: "",
       clientPhone: "",
       comment: "",
+      customPrice: "",
     });
     setShowBookingModal(true);
   };
 
   const openEditBookingModal = (booking: any) => {
     setEditingBooking(booking);
+    // Если у записи есть customPrice, включаем режим редактирования цены
+    setIsEditingPrice(!!booking.customPrice);
     setBookingForm({
       service: booking.service,
       master: booking.master,
@@ -526,6 +536,7 @@ export default function AdminPage() {
       clientName: booking.clientName,
       clientPhone: booking.clientPhone,
       comment: booking.comment || "",
+      customPrice: booking.customPrice ? booking.customPrice.toString() : "",
     });
     setShowBookingModal(true);
   };
@@ -541,20 +552,28 @@ export default function AdminPage() {
     }
 
     try {
+      // Подготавливаем данные для отправки
+      const dataToSend = {
+        ...bookingForm,
+        // Отправляем customPrice только если цена редактировалась
+        customPrice: isEditingPrice ? bookingForm.customPrice : undefined,
+      };
+
       if (editingBooking) {
         await fetch(`/api/bookings/${editingBooking.id}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(bookingForm),
+          body: JSON.stringify(dataToSend),
         });
       } else {
         await fetch("/api/bookings", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(bookingForm),
+          body: JSON.stringify(dataToSend),
         });
       }
       setShowBookingModal(false);
+      setIsEditingPrice(false);
       fetchData();
     } catch (error) {
       alert("Ошибка сохранения записи");
@@ -1287,6 +1306,11 @@ export default function AdminPage() {
                           <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-semibold">
                             {booking.master}
                           </span>
+                          {booking.price && (
+                            <span className="px-2 py-0.5 rounded-full bg-green-100 text-green-700 text-xs font-semibold">
+                              {booking.price}₽{booking.customPrice ? ' (своб.)' : ''}
+                            </span>
+                          )}
                         </div>
                         <p className="text-sm text-slate-500">{booking.clientName} • {booking.clientPhone}</p>
                         {booking.comment && (
@@ -1800,8 +1824,10 @@ export default function AdminPage() {
                     setBookingForm({ 
                       ...bookingForm, 
                       service: e.target.value,
-                      master: selectedService ? selectedService.master : ""
+                      master: selectedService ? selectedService.master : "",
+                      customPrice: ""
                     });
+                    setIsEditingPrice(false);
                   }}
                   required
                   className="w-full p-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
@@ -1884,6 +1910,71 @@ export default function AdminPage() {
                   className="w-full p-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all min-h-[100px]"
                   placeholder="Дополнительные пожелания клиента"
                 />
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold mb-2">Цена</label>
+                <div className="flex gap-2 max-[480px]:gap-1">
+                  <input
+                    type="number"
+                    value={
+                      isEditingPrice 
+                        ? bookingForm.customPrice 
+                        : (() => {
+                            const selectedService = services.find(
+                              s => s.service === bookingForm.service && s.master === bookingForm.master
+                            );
+                            return selectedService?.price || '';
+                          })()
+                    }
+                    onChange={(e) => setBookingForm({ ...bookingForm, customPrice: e.target.value })}
+                    disabled={!isEditingPrice}
+                    className={`flex-1 max-[480px]:w-20 p-3 rounded-xl border border-slate-200 transition-all ${
+                      isEditingPrice 
+                        ? 'focus:border-primary focus:ring-4 focus:ring-primary/10' 
+                        : 'bg-slate-50 text-slate-600 cursor-not-allowed'
+                    }`}
+                    placeholder={isEditingPrice ? "Введите свободную цену" : "Стандартная цена"}
+                    min="0"
+                  />
+                  {!isEditingPrice ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const selectedService = services.find(
+                          s => s.service === bookingForm.service && s.master === bookingForm.master
+                        );
+                        setBookingForm({ 
+                          ...bookingForm, 
+                          customPrice: selectedService?.price?.toString() || '' 
+                        });
+                        setIsEditingPrice(true);
+                      }}
+                      disabled={!bookingForm.service}
+                      className="px-4 py-3 rounded-xl bg-primary/10 text-primary font-semibold hover:bg-primary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    >
+                      <span className="material-symbols-outlined text-lg">edit</span>
+                      <span className="max-[480px]:hidden">Изменить</span>
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setBookingForm({ ...bookingForm, customPrice: '' });
+                        setIsEditingPrice(false);
+                      }}
+                      className="px-4 py-3 rounded-xl bg-red-50 text-red-600 font-semibold hover:bg-red-100 transition-colors flex items-center gap-2"
+                    >
+                      <span className="material-symbols-outlined text-lg">close</span>
+                      <span className="max-[480px]:hidden">Отмена</span>
+                    </button>
+                  )}
+                </div>
+                <p className="text-xs text-slate-500 mt-1">
+                  {isEditingPrice 
+                    ? 'Введите свободную цену или нажмите "Отмена" для использования стандартной цены' 
+                    : 'Нажмите "Изменить" для установки свободной цены'}
+                </p>
               </div>
 
               <div className="flex gap-3 pt-4">

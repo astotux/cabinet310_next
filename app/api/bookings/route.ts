@@ -21,7 +21,7 @@ import { notifyNewBooking } from "@/lib/vkNotifications";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { service, master, date, time, clientName, clientPhone, comment } = body;
+    const { service, master, date, time, clientName, clientPhone, comment, customPrice } = body;
 
     const bookingData: BookingData = {
       service,
@@ -83,6 +83,7 @@ export async function POST(request: NextRequest) {
           clientName,
           clientPhone,
           comment: comment || null,
+          customPrice: customPrice ? parseInt(customPrice) : null,
         },
       });
     }, {

@@ -18,6 +18,7 @@ model Booking {
   clientName  String
   clientPhone String
   comment     String?
+  customPrice Int?     // Свободная цена, установленная вручную
   createdAt   DateTime @default(now())
 }
 

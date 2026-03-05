@@ -10,7 +10,7 @@ export async function PATCH(
     const id = parseInt(idStr);
     const body = await request.json();
     
-    const { service, master, date, time, clientName, clientPhone, comment } = body;
+    const { service, master, date, time, clientName, clientPhone, comment, customPrice } = body;
 
     const updatedBooking = await prisma.booking.update({
       where: { id },
@@ -22,6 +22,7 @@ export async function PATCH(
         clientName,
         clientPhone,
         comment: comment || null,
+        customPrice: customPrice ? parseInt(customPrice) : null,
       },
     });
 
