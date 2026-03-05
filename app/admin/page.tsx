@@ -819,11 +819,6 @@ export default function AdminPage() {
   const handleBlockTimeSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (blockTimeForm.selectedTimes.length === 0) {
-      alert('Выберите хотя бы один временной слот');
-      return;
-    }
-
     try {
       // Загружаем текущие заблокированные слоты
       const blockedRes = await fetch('/api/blocked-slots');
@@ -870,11 +865,16 @@ export default function AdminPage() {
         throw new Error('Ошибка обновления блокировок');
       }
 
-      const message = [];
-      if (timesToAdd.length > 0) message.push(`добавлено ${timesToAdd.length}`);
-      if (timesToRemove.length > 0) message.push(`удалено ${timesToRemove.length}`);
+      // Формируем сообщение об успехе
+      if (timesToAdd.length === 0 && timesToRemove.length === 0) {
+        alert('Изменений не было');
+      } else {
+        const message = [];
+        if (timesToAdd.length > 0) message.push(`добавлено ${timesToAdd.length}`);
+        if (timesToRemove.length > 0) message.push(`удалено ${timesToRemove.length}`);
+        alert(`Успешно обновлено: ${message.join(', ')} слотов`);
+      }
       
-      alert(`Успешно обновлено: ${message.join(', ')} слотов`);
       setShowBlockTimeModal(false);
       fetchData();
     } catch (error) {
@@ -1283,7 +1283,7 @@ export default function AdminPage() {
                 >
                   <span className="material-symbols-outlined max-[480px]:text-base">block</span>
                   <span className="max-[480px]:hidden">Заблокировать время</span>
-                  <span className="hidden max-[480px]:inline">Блокировка</span>
+                  <span className="hidden max-[480px]:inline">Блокировка времени</span>
                 </button>
               </div>
 
@@ -2253,17 +2253,6 @@ export default function AdminPage() {
                 </div>
               </div>
 
-              {/* Причина */}
-              <div>
-                <label className="block text-sm font-bold mb-2">Причина (необязательно)</label>
-                <textarea
-                  value={blockTimeForm.reason}
-                  onChange={(e) => setBlockTimeForm({ ...blockTimeForm, reason: e.target.value })}
-                  className="w-full p-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all min-h-[80px]"
-                  placeholder="Например: Обеденный перерыв, Выходной"
-                />
-              </div>
-
               {/* Кнопки */}
               <div className="flex gap-3 pt-4">
                 <button
@@ -2275,14 +2264,14 @@ export default function AdminPage() {
                 </button>
                 <button
                   type="submit"
-                  disabled={!blockTimeForm.master || !blockTimeForm.date || blockTimeForm.selectedTimes.length === 0}
+                  disabled={!blockTimeForm.master || !blockTimeForm.date}
                   className={`flex-1 gradient-bg px-6 py-3 rounded-xl text-white font-bold transition-opacity ${
-                    !blockTimeForm.master || !blockTimeForm.date || blockTimeForm.selectedTimes.length === 0 
+                    !blockTimeForm.master || !blockTimeForm.date
                       ? 'opacity-50 cursor-not-allowed' 
                       : 'hover:opacity-90'
                   }`}
                 >
-                  Сохранить ({blockTimeForm.selectedTimes.length})
+                  Сохранить
                 </button>
               </div>
             </form>
