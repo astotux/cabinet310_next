@@ -10,6 +10,7 @@ export default function ReviewsPage() {
   const [reviews, setReviews] = useState<any[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [submittedRating, setSubmittedRating] = useState(0);
   const [name, setName] = useState("");
   const [rating, setRating] = useState(5);
   const [text, setText] = useState("");
@@ -98,6 +99,9 @@ export default function ReviewsPage() {
       });
 
       if (response.ok) {
+        // Сохраняем рейтинг перед очисткой формы
+        setSubmittedRating(rating);
+        
         // Показываем успешное уведомление
         setShowSuccess(true);
 
@@ -110,12 +114,6 @@ export default function ReviewsPage() {
 
         // Обновляем список отзывов
         fetchReviews();
-
-        // Через 3 секунды закрываем модальное окно
-        setTimeout(() => {
-          setShowSuccess(false);
-          setShowForm(false);
-        }, 5000);
       }
     } catch (error) {
       alert("Ошибка при отправке отзыва");
@@ -301,7 +299,7 @@ export default function ReviewsPage() {
                   После проверки он появится на странице. Обычно это занимает несколько минут.
                 </p>
 
-                <div className="mt-8 flex items-center justify-center gap-2 text-primary">
+                <div className="mt-8 flex items-center justify-center gap-2 text-primary mb-8">
                   {[...Array(5)].map((_, i) => (
                     <span
                       key={i}
@@ -314,6 +312,45 @@ export default function ReviewsPage() {
                       star
                     </span>
                   ))}
+                </div>
+
+                <div className="space-y-3 max-w-md mx-auto">
+                  {submittedRating === 5 && (
+                    <a
+                      href="https://yandex.ru/maps/org/kabinet_310/1326804088/reviews/?ll=50.837200%2C61.668800&z=16"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="glass rounded-2xl p-4 max-[480px]:p-3.5 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-3 group hover:scale-[1.02] w-full"
+                    >
+                      <div className="size-12 max-[480px]:size-11 rounded-xl bg-[#FC3F1D] flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                        <svg className="w-7 h-7 max-[480px]:w-6 max-[480px]:h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                        </svg>
+                      </div>
+                      <div className="flex-1 min-w-0 text-left">
+                        <h3 className="font-black text-base max-[480px]:text-sm text-slate-900 mb-0.5">
+                          Оставить отзыв на Яндекс Картах
+                        </h3>
+                        <p className="text-xs max-[480px]:text-[11px] text-slate-600 truncate">
+                          Помогите другим найти нас
+                        </p>
+                      </div>
+                      <span className="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors text-xl">
+                        arrow_forward
+                      </span>
+                    </a>
+                  )}
+
+                  <button
+                    onClick={() => {
+                      setShowSuccess(false);
+                      setShowForm(false);
+                      setSubmittedRating(0);
+                    }}
+                    className="w-full px-6 py-3 rounded-xl border-2 border-slate-200 font-bold hover:bg-slate-50 transition-colors text-slate-700"
+                  >
+                    Закрыть
+                  </button>
                 </div>
               </div>
             ) : (
@@ -365,7 +402,7 @@ export default function ReviewsPage() {
                   {/* Rating */}
                   <div className="flex flex-col items-center space-y-2">
                     <label className="text-sm font-bold text-slate-700">Ваша оценка</label>
-                    <div className="flex gap-1.5">
+                    <div className="flex gap-2">
                       {[1, 2, 3, 4, 5].map((star) => (
                         <button
                           key={star}
@@ -375,7 +412,7 @@ export default function ReviewsPage() {
                             }`}
                         >
                           <span
-                            className="material-symbols-outlined text-3xl max-[480px]:text-2xl"
+                            className="material-symbols-outlined text-5xl max-[480px]:text-4xl"
                             style={{ fontVariationSettings: star <= rating ? "'FILL' 1" : "'FILL' 0" }}
                           >
                             star
