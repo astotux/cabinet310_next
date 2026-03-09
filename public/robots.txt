@@ -1,22 +1,14 @@
 User-agent: *
 Allow: /
-Disallow: /admin/
 Disallow: /admin
 Disallow: /api/
 Disallow: /qr/
 
 User-agent: Yandex
 Allow: /
-Disallow: /admin/
 Disallow: /admin
 Disallow: /api/
 Disallow: /qr/
 Clean-param: utm_source&utm_medium&utm_campaign
-
-User-agent: Googlebot
-Allow: /
-Disallow: /admin/
-Disallow: /api/
-Disallow: /qr/
 
 Sitemap: https://cabinet310.ru/sitemap.xml
