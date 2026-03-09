@@ -5,7 +5,6 @@ Disallow: /admin
 Disallow: /api/
 Disallow: /qr/
 
-# Специфичные правила для Яндекса
 User-agent: Yandex
 Allow: /
 Disallow: /admin/
@@ -14,7 +13,6 @@ Disallow: /api/
 Disallow: /qr/
 Clean-param: utm_source&utm_medium&utm_campaign
 
-# Специфичные правила для Google
 User-agent: Googlebot
 Allow: /
 Disallow: /admin/
