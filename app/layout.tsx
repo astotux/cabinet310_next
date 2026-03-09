@@ -20,6 +20,13 @@ export const metadata: Metadata = {
   authors: [{ name: "Кабинет 310" }],
   creator: "Кабинет 310",
   publisher: "Кабинет 310",
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: '48x48', type: 'image/x-icon' },
+    ],
+    shortcut: '/favicon.ico',
+    apple: '/favicon.ico',
+  },
   formatDetection: {
     email: false,
     address: false,
@@ -58,10 +65,11 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  verification: {
-    google: 'your-google-verification-code',
-    yandex: 'your-yandex-verification-code',
-  },
+  // Удали эти строки или добавь реальные коды верификации
+  // verification: {
+  //   google: 'your-google-verification-code',
+  //   yandex: 'your-yandex-verification-code',
+  // },
 };
 
 export default function RootLayout({

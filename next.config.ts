@@ -16,6 +16,8 @@ const nextConfig: NextConfig = {
   compress: true,
   poweredByHeader: false,
   generateEtags: true,
+  // Убедись, что trailing slash отключен для правильной работы sitemap
+  trailingSlash: false,
 };
 
 export default nextConfig;

@@ -11,7 +11,9 @@
     "create-admin": "node scripts/create-admin-secure.mjs",
     "hash-password": "node scripts/hash-password.mjs",
     "test-jwt": "node scripts/test-jwt.mjs",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "check-seo": "node scripts/check-seo-files.js",
+    "validate-seo": "node scripts/validate-seo-local.mjs"
   },
   "dependencies": {
     "@libsql/client": "^0.8.1",
