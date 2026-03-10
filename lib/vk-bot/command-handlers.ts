@@ -15,10 +15,10 @@ export class CommandHandlers {
     const userId = message.from_id;
     
     try {
-      // Очищаем состояние пользователя
+      // Принудительно очищаем состояние пользователя
       await stateManager.clearUserState(userId);
       
-      // Устанавливаем состояние IDLE
+      // Создаем новое чистое состояние
       await stateManager.transitionTo(userId, DialogState.IDLE);
       
       // Отправляем приветственное сообщение
@@ -28,8 +28,16 @@ export class CommandHandlers {
       console.log(`Start command handled for user ${userId}`);
     } catch (error) {
       console.error('Error handling start command:', error);
-      const errorMessage = messageFormatter.formatError('Ошибка инициализации. Попробуйте еще раз.');
-      await vkBotServer.sendMessage(userId, errorMessage.text, errorMessage.keyboard);
+      
+      // В случае ошибки пытаемся создать новое состояние
+      try {
+        await stateManager.createFreshUserState(userId);
+        const welcomeMessage = messageFormatter.formatWelcome();
+        await vkBotServer.sendMessage(userId, welcomeMessage.text, welcomeMessage.keyboard);
+      } catch (fallbackError) {
+        console.error('Fallback error in start command:', fallbackError);
+        await vkBotServer.sendMessage(userId, 'Добро пожаловать! Используйте кнопки меню для навигации.');
+      }
     }
   }
 
@@ -460,7 +468,9 @@ export class CommandHandlers {
     // Переходим сразу к подтверждению
     await stateManager.transitionTo(userId, DialogState.CONFIRMING_BOOKING);
     
-    const confirmationMessage = messageFormatter.formatBookingConfirmation(currentState.bookingData as any);
+    // Получаем обновленное состояние с полными данными
+    const updatedState = await stateManager.getUserState(userId);
+    const confirmationMessage = messageFormatter.formatBookingConfirmation(updatedState.bookingData);
     await vkBotServer.sendMessage(userId, confirmationMessage.text, confirmationMessage.keyboard);
   }
 

@@ -199,11 +199,11 @@ export class MessageFormatter {
    */
   formatBookingConfirmation(bookingData: Partial<VKBookingData>): FormattedMessage {
     let text = `📋 ПОДТВЕРЖДЕНИЕ ЗАПИСИ\n\n`;
-    text += `🎨 Услуга: ${bookingData.service}\n`;
-    text += `📅 Дата: ${this.formatDate(bookingData.date!)}\n`;
-    text += `⏰ Время: ${bookingData.time}\n`;
-    text += `👥 Клиент: ${bookingData.clientName}\n\n`;
-    text += `📍 Адрес студии:\nг. Сыктывкар, ул. Куратов, д. 4, кабинет 310\n\n📞 Контакты:\nТелефон: +7 (908) 695-49-04\n\n`;
+    text += `🎨 Услуга: ${bookingData.service || 'Не указана'}\n`;
+    text += `📅 Дата: ${bookingData.date ? this.formatDate(bookingData.date) : 'Не указана'}\n`;
+    text += `⏰ Время: ${bookingData.time || 'Не указано'}\n`;
+    text += `👥 Клиент: ${bookingData.clientName || 'Не указан'}\n\n`;
+    text += `📍 Адрес студии:\nг. Сыктывкар, ул. Куратова, д. 4, кабинет 310\n\n📞 Контакты:\nТелефон: +7 (908) 695-49-04\n\n`;
     text += `❓ Подтвердить запись?`;
 
     const keyboard: VKKeyboard = {
@@ -238,45 +238,47 @@ export class MessageFormatter {
    * Форматирование подтверждения созданной записи
    */
   formatCreatedBookingConfirmation(booking: VKBookingData): FormattedMessage {
-    const text = `✅ ЗАПИСЬ ПОДТВЕРЖДЕНА!
+      const text = `✅ ЗАПИСЬ ПОДТВЕРЖДЕНА!
 
-🎨 Услуга: ${booking.service}
-📅 Дата: ${this.formatDate(booking.date)}
-⏰ Время: ${booking.time}
-👥 Клиент: ${booking.clientName}
+  🎨 Услуга: ${booking.service || 'Не указана'}
+  📅 Дата: ${booking.date ? this.formatDate(booking.date) : 'Не указана'}
+  ⏰ Время: ${booking.time || 'Не указано'}
+  👥 Клиент: ${booking.clientName || 'Не указан'}
 
-📍 Адрес студии:
-г. Сыктывкар, ул. Куратов, д. 4, кабинет 310
+  📍 Адрес студии:
+  г. Сыктывкар, ул. Куратова, д. 4, кабинет 310
 
-📞 Контакты:
-Телефон: +7 (908) 695-49-04
+  📞 Контакты:
+  Телефон: +7 (908) 695-49-04
 
-⚠️ Важно:
-• Приходите за 5 минут до начала
-• При опоздании более чем на 15 минут запись может быть отменена
-• Для переноса или отмены записи свяжитесь с нами заранее
+  ⚠️ Важно:
+  • Приходите за 5 минут до начала
+  • При опоздании более чем на 15 минут запись может быть отменена
+  • Для переноса или отмены записи свяжитесь с нами заранее
 
-Спасибо за выбор нашей студии! 💅✨`;
+  Спасибо за выбор нашей студии! 💅✨`;
 
-    const keyboard: VKKeyboard = {
-      one_time: false,
-      inline: true,
-      buttons: [
-        [
-          {
-            action: {
-              type: 'text',
-              label: '✍️ Еще запись',
-              payload: JSON.stringify({ command: 'book' })
-            },
-            color: 'positive'
-          }
+      const keyboard: VKKeyboard = {
+        one_time: false,
+        inline: true,
+        buttons: [
+          [
+            {
+              action: {
+                type: 'text',
+                label: '✍️ Еще запись',
+                payload: JSON.stringify({ command: 'book' })
+              },
+              color: 'positive'
+            }
+          ]
         ]
-      ]
-    };
+      };
 
-    return { text, keyboard };
-  }
+      return { text, keyboard };
+    }
+
+
 
   /**
    * Форматирование сообщения об ошибке

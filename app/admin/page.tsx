@@ -1480,7 +1480,7 @@ export default function AdminPage() {
                           : 'bg-red-100 text-red-600'
                       }`}>
                         <span className="material-symbols-outlined max-[480px]:text-lg">
-                          {vkBotEnabled ? 'smart_toy' : 'smart_toy_outline'}
+                          smart_toy
                         </span>
                       </div>
                       <div className="text-left flex-1">

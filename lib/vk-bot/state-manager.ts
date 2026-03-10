@@ -113,6 +113,31 @@ export class StateManager {
   }
 
   /**
+   * Создание нового чистого состояния пользователя
+   */
+  async createFreshUserState(userId: number): Promise<void> {
+    try {
+      // Сначала удаляем старое состояние если есть
+      await this.clearUserState(userId);
+      
+      // Создаем новое состояние
+      const newState: UserState = {
+        userId,
+        currentState: DialogState.IDLE,
+        bookingData: {},
+        lastActivity: new Date(),
+        messageHistory: []
+      };
+
+      await this.saveUserState(newState);
+      console.log(`Created fresh state for user ${userId}`);
+    } catch (error) {
+      console.error('Error creating fresh user state:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Переход к следующему состоянию
    */
   async transitionTo(userId: number, newState: DialogState, data?: any): Promise<void> {
