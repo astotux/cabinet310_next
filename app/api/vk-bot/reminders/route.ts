@@ -59,7 +59,6 @@ export async function GET() {
         vkUserId: n.vkUserId,
         clientName: n.clientName,
         service: n.service,
-        master: n.master,
         date: n.date,
         time: n.time,
         type: n.type
