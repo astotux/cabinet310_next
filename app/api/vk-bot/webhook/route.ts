@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
 export async function GET() {
   return NextResponse.json({
     status: 'ok',
-    message: 'VK Bot webhook is running',
+    message: 'f8b32dee',
     timestamp: new Date().toISOString()
   });
 }
