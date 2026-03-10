@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { IMaskInput } from 'react-imask';
 import { Line } from 'react-chartjs-2';
+import ContactInfo from '../../components/ContactInfo';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -954,7 +955,7 @@ export default function AdminPage() {
           { text: 'Цена', style: 'tableHeader' },
           { text: 'Мастер', style: 'tableHeader' },
           { text: 'Клиент', style: 'tableHeader' },
-          { text: 'Телефон', style: 'tableHeader' },
+          { text: 'Контакт', style: 'tableHeader' },
           { text: 'Комментарий', style: 'tableHeader' }
         ],
         // Данные
@@ -971,7 +972,7 @@ export default function AdminPage() {
             { text: booking.price ? `${booking.price}₽` : '-', alignment: 'center' },
             { text: booking.master, alignment: 'center' },
             { text: booking.clientName, alignment: 'center' },
-            { text: booking.clientPhone, alignment: 'center' },
+            { text: booking.vkProfile ? booking.vkProfile : (booking.clientPhone || 'Не указан'), alignment: 'center' },
             booking.comment || '-'
           ];
         })
@@ -1321,7 +1322,11 @@ export default function AdminPage() {
                             </span>
                           )}
                         </div>
-                        <p className="text-sm text-slate-500">{booking.clientName} • {booking.clientPhone}</p>
+                        <ContactInfo 
+                          clientName={booking.clientName}
+                          clientPhone={booking.clientPhone}
+                          vkProfile={booking.vkProfile}
+                        />
                         {booking.comment && (
                           <p className="text-sm text-slate-500 italic mt-1">💬 {booking.comment}</p>
                         )}

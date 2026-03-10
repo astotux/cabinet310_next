@@ -14,6 +14,17 @@ interface BookingNotification {
   comment?: string;
 }
 
+interface VKBookingNotification {
+  service: string;
+  master: string;
+  date: string;
+  time: string;
+  clientName: string;
+  vkProfile: string;
+  vkUserId: number;
+  comment?: string;
+}
+
 interface ReviewNotification {
   name: string;
   rating: number;
@@ -62,6 +73,24 @@ export async function notifyNewBooking(booking: BookingNotification) {
 
 👥 Клиент: ${booking.clientName}
 📱 Телефон: ${booking.clientPhone}
+${booking.comment ? `💬 Комментарий: ${booking.comment}` : ''}`;
+
+  // Отправляем уведомление всем админам
+  for (const adminId of VK_ADMIN_IDS) {
+    await sendVKMessage(adminId, message);
+  }
+}
+
+export async function notifyNewVKBooking(booking: VKBookingNotification) {
+  const message = `🎉 Новая запись через ВК бота!
+
+📋 Услуга: ${booking.service}
+👤 Мастер: ${booking.master}
+📅 Дата: ${booking.date}
+⏰ Время: ${booking.time}
+
+👥 Клиент: ${booking.clientName}
+🔗 VK профиль: https://${booking.vkProfile}
 ${booking.comment ? `💬 Комментарий: ${booking.comment}` : ''}`;
 
   // Отправляем уведомление всем админам

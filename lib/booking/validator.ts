@@ -11,7 +11,9 @@ export interface BookingData {
   date: string;       // YYYY-MM-DD формат
   time: string;       // HH:mm формат
   clientName: string;
-  clientPhone: string;
+  clientPhone?: string;  // Теперь необязательное для VK бронирований
+  vkProfile?: string;    // VK профиль (vk.com/id123456 или vk.com/username)
+  vkUserId?: number;     // ID пользователя ВК для уведомлений
 }
 
 /**
@@ -39,20 +41,36 @@ function isValidPhone(phone: string): boolean {
 }
 
 /**
+ * Валидирует формат VK профиля
+ * Принимает форматы: vk.com/id123456, vk.com/username
+ * 
+ * @param vkProfile - Ссылка на VK профиль
+ * @returns true если формат валиден
+ */
+function validateVKProfile(vkProfile: string): boolean {
+  // Поддерживаемые форматы:
+  // vk.com/id123456 (числовой ID)
+  // vk.com/username (имя пользователя)
+  const vkProfileRegex = /^vk\.com\/(id\d+|[a-zA-Z0-9_]+)$/;
+  return vkProfileRegex.test(vkProfile);
+}
+
+/**
  * Валидирует данные бронирования
  * 
  * Проверки:
  * - Все обязательные поля заполнены
  * - Дата в формате YYYY-MM-DD
  * - Время в формате HH:mm
- * - Телефон в валидном формате
+ * - Контактные данные: либо телефон, либо VK профиль
  * - Дата не в прошлом
  * 
  * @param data - Данные бронирования
  * @returns Результат валидации с списком ошибок
  * 
  * @example
- * const result = validateBooking({
+ * // Обычное бронирование с телефоном
+ * const result1 = validateBooking({
  *   service: 'Маникюр',
  *   master: 'Лиза',
  *   date: '2024-01-15',
@@ -60,7 +78,17 @@ function isValidPhone(phone: string): boolean {
  *   clientName: 'Иван Иванов',
  *   clientPhone: '+79991234567'
  * });
- * // { valid: true, errors: [] }
+ * 
+ * // VK бронирование
+ * const result2 = validateBooking({
+ *   service: 'Маникюр',
+ *   master: 'Лиза',
+ *   date: '2024-01-15',
+ *   time: '14:00',
+ *   clientName: 'Иван Иванов',
+ *   vkProfile: 'vk.com/id123456',
+ *   vkUserId: 123456
+ * });
  */
 export function validateBooking(data: BookingData): ValidationResult {
   const errors: string[] = [];
@@ -86,8 +114,16 @@ export function validateBooking(data: BookingData): ValidationResult {
     errors.push('Не указано имя клиента');
   }
 
-  if (!data.clientPhone || data.clientPhone.trim() === '') {
-    errors.push('Не указан телефон клиента');
+  // Проверка контактных данных - должен быть указан либо телефон, либо VK профиль
+  const hasPhone = data.clientPhone && data.clientPhone.trim() !== '';
+  const hasVKProfile = data.vkProfile && data.vkProfile.trim() !== '';
+
+  if (!hasPhone && !hasVKProfile) {
+    errors.push('Необходимо указать либо телефон, либо VK профиль');
+  }
+
+  if (hasPhone && hasVKProfile) {
+    errors.push('Нельзя указывать одновременно телефон и VK профиль');
   }
 
   // Если есть критические ошибки, возвращаем результат
@@ -119,9 +155,14 @@ export function validateBooking(data: BookingData): ValidationResult {
     errors.push('Неверный формат времени. Используйте HH:mm');
   }
 
-  // Валидация телефона
-  if (!isValidPhone(data.clientPhone)) {
+  // Валидация телефона (если указан)
+  if (hasPhone && !isValidPhone(data.clientPhone!)) {
     errors.push('Неверный формат телефона. Используйте российский формат (+7XXXXXXXXXX)');
+  }
+
+  // Валидация VK профиля (если указан)
+  if (hasVKProfile && !validateVKProfile(data.vkProfile!)) {
+    errors.push('Неверный формат VK профиля. Используйте формат vk.com/id123456 или vk.com/username');
   }
 
   return {

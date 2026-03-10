@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { validateBookingWithAvailability, BookingData } from "@/lib/booking/validator";
-import { notifyNewBooking } from "@/lib/vkNotifications";
+import { notifyNewBooking, notifyNewVKBooking } from "@/lib/vkNotifications";
+import { vkNotificationService } from "@/lib/vk-bot/notification-service";
 
 /**
  * POST /api/bookings
@@ -15,13 +16,30 @@ import { notifyNewBooking } from "@/lib/vkNotifications";
  *   date: string (YYYY-MM-DD),
  *   time: string (HH:mm),
  *   clientName: string,
- *   clientPhone: string
+ *   clientPhone?: string,  // Для обычных записей
+ *   vkProfile?: string,    // Для VK записей (vk.com/id123456)
+ *   vkUserId?: number,     // ID пользователя ВК
+ *   comment?: string,
+ *   customPrice?: number,
+ *   skipNotification?: boolean
  * }
  */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { service, master, date, time, clientName, clientPhone, comment, customPrice, skipNotification } = body;
+    const { 
+      service, 
+      master, 
+      date, 
+      time, 
+      clientName, 
+      clientPhone, 
+      vkProfile,
+      vkUserId,
+      comment, 
+      customPrice, 
+      skipNotification 
+    } = body;
 
     const bookingData: BookingData = {
       service,
@@ -29,7 +47,9 @@ export async function POST(request: NextRequest) {
       date,
       time,
       clientName,
-      clientPhone,
+      clientPhone: clientPhone || undefined,
+      vkProfile: vkProfile || undefined,
+      vkUserId: vkUserId || undefined,
     };
 
     // Получаем информацию об услуге для определения длительности
@@ -81,10 +101,12 @@ export async function POST(request: NextRequest) {
           date,
           time,
           clientName,
-          clientPhone,
+          clientPhone: clientPhone || null,
+          vkProfile: vkProfile || null,
+          vkUserId: vkUserId || null,
           comment: comment || null,
           customPrice: customPrice ? parseInt(customPrice) : null,
-        },
+        } as any,
       });
     }, {
       maxWait: 10000, // Максимальное время ожидания начала транзакции
@@ -94,15 +116,41 @@ export async function POST(request: NextRequest) {
     // Отправляем уведомление в VK (асинхронно, не блокируем ответ)
     // Пропускаем уведомление если skipNotification = true (создание админом)
     if (!skipNotification) {
-      notifyNewBooking({
-        service,
-        master,
-        date,
-        time,
-        clientName,
-        clientPhone,
-        comment,
-      }).catch(err => console.error('Failed to send VK notification:', err));
+      if (vkProfile && vkUserId) {
+        // Уведомление администраторам о VK бронировании
+        notifyNewVKBooking({
+          service,
+          master,
+          date,
+          time,
+          clientName,
+          vkProfile,
+          vkUserId,
+          comment,
+        }).catch(err => console.error('Failed to send VK admin notification:', err));
+        
+        // Подтверждение пользователю ВК
+        vkNotificationService.sendBookingConfirmation({
+          vkUserId,
+          clientName,
+          service,
+          master,
+          date,
+          time,
+          type: 'confirmation'
+        }).catch(err => console.error('Failed to send VK user confirmation:', err));
+      } else if (clientPhone) {
+        // Обычное уведомление
+        notifyNewBooking({
+          service,
+          master,
+          date,
+          time,
+          clientName,
+          clientPhone,
+          comment,
+        }).catch(err => console.error('Failed to send VK notification:', err));
+      }
     }
 
     return NextResponse.json(booking, { status: 201 });

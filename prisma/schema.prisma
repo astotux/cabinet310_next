@@ -16,7 +16,9 @@ model Booking {
   date        String
   time        String
   clientName  String
-  clientPhone String
+  clientPhone String?  // Теперь необязательное поле для VK записей
+  vkProfile   String?  // Ссылка на VK профиль (vk.com/id123456 или vk.com/username)
+  vkUserId    Int?     // ID пользователя ВК для уведомлений
   comment     String?
   customPrice Int?     // Свободная цена, установленная вручную
   createdAt   DateTime @default(now())
@@ -69,4 +71,14 @@ model Admin {
   password  String   // Хешированный пароль
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
+}
+
+model VKUserState {
+  id            Int      @id @default(autoincrement())
+  vkUserId      Int      @unique
+  currentState  String   // DialogState enum (idle, selecting_service, etc.)
+  bookingData   String?  // JSON с промежуточными данными бронирования
+  lastActivity  DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
