@@ -268,9 +268,10 @@ export class ErrorHandler {
     switch (error.type) {
       case ErrorType.VK_API_ERROR:
         // Повторяем только для временных ошибок VK API
-        return error.originalError && 
+        return !!(error.originalError && 
+               error.originalError.message &&
                (error.originalError.message.includes('Too many requests') ||
-                error.originalError.message.includes('Flood control'));
+                error.originalError.message.includes('Flood control')));
                 
       case ErrorType.DATABASE_ERROR:
         // Повторяем для ошибок блокировки/занятости БД
