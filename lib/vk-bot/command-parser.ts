@@ -38,9 +38,9 @@ export class CommandParser {
       return CommandType.BOOK;
     }
 
-    // Команда "Помощь"
-    if (this.matchesCommand(text, ['помощь', 'help', '/help', 'что ты умеешь'])) {
-      return CommandType.HELP;
+    // Команда "Связаться с человеком"
+    if (this.matchesCommand(text, ['связаться с человеком', 'человек', 'помощь', 'help', '/help', 'что ты умеешь', 'администратор', 'админ'])) {
+      return CommandType.CONTACT_HUMAN;
     }
 
     // Команда "Отмена"
@@ -80,7 +80,7 @@ export class CommandParser {
    */
   private validateCommand(commandType: CommandType, parameters: CommandParameters): boolean {
     // Базовые команды всегда валидны
-    if ([CommandType.START, CommandType.PRICE, CommandType.BOOK, CommandType.HELP, CommandType.CANCEL].includes(commandType)) {
+    if ([CommandType.START, CommandType.PRICE, CommandType.BOOK, CommandType.CONTACT_HUMAN, CommandType.CANCEL].includes(commandType)) {
       return true;
     }
 
@@ -116,7 +116,7 @@ export class CommandParser {
     return [
       '📋 Прайс - посмотреть список услуг и цены',
       '✍️ Записаться - записаться на услугу',
-      '❓ Помощь - получить справку',
+      '👤 Связаться с человеком - получить помощь от администратора',
       '❌ Отмена - отменить текущее действие'
     ];
   }

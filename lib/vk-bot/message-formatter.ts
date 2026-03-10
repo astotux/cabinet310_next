@@ -16,10 +16,10 @@ export class MessageFormatter {
     // Группируем услуги по категориям
     const servicesByCategory = this.groupServicesByCategory(services);
     
-    let text = '💅 **ПРАЙС-ЛИСТ**\n\n';
+    let text = '💅 ПРАЙС-ЛИСТ\n\n';
     
     for (const [category, categoryServices] of Object.entries(servicesByCategory)) {
-      text += `🔸 **${category.toUpperCase()}**\n`;
+      text += `🔸 ${category.toUpperCase()}\n`;
       
       categoryServices.forEach(service => {
         const duration = this.formatDuration(service.duration);
@@ -27,7 +27,6 @@ export class MessageFormatter {
         if (service.description) {
           text += `  ${service.description}\n`;
         }
-        text += `  👤 Мастер: ${service.master}\n`;
         text += `  ⏱ Время: ${duration}\n`;
         text += `  💰 Цена: ${service.price} ₽\n\n`;
       });
@@ -54,8 +53,8 @@ export class MessageFormatter {
           {
             action: {
               type: 'text',
-              label: '❓ Помощь',
-              payload: JSON.stringify({ command: 'help' })
+              label: '👤 Связаться с человеком',
+              payload: JSON.stringify({ command: 'contact_human' })
             },
             color: 'secondary'
           }
@@ -69,7 +68,7 @@ export class MessageFormatter {
   /**
    * Форматирование доступных слотов
    */
-  formatAvailableSlots(slots: string[], date: string, serviceName?: string, masterName?: string): FormattedMessage {
+  formatAvailableSlots(slots: string[], date: string, serviceName?: string): FormattedMessage {
     if (slots.length === 0) {
       return {
         text: `❌ На ${this.formatDate(date)} нет свободных слотов.\n\nПопробуйте выбрать другую дату.`,
@@ -77,13 +76,16 @@ export class MessageFormatter {
       };
     }
 
-    let text = `📅 **СВОБОДНЫЕ СЛОТЫ**\n\n`;
-    if (serviceName && masterName) {
-      text += `🎨 Услуга: ${serviceName}\n👤 Мастер: ${masterName}\n`;
+    let text = `📅 СВОБОДНЫЕ СЛОТЫ\n\n`;
+    if (serviceName) {
+      text += `🎨 Услуга: ${serviceName}\n`;
     }
     text += `📆 Дата: ${this.formatDate(date)}\n\n`;
 
-    text += '⏰ **Доступное время:**\n';
+    text += '⏰ Доступное время:\n';
+    
+    // Создаем кнопки для каждого слота
+    const buttons: any[][] = [];
     
     // Группируем слоты по времени дня
     const morningSlots = slots.filter(slot => this.isMorning(slot));
@@ -91,42 +93,84 @@ export class MessageFormatter {
     const eveningSlots = slots.filter(slot => this.isEvening(slot));
 
     if (morningSlots.length > 0) {
-      text += `🌅 **Утро:** ${morningSlots.join(', ')}\n`;
+      text += `🌅 Утро: ${morningSlots.join(', ')}\n`;
+      morningSlots.forEach(slot => {
+        buttons.push([{
+          action: {
+            type: 'text',
+            label: `🌅 ${slot}`,
+            payload: JSON.stringify({ command: 'select_time', time: slot })
+          },
+          color: 'primary'
+        }]);
+      });
     }
+    
     if (afternoonSlots.length > 0) {
-      text += `☀️ **День:** ${afternoonSlots.join(', ')}\n`;
+      text += `☀️ День: ${afternoonSlots.join(', ')}\n`;
+      afternoonSlots.forEach(slot => {
+        buttons.push([{
+          action: {
+            type: 'text',
+            label: `☀️ ${slot}`,
+            payload: JSON.stringify({ command: 'select_time', time: slot })
+          },
+          color: 'primary'
+        }]);
+      });
     }
+    
     if (eveningSlots.length > 0) {
-      text += `🌆 **Вечер:** ${eveningSlots.join(', ')}\n`;
+      text += `🌆 Вечер: ${eveningSlots.join(', ')}\n`;
+      eveningSlots.forEach(slot => {
+        buttons.push([{
+          action: {
+            type: 'text',
+            label: `🌆 ${slot}`,
+            payload: JSON.stringify({ command: 'select_time', time: slot })
+          },
+          color: 'primary'
+        }]);
+      });
     }
 
-    text += '\n💬 Напишите время в формате ЧЧ:ММ (например: 14:30)';
+    // Добавляем кнопку "Назад"
+    buttons.push([{
+      action: {
+        type: 'text',
+        label: '⬅️ Назад',
+        payload: JSON.stringify({ command: 'back_to_date' })
+      },
+      color: 'secondary'
+    }]);
 
-    return { 
-      text,
-      keyboard: this.createBackKeyboard()
+    const keyboard: VKKeyboard = {
+      one_time: false,
+      inline: true,
+      buttons: buttons.slice(0, 10) // Ограничиваем количество кнопок
     };
+
+    return { text, keyboard };
   }
 
   /**
    * Форматирование подтверждения бронирования
    */
   formatBookingConfirmation(booking: VKBookingData): FormattedMessage {
-    const text = `✅ **ЗАПИСЬ ПОДТВЕРЖДЕНА!**
+    const text = `✅ ЗАПИСЬ ПОДТВЕРЖДЕНА!
 
 🎨 Услуга: ${booking.service}
-👤 Мастер: ${booking.master}
 📅 Дата: ${this.formatDate(booking.date)}
 ⏰ Время: ${booking.time}
 👥 Клиент: ${booking.clientName}
 
-📍 **Адрес студии:**
+📍 Адрес студии:
 г. Москва, ул. Примерная, д. 123
 
-📞 **Контакты:**
+📞 Контакты:
 Телефон: +7 (999) 123-45-67
 
-⚠️ **Важно:**
+⚠️ Важно:
 • Приходите за 5 минут до начала
 • При опоздании более чем на 15 минут запись может быть отменена
 • Для переноса или отмены записи свяжитесь с нами заранее
@@ -165,7 +209,7 @@ export class MessageFormatter {
    * Форматирование сообщения об ошибке
    */
   formatError(error: string): FormattedMessage {
-    const text = `❌ **ОШИБКА**\n\n${error}\n\nПопробуйте еще раз или обратитесь к администратору.`;
+    const text = `❌ ОШИБКА\n\n${error}\n\nПопробуйте еще раз или обратитесь к администратору.`;
     
     return { 
       text,
@@ -177,25 +221,24 @@ export class MessageFormatter {
    * Форматирование справочного сообщения
    */
   formatHelp(): FormattedMessage {
-    const text = `❓ **СПРАВКА**
+    const text = `❓ СПРАВКА
 
 Я помогу вам записаться на услуги нашей студии красоты!
 
-🔹 **Доступные команды:**
-• 📋 **Прайс** - посмотреть услуги и цены
-• ✍️ **Записаться** - записаться на услугу
-• ❓ **Помощь** - показать эту справку
-• ❌ **Отмена** - отменить текущее действие
+🔹 Доступные команды:
+• 📋 Прайс - посмотреть услуги и цены
+• ✍️ Записаться - записаться на услугу
+• 👤 Связаться с человеком - получить помощь от администратора
+• ❌ Отмена - отменить текущее действие
 
-🔹 **Как записаться:**
+🔹 Как записаться:
 1. Нажмите "Записаться" или напишите "Записаться"
 2. Выберите услугу из списка
-3. Выберите мастера
-4. Выберите удобную дату и время
-5. Укажите ваше имя
-6. Подтвердите запись
+3. Выберите удобную дату и время
+4. Укажите ваше имя
+5. Подтвердите запись
 
-📞 **Контакты:**
+📞 Контакты:
 Телефон: +7 (999) 123-45-67
 Адрес: г. Москва, ул. Примерная, д. 123
 
@@ -211,7 +254,7 @@ export class MessageFormatter {
    * Форматирование приветственного сообщения
    */
   formatWelcome(): FormattedMessage {
-    const text = `👋 **Добро пожаловать в студию красоты!**
+    const text = `👋 Добро пожаловать в студию красоты!
 
 Я ваш помощник для записи на услуги. Здесь вы можете:
 
@@ -233,12 +276,12 @@ export class MessageFormatter {
   formatServiceSelection(services: ServiceInfo[]): FormattedMessage {
     const servicesByCategory = this.groupServicesByCategory(services);
     
-    let text = '🎨 **ВЫБЕРИТЕ УСЛУГУ**\n\n';
+    let text = '🎨 ВЫБЕРИТЕ УСЛУГУ\n\n';
     
     const buttons: any[][] = [];
     
     for (const [category, categoryServices] of Object.entries(servicesByCategory)) {
-      text += `🔸 **${category.toUpperCase()}**\n`;
+      text += `🔸 ${category.toUpperCase()}\n`;
       
       categoryServices.forEach(service => {
         text += `• ${service.service} - ${service.price} ₽\n`;
@@ -274,6 +317,96 @@ export class MessageFormatter {
       one_time: false,
       inline: true,
       buttons: buttons.slice(0, 10) // Ограничиваем количество кнопок
+    };
+
+    return { text, keyboard };
+  }
+
+  /**
+   * Форматирование выбора даты с кнопками-слайдером
+   */
+  formatDateSelection(availableDates: string[], serviceName: string, currentIndex: number = 0): FormattedMessage {
+    if (availableDates.length === 0) {
+      return {
+        text: '❌ Нет доступных дат для записи.',
+        keyboard: this.createBackKeyboard()
+      };
+    }
+
+    const maxDatesPerPage = 5;
+    const startIndex = currentIndex;
+    const endIndex = Math.min(startIndex + maxDatesPerPage, availableDates.length);
+    const currentDates = availableDates.slice(startIndex, endIndex);
+
+    let text = `🎨 Услуга: ${serviceName}\n\n📅 ВЫБЕРИТЕ ДАТУ\n\n`;
+    
+    const buttons: any[][] = [];
+    
+    // Добавляем кнопки для дат
+    currentDates.forEach(date => {
+      const displayDate = this.formatDate(date);
+      buttons.push([{
+        action: {
+          type: 'text',
+          label: displayDate,
+          payload: JSON.stringify({ 
+            command: 'select_date', 
+            date: date 
+          })
+        },
+        color: 'primary'
+      }]);
+      text += `📆 ${displayDate}\n`;
+    });
+
+    // Добавляем навигационные кнопки
+    const navButtons = [];
+    if (startIndex > 0) {
+      navButtons.push({
+        action: {
+          type: 'text',
+          label: '⬅️ Предыдущие',
+          payload: JSON.stringify({ 
+            command: 'prev_dates', 
+            index: Math.max(0, startIndex - maxDatesPerPage)
+          })
+        },
+        color: 'secondary'
+      });
+    }
+    
+    if (endIndex < availableDates.length) {
+      navButtons.push({
+        action: {
+          type: 'text',
+          label: 'Следующие ➡️',
+          payload: JSON.stringify({ 
+            command: 'next_dates', 
+            index: endIndex
+          })
+        },
+        color: 'secondary'
+      });
+    }
+    
+    if (navButtons.length > 0) {
+      buttons.push(navButtons);
+    }
+
+    // Добавляем кнопку "Назад"
+    buttons.push([{
+      action: {
+        type: 'text',
+        label: '⬅️ Назад к услугам',
+        payload: JSON.stringify({ command: 'back_to_services' })
+      },
+      color: 'secondary'
+    }]);
+
+    const keyboard: VKKeyboard = {
+      one_time: false,
+      inline: true,
+      buttons: buttons
     };
 
     return { text, keyboard };
@@ -382,8 +515,8 @@ export class MessageFormatter {
           {
             action: {
               type: 'text',
-              label: '❓ Помощь',
-              payload: JSON.stringify({ command: 'help' })
+              label: '👤 Связаться с человеком',
+              payload: JSON.stringify({ command: 'contact_human' })
             },
             color: 'secondary'
           }
@@ -419,6 +552,23 @@ export class MessageFormatter {
           }
         ]
       ]
+    };
+  }
+
+  /**
+   * Форматирование сообщения о запросе связи с человеком
+   */
+  formatContactHumanRequest(): FormattedMessage {
+    const text = `👤 Запрос отправлен!
+
+Ваш запрос на связь с администратором отправлен. 
+Мы свяжемся с вами в ближайшее время.
+
+А пока вы можете:`;
+
+    return {
+      text,
+      keyboard: this.createMainMenuKeyboard()
     };
   }
 }

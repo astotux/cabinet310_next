@@ -63,8 +63,8 @@ export class VKBotServer {
           await commandHandlers.handleBookCommand(message);
           break;
           
-        case CommandType.HELP:
-          await commandHandlers.handleHelpCommand(message);
+        case CommandType.CONTACT_HUMAN:
+          await commandHandlers.handleContactHumanCommand(message);
           break;
           
         case CommandType.CANCEL:

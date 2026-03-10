@@ -7,7 +7,6 @@ export interface BookingNotification {
   vkUserId: number;
   clientName: string;
   service: string;
-  master: string;
   date: string;
   time: string;
   type: 'confirmation' | 'reminder_24h' | 'reminder_2h';
@@ -65,21 +64,20 @@ export class VKNotificationService {
   private formatConfirmationMessage(notification: BookingNotification) {
     const formattedDate = this.formatDate(notification.date);
     
-    const text = `✅ **ЗАПИСЬ ПОДТВЕРЖДЕНА!**
+    const text = `✅ ЗАПИСЬ ПОДТВЕРЖДЕНА!
 
 🎨 Услуга: ${notification.service}
-👤 Мастер: ${notification.master}
 📅 Дата: ${formattedDate}
 ⏰ Время: ${notification.time}
 👥 Клиент: ${notification.clientName}
 
-📍 **Адрес студии:**
+📍 Адрес студии:
 г. Москва, ул. Примерная, д. 123
 
-📞 **Контакты:**
+📞 Контакты:
 Телефон: +7 (999) 123-45-67
 
-⚠️ **Важно:**
+⚠️ Важно:
 • Приходите за 5 минут до начала
 • При опоздании более чем на 15 минут запись может быть отменена
 • Для переноса или отмены записи свяжитесь с нами заранее
@@ -88,7 +86,6 @@ export class VKNotificationService {
 
     return messageFormatter.formatBookingConfirmation({
       service: notification.service,
-      master: notification.master,
       date: notification.date,
       time: notification.time,
       clientName: notification.clientName,
@@ -103,22 +100,21 @@ export class VKNotificationService {
   private format24HourReminderMessage(notification: BookingNotification) {
     const formattedDate = this.formatDate(notification.date);
     
-    const text = `⏰ **НАПОМИНАНИЕ О ЗАПИСИ**
+    const text = `⏰ НАПОМИНАНИЕ О ЗАПИСИ
 
 Завтра у вас запись в нашей студии красоты!
 
 🎨 Услуга: ${notification.service}
-👤 Мастер: ${notification.master}
 📅 Дата: ${formattedDate}
 ⏰ Время: ${notification.time}
 
-📍 **Адрес:**
+📍 Адрес:
 г. Москва, ул. Примерная, д. 123
 
-📞 **Контакты:**
+📞 Контакты:
 Телефон: +7 (999) 123-45-67
 
-⚠️ **Напоминаем:**
+⚠️ Напоминаем:
 • Приходите за 5 минут до начала
 • При необходимости переноса или отмены свяжитесь с нами заранее
 
@@ -151,23 +147,22 @@ export class VKNotificationService {
   private format2HourReminderMessage(notification: BookingNotification) {
     const formattedDate = this.formatDate(notification.date);
     
-    const text = `🔔 **СКОРО ВАША ЗАПИСЬ!**
+    const text = `🔔 СКОРО ВАША ЗАПИСЬ!
 
 Через 2 часа у вас запись в нашей студии красоты!
 
 🎨 Услуга: ${notification.service}
-👤 Мастер: ${notification.master}
 📅 Дата: ${formattedDate}
 ⏰ Время: ${notification.time}
 
-📍 **Адрес:**
+📍 Адрес:
 г. Москва, ул. Примерная, д. 123
 
-🚗 **Как добраться:**
+🚗 Как добраться:
 • Метро "Примерная" (5 минут пешком)
 • Парковка рядом с домом
 
-⚠️ **Важно:**
+⚠️ Важно:
 • Приходите за 5 минут до начала
 • Возьмите с собой документ, удостоверяющий личность
 
@@ -270,7 +265,6 @@ export class VKNotificationService {
             vkUserId: booking.vkUserId,
             clientName: booking.clientName,
             service: booking.service,
-            master: booking.master,
             date: booking.date,
             time: booking.time,
             type
@@ -311,6 +305,43 @@ export class VKNotificationService {
       console.log(`Sent ${notifications.length} scheduled reminders`);
     } catch (error) {
       console.error('Error sending scheduled reminders:', error);
+    }
+  }
+
+  /**
+   * Отправка уведомления админам о запросе связи с человеком
+   */
+  async notifyAdminsAboutContactRequest(vkUserId: number, userName?: string): Promise<void> {
+    try {
+      // Получаем список админов из переменных окружения
+      const adminIds = process.env.VK_ADMIN_IDS?.split(',').map(id => parseInt(id.trim())) || [];
+      
+      if (adminIds.length === 0) {
+        console.warn('No admin IDs configured for contact notifications');
+        return;
+      }
+
+      const userProfile = `vk.com/id${vkUserId}`;
+      const text = `🚨 ЗАПРОС СВЯЗИ С ЧЕЛОВЕКОМ
+
+👤 Пользователь: ${userName || 'Не указано'}
+🔗 Профиль: ${userProfile}
+📱 VK ID: ${vkUserId}
+⏰ Время: ${new Date().toLocaleString('ru-RU')}
+
+Пользователь запросил связь с администратором.`;
+
+      // Отправляем уведомление всем админам
+      for (const adminId of adminIds) {
+        try {
+          await vkBotServer.sendMessage(adminId, text);
+          console.log(`Contact request notification sent to admin ${adminId}`);
+        } catch (error) {
+          console.error(`Error sending notification to admin ${adminId}:`, error);
+        }
+      }
+    } catch (error) {
+      console.error('Error notifying admins about contact request:', error);
     }
   }
 }

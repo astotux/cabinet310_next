@@ -166,9 +166,9 @@ export class StateManager {
   getNextBookingState(currentState: DialogState): DialogState | null {
     const stateFlow: Record<DialogState, DialogState | null> = {
       [DialogState.IDLE]: DialogState.SELECTING_SERVICE,
-      [DialogState.SELECTING_SERVICE]: DialogState.SELECTING_MASTER,
-      [DialogState.SELECTING_MASTER]: DialogState.SELECTING_SLOT,
-      [DialogState.SELECTING_SLOT]: DialogState.ENTERING_NAME,
+      [DialogState.SELECTING_SERVICE]: DialogState.SELECTING_DATE,
+      [DialogState.SELECTING_DATE]: DialogState.SELECTING_TIME,
+      [DialogState.SELECTING_TIME]: DialogState.ENTERING_NAME,
       [DialogState.ENTERING_NAME]: DialogState.CONFIRMING_BOOKING,
       [DialogState.CONFIRMING_BOOKING]: null, // Конечное состояние
     };

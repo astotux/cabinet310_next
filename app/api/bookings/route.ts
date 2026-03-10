@@ -134,7 +134,6 @@ export async function POST(request: NextRequest) {
           vkUserId,
           clientName,
           service,
-          master,
           date,
           time,
           type: 'confirmation'

@@ -5,6 +5,7 @@ import { messageFormatter } from './message-formatter';
 import { vkBookingService } from './booking-service';
 import { stateManager } from './state-manager';
 import { vkBotServer } from './server';
+import { vkNotificationService } from './notification-service';
 
 export class CommandHandlers {
   /**
@@ -92,20 +93,27 @@ export class CommandHandlers {
   }
 
   /**
-   * Обработчик команды "Помощь"
+   * Обработчик команды "Помощь" - теперь обрабатывает запрос связи с человеком
    */
-  async handleHelpCommand(message: VKMessage): Promise<void> {
+  async handleContactHumanCommand(message: VKMessage): Promise<void> {
     const userId = message.from_id;
     
     try {
-      // Отправляем справочное сообщение
-      const helpMessage = messageFormatter.formatHelp();
-      await vkBotServer.sendMessage(userId, helpMessage.text, helpMessage.keyboard);
+      // Получаем информацию о пользователе для уведомления админов
+      const currentState = await stateManager.getUserState(userId);
+      const userName = currentState.bookingData.clientName;
       
-      console.log(`Help command handled for user ${userId}`);
+      // Уведомляем админов
+      await vkNotificationService.notifyAdminsAboutContactRequest(userId, userName);
+      
+      // Отправляем подтверждение пользователю
+      const contactMessage = messageFormatter.formatContactHumanRequest();
+      await vkBotServer.sendMessage(userId, contactMessage.text, contactMessage.keyboard);
+      
+      console.log(`Contact human request handled for user ${userId}`);
     } catch (error) {
-      console.error('Error handling help command:', error);
-      const errorMessage = messageFormatter.formatError('Ошибка получения справки.');
+      console.error('Error handling contact human request:', error);
+      const errorMessage = messageFormatter.formatError('Ошибка отправки запроса. Попробуйте еще раз.');
       await vkBotServer.sendMessage(userId, errorMessage.text, errorMessage.keyboard);
     }
   }
@@ -149,6 +157,24 @@ export class CommandHandlers {
     const userId = message.from_id;
     
     try {
+      // Проверяем payload для кнопочных команд
+      if (message.payload) {
+        try {
+          const payload = JSON.parse(message.payload);
+          await this.handlePayloadCommand(message, payload);
+          return;
+        } catch (error) {
+          console.error('Error parsing payload:', error);
+        }
+      }
+      
+      // Проверяем текстовые команды
+      const text = message.text.toLowerCase().trim();
+      if (text === 'связаться с человеком' || text === 'человек' || text === 'помощь') {
+        await this.handleContactHumanCommand(message);
+        return;
+      }
+      
       const currentState = await stateManager.getUserState(userId);
       
       // Если пользователь в процессе бронирования, обрабатываем как ввод данных
@@ -158,21 +184,63 @@ export class CommandHandlers {
       }
       
       // Иначе показываем сообщение о неизвестной команде
-      let text = `❓ Не понимаю команду "${message.text}"\n\n`;
-      text += 'Доступные команды:\n';
-      text += '• 📋 Прайс - посмотреть услуги и цены\n';
-      text += '• ✍️ Записаться - записаться на услугу\n';
-      text += '• ❓ Помощь - получить справку\n\n';
-      text += 'Или выберите действие из меню:';
+      let text_msg = `❓ Не понимаю команду "${message.text}"\n\n`;
+      text_msg += 'Доступные команды:\n';
+      text_msg += '• 📋 Прайс - посмотреть услуги и цены\n';
+      text_msg += '• ✍️ Записаться - записаться на услугу\n';
+      text_msg += '• 👤 Связаться с человеком - получить помощь\n\n';
+      text_msg += 'Или выберите действие из меню:';
       
       const welcomeMessage = messageFormatter.formatWelcome();
-      await vkBotServer.sendMessage(userId, text, welcomeMessage.keyboard);
+      await vkBotServer.sendMessage(userId, text_msg, welcomeMessage.keyboard);
       
       console.log(`Unknown command handled for user ${userId}: ${message.text}`);
     } catch (error) {
       console.error('Error handling unknown command:', error);
       const errorMessage = messageFormatter.formatError('Ошибка обработки команды.');
       await vkBotServer.sendMessage(userId, errorMessage.text, errorMessage.keyboard);
+    }
+  }
+
+  /**
+   * Обработка команд из payload (кнопки)
+   */
+  private async handlePayloadCommand(message: VKMessage, payload: any): Promise<void> {
+    const userId = message.from_id;
+    
+    switch (payload.command) {
+      case 'contact_human':
+        await this.handleContactHumanCommand(message);
+        break;
+        
+      case 'select_service':
+        await this.handleServiceSelection(userId, payload.service);
+        break;
+        
+      case 'select_date':
+        await this.handleDateSelection(userId, payload.date);
+        break;
+        
+      case 'select_time':
+        await this.handleTimeSelection(userId, payload.time);
+        break;
+        
+      case 'back_to_services':
+        await this.handleBookCommand(message);
+        break;
+        
+      case 'back_to_date':
+        const currentState = await stateManager.getUserState(userId);
+        if (currentState.bookingData.service) {
+          await stateManager.transitionTo(userId, DialogState.SELECTING_DATE);
+          const availableDates = await vkBookingService.getAvailableDates(currentState.bookingData.service);
+          const dateMessage = messageFormatter.formatDateSelection(availableDates, currentState.bookingData.service);
+          await vkBotServer.sendMessage(userId, dateMessage.text, dateMessage.keyboard);
+        }
+        break;
+        
+      default:
+        await this.handleUnknownCommand(message);
     }
   }
 
@@ -189,12 +257,12 @@ export class CommandHandlers {
           await this.handleServiceSelection(userId, text);
           break;
           
-        case DialogState.SELECTING_MASTER:
-          await this.handleMasterSelection(userId, text);
+        case DialogState.SELECTING_DATE:
+          await this.handleDateSelection(userId, text);
           break;
           
-        case DialogState.SELECTING_SLOT:
-          await this.handleSlotSelection(userId, text);
+        case DialogState.SELECTING_TIME:
+          await this.handleTimeSelection(userId, text);
           break;
           
         case DialogState.ENTERING_NAME:
@@ -230,130 +298,44 @@ export class CommandHandlers {
     // Сохраняем выбранную услугу
     await stateManager.updateBookingData(userId, { service: serviceName });
     
-    // Получаем доступных мастеров
-    const masters = await vkBookingService.getAvailableMasters(serviceName);
-    
-    if (masters.length === 0) {
-      const errorMessage = messageFormatter.formatError('Для этой услуги нет доступных мастеров.');
-      await vkBotServer.sendMessage(userId, errorMessage.text, errorMessage.keyboard);
-      return;
-    }
-    
-    // Переходим к выбору мастера
-    await stateManager.transitionTo(userId, DialogState.SELECTING_MASTER);
-    
-    // Формируем сообщение с мастерами
-    let text = `✅ Услуга: ${serviceName}\n\n👤 **ВЫБЕРИТЕ МАСТЕРА:**\n\n`;
-    masters.forEach((master, index) => {
-      text += `${index + 1}. ${master}\n`;
-    });
-    text += '\n💬 Напишите имя мастера или номер из списка';
-    
-    await vkBotServer.sendMessage(userId, text);
-  }
-
-  /**
-   * Обработка выбора мастера
-   */
-  private async handleMasterSelection(userId: number, masterInput: string): Promise<void> {
-    const currentState = await stateManager.getUserState(userId);
-    const serviceName = currentState.bookingData.service;
-    
-    if (!serviceName) {
-      await this.handleCancelCommand({ from_id: userId } as VKMessage);
-      return;
-    }
-    
-    // Получаем список мастеров
-    const masters = await vkBookingService.getAvailableMasters(serviceName);
-    let selectedMaster: string | null = null;
-    
-    // Проверяем ввод по номеру
-    const masterIndex = parseInt(masterInput) - 1;
-    if (!isNaN(masterIndex) && masterIndex >= 0 && masterIndex < masters.length) {
-      selectedMaster = masters[masterIndex];
-    } else {
-      // Проверяем ввод по имени
-      selectedMaster = masters.find(master => 
-        master.toLowerCase() === masterInput.toLowerCase()
-      ) || null;
-    }
-    
-    if (!selectedMaster) {
-      await vkBotServer.sendMessage(userId, '❌ Мастер не найден. Выберите мастера из списка.');
-      return;
-    }
-    
-    // Сохраняем выбранного мастера
-    await stateManager.updateBookingData(userId, { master: selectedMaster });
-    
-    // Получаем доступные даты
-    const availableDates = await vkBookingService.getAvailableDates(serviceName, selectedMaster);
+    // Получаем доступные даты для услуги
+    const availableDates = await vkBookingService.getAvailableDates(serviceName);
     
     if (availableDates.length === 0) {
-      const errorMessage = messageFormatter.formatError('У этого мастера нет свободных слотов на ближайшие 2 недели.');
+      const errorMessage = messageFormatter.formatError('Для этой услуги нет свободных слотов на ближайшие 2 недели.');
       await vkBotServer.sendMessage(userId, errorMessage.text, errorMessage.keyboard);
       return;
     }
     
-    // Переходим к выбору слота
-    await stateManager.transitionTo(userId, DialogState.SELECTING_SLOT);
+    // Переходим к выбору даты
+    await stateManager.transitionTo(userId, DialogState.SELECTING_DATE);
     
-    // Показываем доступные даты
-    let text = `✅ Услуга: ${serviceName}\n✅ Мастер: ${selectedMaster}\n\n📅 **ДОСТУПНЫЕ ДАТЫ:**\n\n`;
-    
-    for (let i = 0; i < Math.min(availableDates.length, 7); i++) {
-      const date = availableDates[i];
-      const displayDate = vkBookingService.formatDateForDisplay(date);
-      text += `${i + 1}. ${displayDate} (${date})\n`;
-    }
-    
-    text += '\n💬 Напишите номер даты или дату в формате ГГГГ-ММ-ДД';
-    
-    await vkBotServer.sendMessage(userId, text);
-  }
-
-  /**
-   * Обработка выбора слота
-   */
-  private async handleSlotSelection(userId: number, input: string): Promise<void> {
-    const currentState = await stateManager.getUserState(userId);
-    const { service, master } = currentState.bookingData;
-    
-    if (!service || !master) {
-      await this.handleCancelCommand({ from_id: userId } as VKMessage);
-      return;
-    }
-    
-    // Если еще не выбрана дата, обрабатываем выбор даты
-    if (!currentState.bookingData.date) {
-      await this.handleDateSelection(userId, input, service, master);
-      return;
-    }
-    
-    // Если дата уже выбрана, обрабатываем выбор времени
-    await this.handleTimeSelection(userId, input, service, master, currentState.bookingData.date);
+    // Показываем доступные даты с кнопками
+    const dateMessage = messageFormatter.formatDateSelection(availableDates, serviceName);
+    await vkBotServer.sendMessage(userId, dateMessage.text, dateMessage.keyboard);
   }
 
   /**
    * Обработка выбора даты
    */
-  private async handleDateSelection(userId: number, dateInput: string, service: string, master: string): Promise<void> {
+  private async handleDateSelection(userId: number, dateInput: string): Promise<void> {
+    const currentState = await stateManager.getUserState(userId);
+    const { service } = currentState.bookingData;
+    
+    if (!service) {
+      await this.handleCancelCommand({ from_id: userId } as VKMessage);
+      return;
+    }
+    
     let selectedDate: string | null = null;
     
     // Получаем доступные даты
-    const availableDates = await vkBookingService.getAvailableDates(service, master);
+    const availableDates = await vkBookingService.getAvailableDates(service);
     
-    // Проверяем ввод по номеру
-    const dateIndex = parseInt(dateInput) - 1;
-    if (!isNaN(dateIndex) && dateIndex >= 0 && dateIndex < availableDates.length) {
-      selectedDate = availableDates[dateIndex];
-    } else {
-      // Проверяем ввод по дате
-      const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-      if (dateRegex.test(dateInput) && availableDates.includes(dateInput)) {
-        selectedDate = dateInput;
-      }
+    // Проверяем ввод по дате
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (dateRegex.test(dateInput) && availableDates.includes(dateInput)) {
+      selectedDate = dateInput;
     }
     
     if (!selectedDate) {
@@ -365,31 +347,42 @@ export class CommandHandlers {
     await stateManager.updateBookingData(userId, { date: selectedDate });
     
     // Получаем доступные слоты на эту дату
-    const availableSlots = await vkBookingService.getAvailableSlots(service, master, selectedDate);
+    const availableSlots = await vkBookingService.getAvailableSlots(service, selectedDate);
     
     if (availableSlots.length === 0) {
       await vkBotServer.sendMessage(userId, '❌ На выбранную дату нет свободных слотов. Выберите другую дату.');
       return;
     }
     
-    // Показываем доступные слоты
-    const slotsMessage = messageFormatter.formatAvailableSlots(availableSlots, selectedDate, service, master);
+    // Переходим к выбору времени
+    await stateManager.transitionTo(userId, DialogState.SELECTING_TIME);
+    
+    // Показываем доступные слоты с кнопками
+    const slotsMessage = messageFormatter.formatAvailableSlots(availableSlots, selectedDate, service);
     await vkBotServer.sendMessage(userId, slotsMessage.text, slotsMessage.keyboard);
   }
 
   /**
    * Обработка выбора времени
    */
-  private async handleTimeSelection(userId: number, timeInput: string, service: string, master: string, date: string): Promise<void> {
+  private async handleTimeSelection(userId: number, timeInput: string): Promise<void> {
+    const currentState = await stateManager.getUserState(userId);
+    const { service, date } = currentState.bookingData;
+    
+    if (!service || !date) {
+      await this.handleCancelCommand({ from_id: userId } as VKMessage);
+      return;
+    }
+    
     // Проверяем формат времени
     const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
     if (!timeRegex.test(timeInput)) {
-      await vkBotServer.sendMessage(userId, '❌ Неверный формат времени. Используйте формат ЧЧ:ММ (например: 14:30)');
+      await vkBotServer.sendMessage(userId, '❌ Неверный формат времени. Выберите время из списка.');
       return;
     }
     
     // Проверяем доступность слота
-    const isAvailable = await vkBookingService.isSlotAvailable(service, master, date, timeInput);
+    const isAvailable = await vkBookingService.isSlotAvailable(service, date, timeInput);
     
     if (!isAvailable) {
       await vkBotServer.sendMessage(userId, '❌ Выбранное время недоступно. Выберите другое время из списка.');
@@ -402,7 +395,7 @@ export class CommandHandlers {
     // Переходим к вводу имени
     await stateManager.transitionTo(userId, DialogState.ENTERING_NAME);
     
-    const text = `✅ Услуга: ${service}\n✅ Мастер: ${master}\n✅ Дата: ${vkBookingService.formatDateForDisplay(date)}\n✅ Время: ${timeInput}\n\n👤 **Как вас зовут?**\n\nНапишите ваше имя:`;
+    const text = `✅ Услуга: ${service}\n✅ Дата: ${vkBookingService.formatDateForDisplay(date)}\n✅ Время: ${timeInput}\n\n👤 Как вас зовут?\n\nНапишите ваше имя:`;
     
     await vkBotServer.sendMessage(userId, text);
   }
@@ -434,13 +427,12 @@ export class CommandHandlers {
     const currentState = await stateManager.getUserState(userId);
     const bookingData = currentState.bookingData;
     
-    let text = `📋 **ПОДТВЕРЖДЕНИЕ ЗАПИСИ**\n\n`;
+    let text = `📋 ПОДТВЕРЖДЕНИЕ ЗАПИСИ\n\n`;
     text += `🎨 Услуга: ${bookingData.service}\n`;
-    text += `👤 Мастер: ${bookingData.master}\n`;
     text += `📅 Дата: ${vkBookingService.formatDateForDisplay(bookingData.date!)}\n`;
     text += `⏰ Время: ${bookingData.time}\n`;
     text += `👥 Клиент: ${bookingData.clientName}\n\n`;
-    text += `❓ **Подтвердить запись?**\n\n`;
+    text += `❓ Подтвердить запись?\n\n`;
     text += `Напишите "Да" для подтверждения или "Нет" для отмены.`;
     
     await vkBotServer.sendMessage(userId, text);
@@ -470,7 +462,7 @@ export class CommandHandlers {
       const bookingData = currentState.bookingData;
       
       // Проверяем полноту данных
-      if (!bookingData.service || !bookingData.master || !bookingData.date || 
+      if (!bookingData.service || !bookingData.date || 
           !bookingData.time || !bookingData.clientName) {
         const errorMessage = messageFormatter.formatError('Неполные данные для записи. Начните заново.');
         await vkBotServer.sendMessage(userId, errorMessage.text, errorMessage.keyboard);
@@ -480,7 +472,6 @@ export class CommandHandlers {
       // Создаем бронирование
       const result = await vkBookingService.createVKBooking({
         service: bookingData.service,
-        master: bookingData.master,
         date: bookingData.date,
         time: bookingData.time,
         clientName: bookingData.clientName,

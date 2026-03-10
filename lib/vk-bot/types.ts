@@ -56,14 +56,13 @@ export enum CommandType {
   START = 'start',
   PRICE = 'price',
   BOOK = 'book',
-  HELP = 'help',
+  CONTACT_HUMAN = 'contact_human',
   CANCEL = 'cancel',
   UNKNOWN = 'unknown'
 }
 
 export interface CommandParameters {
   service?: string;
-  master?: string;
   date?: string;
   time?: string;
   name?: string;
@@ -79,15 +78,14 @@ export interface ParsedCommand {
 export enum DialogState {
   IDLE = 'idle',
   SELECTING_SERVICE = 'selecting_service',
-  SELECTING_MASTER = 'selecting_master',
-  SELECTING_SLOT = 'selecting_slot',
+  SELECTING_DATE = 'selecting_date',
+  SELECTING_TIME = 'selecting_time',
   ENTERING_NAME = 'entering_name',
   CONFIRMING_BOOKING = 'confirming_booking'
 }
 
 export interface VKBookingData {
   service: string;
-  master: string;
   date: string;
   time: string;
   clientName: string;

@@ -13,18 +13,7 @@ export class VKBookingService {
       // Формируем VK профиль из user ID
       const vkProfile = `vk.com/id${bookingData.vkUserId}`;
       
-      // Подготавливаем данные для валидации
-      const validationData: BookingData = {
-        service: bookingData.service,
-        master: bookingData.master,
-        date: bookingData.date,
-        time: bookingData.time,
-        clientName: bookingData.clientName,
-        vkProfile: vkProfile,
-        vkUserId: bookingData.vkUserId,
-      };
-
-      // Получаем информацию об услуге для определения длительности
+      // Получаем информацию об услуге для определения мастера и длительности
       const serviceInfo = await prisma.price.findFirst({
         where: { service: bookingData.service }
       });
@@ -35,6 +24,17 @@ export class VKBookingService {
           errors: ['Услуга не найдена']
         };
       }
+
+      // Подготавливаем данные для валидации (используем мастера из услуги)
+      const validationData: BookingData = {
+        service: bookingData.service,
+        master: serviceInfo.master, // Берем мастера из услуги
+        date: bookingData.date,
+        time: bookingData.time,
+        clientName: bookingData.clientName,
+        vkProfile: vkProfile,
+        vkUserId: bookingData.vkUserId,
+      };
 
       // Валидируем данные и проверяем доступность
       const validation = await validateBookingWithAvailability(
@@ -57,7 +57,7 @@ export class VKBookingService {
         },
         body: JSON.stringify({
           service: bookingData.service,
-          master: bookingData.master,
+          master: serviceInfo.master, // Используем мастера из услуги
           date: bookingData.date,
           time: bookingData.time,
           clientName: bookingData.clientName,
@@ -122,29 +122,11 @@ export class VKBookingService {
   }
 
   /**
-   * Получение доступных мастеров для услуги
+   * Получение доступных слотов для услуги на дату
    */
-  async getAvailableMasters(service: string): Promise<string[]> {
+  async getAvailableSlots(service: string, date: string): Promise<string[]> {
     try {
-      const services = await prisma.price.findMany({
-        where: { service: service },
-        select: { master: true },
-        distinct: ['master']
-      });
-
-      return services.map(s => s.master);
-    } catch (error) {
-      console.error('Error getting available masters:', error);
-      return [];
-    }
-  }
-
-  /**
-   * Получение доступных слотов
-   */
-  async getAvailableSlots(service: string, master: string, date: string): Promise<string[]> {
-    try {
-      // Используем существующий API для получения доступности
+      // Получаем информацию об услуге
       const serviceInfo = await prisma.price.findFirst({
         where: { service: service }
       });
@@ -155,7 +137,7 @@ export class VKBookingService {
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/availability?` +
-        `service=${serviceInfo.id}&master=${encodeURIComponent(master)}&date=${date}`
+        `service=${serviceInfo.id}&master=${encodeURIComponent(serviceInfo.master)}&date=${date}`
       );
 
       if (!response.ok) {
@@ -224,9 +206,9 @@ export class VKBookingService {
   /**
    * Проверка доступности конкретного слота
    */
-  async isSlotAvailable(service: string, master: string, date: string, time: string): Promise<boolean> {
+  async isSlotAvailable(service: string, date: string, time: string): Promise<boolean> {
     try {
-      const availableSlots = await this.getAvailableSlots(service, master, date);
+      const availableSlots = await this.getAvailableSlots(service, date);
       return availableSlots.includes(time);
     } catch (error) {
       console.error('Error checking slot availability:', error);
@@ -235,9 +217,9 @@ export class VKBookingService {
   }
 
   /**
-   * Получение ближайших доступных дат
+   * Получение ближайших доступных дат для услуги
    */
-  async getAvailableDates(service: string, master: string, daysAhead: number = 14): Promise<string[]> {
+  async getAvailableDates(service: string, daysAhead: number = 14): Promise<string[]> {
     const availableDates: string[] = [];
     const today = new Date();
 
@@ -251,7 +233,7 @@ export class VKBookingService {
       }
 
       const dateStr = date.toISOString().split('T')[0]; // YYYY-MM-DD
-      const slots = await this.getAvailableSlots(service, master, dateStr);
+      const slots = await this.getAvailableSlots(service, dateStr);
       
       if (slots.length > 0) {
         availableDates.push(dateStr);
