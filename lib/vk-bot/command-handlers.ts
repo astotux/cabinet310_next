@@ -225,6 +225,11 @@ export class CommandHandlers {
         await this.handleTimeSelection(userId, payload.time);
         break;
         
+      case 'next_dates':
+      case 'prev_dates':
+        await this.handleDateNavigation(userId, payload);
+        break;
+        
       case 'back_to_services':
         await this.handleBookCommand(message);
         break;
@@ -242,6 +247,25 @@ export class CommandHandlers {
       default:
         await this.handleUnknownCommand(message);
     }
+  }
+
+  /**
+   * Обработка навигации по датам
+   */
+  private async handleDateNavigation(userId: number, payload: any): Promise<void> {
+    const currentState = await stateManager.getUserState(userId);
+    const { service } = currentState.bookingData;
+    
+    if (!service) {
+      await this.handleCancelCommand({ from_id: userId } as VKMessage);
+      return;
+    }
+    
+    const availableDates = await vkBookingService.getAvailableDates(service);
+    const newIndex = payload.index || 0;
+    
+    const dateMessage = messageFormatter.formatDateSelection(availableDates, service, newIndex);
+    await vkBotServer.sendMessage(userId, dateMessage.text, dateMessage.keyboard);
   }
 
   /**

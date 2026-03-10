@@ -84,7 +84,6 @@ export class MessageFormatter {
 
     text += '⏰ Доступное время:\n';
     
-    // Создаем кнопки для каждого слота
     const buttons: any[][] = [];
     
     // Группируем слоты по времени дня
@@ -92,53 +91,64 @@ export class MessageFormatter {
     const afternoonSlots = slots.filter(slot => this.isAfternoon(slot));
     const eveningSlots = slots.filter(slot => this.isEvening(slot));
 
-    if (morningSlots.length > 0) {
-      text += `🌅 Утро: ${morningSlots.join(', ')}\n`;
-      morningSlots.forEach(slot => {
-        buttons.push([{
+    // Добавляем кнопки по 2 в ряд для экономии места
+    const addSlotsToButtons = (timeSlots: string[], emoji: string) => {
+      for (let i = 0; i < timeSlots.length; i += 2) {
+        const row = [];
+        
+        // Первая кнопка в ряду
+        row.push({
           action: {
             type: 'text',
-            label: `🌅 ${slot}`,
-            payload: JSON.stringify({ command: 'select_time', time: slot })
+            label: `${emoji} ${timeSlots[i]}`,
+            payload: JSON.stringify({ command: 'select_time', time: timeSlots[i] })
           },
           color: 'primary'
-        }]);
-      });
+        });
+        
+        // Вторая кнопка в ряду (если есть)
+        if (i + 1 < timeSlots.length) {
+          row.push({
+            action: {
+              type: 'text',
+              label: `${emoji} ${timeSlots[i + 1]}`,
+              payload: JSON.stringify({ command: 'select_time', time: timeSlots[i + 1] })
+            },
+            color: 'primary'
+          });
+        }
+        
+        buttons.push(row);
+      }
+    };
+
+    if (morningSlots.length > 0) {
+      text += `🌅 Утро: ${morningSlots.join(', ')}\n`;
+      addSlotsToButtons(morningSlots, '🌅');
     }
     
     if (afternoonSlots.length > 0) {
       text += `☀️ День: ${afternoonSlots.join(', ')}\n`;
-      afternoonSlots.forEach(slot => {
-        buttons.push([{
-          action: {
-            type: 'text',
-            label: `☀️ ${slot}`,
-            payload: JSON.stringify({ command: 'select_time', time: slot })
-          },
-          color: 'primary'
-        }]);
-      });
+      addSlotsToButtons(afternoonSlots, '☀️');
     }
     
     if (eveningSlots.length > 0) {
       text += `🌆 Вечер: ${eveningSlots.join(', ')}\n`;
-      eveningSlots.forEach(slot => {
-        buttons.push([{
-          action: {
-            type: 'text',
-            label: `🌆 ${slot}`,
-            payload: JSON.stringify({ command: 'select_time', time: slot })
-          },
-          color: 'primary'
-        }]);
-      });
+      addSlotsToButtons(eveningSlots, '🌆');
+    }
+
+    // Ограничиваем количество кнопок до 8 рядов (VK лимит 10, оставляем место для навигации)
+    const maxRows = 8;
+    if (buttons.length > maxRows) {
+      buttons.splice(maxRows);
+      text += '\n⚠️ Показаны не все слоты. Выберите из доступных или попробуйте другую дату.';
     }
 
     // Добавляем кнопку "Назад"
     buttons.push([{
       action: {
         type: 'text',
-        label: '⬅️ Назад',
+        label: '⬅️ Назад к датам',
         payload: JSON.stringify({ command: 'back_to_date' })
       },
       color: 'secondary'
@@ -147,7 +157,7 @@ export class MessageFormatter {
     const keyboard: VKKeyboard = {
       one_time: false,
       inline: true,
-      buttons: buttons.slice(0, 10) // Ограничиваем количество кнопок
+      buttons: buttons
     };
 
     return { text, keyboard };
@@ -333,7 +343,7 @@ export class MessageFormatter {
       };
     }
 
-    const maxDatesPerPage = 5;
+    const maxDatesPerPage = 3; // Уменьшаем до 3 дат на страницу
     const startIndex = currentIndex;
     const endIndex = Math.min(startIndex + maxDatesPerPage, availableDates.length);
     const currentDates = availableDates.slice(startIndex, endIndex);
@@ -359,13 +369,13 @@ export class MessageFormatter {
       text += `📆 ${displayDate}\n`;
     });
 
-    // Добавляем навигационные кнопки
+    // Добавляем навигационные кнопки в одну строку
     const navButtons = [];
     if (startIndex > 0) {
       navButtons.push({
         action: {
           type: 'text',
-          label: '⬅️ Предыдущие',
+          label: '⬅️ Пред.',
           payload: JSON.stringify({ 
             command: 'prev_dates', 
             index: Math.max(0, startIndex - maxDatesPerPage)
@@ -379,7 +389,7 @@ export class MessageFormatter {
       navButtons.push({
         action: {
           type: 'text',
-          label: 'Следующие ➡️',
+          label: 'След. ➡️',
           payload: JSON.stringify({ 
             command: 'next_dates', 
             index: endIndex
