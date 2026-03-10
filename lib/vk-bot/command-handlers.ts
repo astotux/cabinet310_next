@@ -238,6 +238,11 @@ export class CommandHandlers {
         await this.handleDateNavigation(userId, payload);
         break;
         
+      case 'next_times':
+      case 'prev_times':
+        await this.handleTimeNavigation(userId, payload);
+        break;
+        
       case 'back_to_services':
         await this.handleBookCommand(message);
         break;
@@ -274,6 +279,25 @@ export class CommandHandlers {
     
     const dateMessage = messageFormatter.formatDateSelection(availableDates, service, newIndex);
     await vkBotServer.sendMessage(userId, dateMessage.text, dateMessage.keyboard);
+  }
+
+  /**
+   * Обработка навигации по времени
+   */
+  private async handleTimeNavigation(userId: number, payload: any): Promise<void> {
+    const currentState = await stateManager.getUserState(userId);
+    const { service, date } = currentState.bookingData;
+    
+    if (!service || !date) {
+      await this.handleCancelCommand({ from_id: userId } as VKMessage);
+      return;
+    }
+    
+    const availableSlots = await vkBookingService.getAvailableSlots(service, date);
+    const newIndex = payload.index || 0;
+    
+    const slotsMessage = messageFormatter.formatAvailableSlots(availableSlots, date, service, newIndex);
+    await vkBotServer.sendMessage(userId, slotsMessage.text, slotsMessage.keyboard);
   }
 
   /**
@@ -385,8 +409,8 @@ export class CommandHandlers {
     // Переходим к выбору времени
     await stateManager.transitionTo(userId, DialogState.SELECTING_TIME);
     
-    // Показываем доступные слоты с кнопками
-    const slotsMessage = messageFormatter.formatAvailableSlots(availableSlots, selectedDate, service);
+    // Показываем доступные слоты с слайдером (начинаем с индекса 0)
+    const slotsMessage = messageFormatter.formatAvailableSlots(availableSlots, selectedDate, service, 0);
     await vkBotServer.sendMessage(userId, slotsMessage.text, slotsMessage.keyboard);
   }
 

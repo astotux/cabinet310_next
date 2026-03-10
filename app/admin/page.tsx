@@ -97,6 +97,10 @@ export default function AdminPage() {
   // Фильтр для экспорта записей
   const [exportMasterFilter, setExportMasterFilter] = useState<'all' | 'Лиза' | 'Женя'>('all');
   
+  // Состояние VK бота
+  const [vkBotEnabled, setVkBotEnabled] = useState(true);
+  const [vkBotLoading, setVkBotLoading] = useState(false);
+  
   const router = useRouter();
   
   // Состояние для календаря
@@ -253,6 +257,7 @@ export default function AdminPage() {
     }
     
     fetchData();
+    fetchVkBotStatus();
   }, []);
 
   const fetchData = async () => {
@@ -425,6 +430,42 @@ export default function AdminPage() {
     await fetch('/api/admin/logout', { method: 'POST' });
     localStorage.removeItem("adminToken");
     window.location.href = "/admin/secure-entry";
+  };
+
+  // Функция для переключения VK бота
+  const toggleVkBot = async () => {
+    setVkBotLoading(true);
+    try {
+      const response = await fetch('/api/admin/vk-bot-toggle', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ enabled: !vkBotEnabled })
+      });
+      
+      if (response.ok) {
+        setVkBotEnabled(!vkBotEnabled);
+      } else {
+        alert('Ошибка переключения VK бота');
+      }
+    } catch (error) {
+      console.error('Error toggling VK bot:', error);
+      alert('Ошибка переключения VK бота');
+    } finally {
+      setVkBotLoading(false);
+    }
+  };
+
+  // Функция для получения статуса VK бота
+  const fetchVkBotStatus = async () => {
+    try {
+      const response = await fetch('/api/admin/vk-bot-status');
+      if (response.ok) {
+        const data = await response.json();
+        setVkBotEnabled(data.enabled);
+      }
+    } catch (error) {
+      console.error('Error fetching VK bot status:', error);
+    }
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1427,6 +1468,42 @@ export default function AdminPage() {
                   >
                     Скачать PDF
                   </button>
+                </div>
+
+                {/* VK Бот переключатель */}
+                <div className="w-full p-4 max-[480px]:p-3 rounded-2xl bg-white/60 border border-slate-200/60">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className={`size-10 max-[480px]:size-9 rounded-xl flex items-center justify-center ${
+                        vkBotEnabled 
+                          ? 'bg-green-100 text-green-600' 
+                          : 'bg-red-100 text-red-600'
+                      }`}>
+                        <span className="material-symbols-outlined max-[480px]:text-lg">
+                          {vkBotEnabled ? 'smart_toy' : 'smart_toy_outline'}
+                        </span>
+                      </div>
+                      <div className="text-left flex-1">
+                        <p className="font-bold text-sm max-[480px]:text-xs">VK Бот</p>
+                        <p className="text-xs max-[480px]:text-[10px] text-slate-500">
+                          {vkBotEnabled ? 'Включен' : 'Выключен'}
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={toggleVkBot}
+                      disabled={vkBotLoading}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                        vkBotEnabled ? 'bg-green-500' : 'bg-gray-300'
+                      } ${vkBotLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                          vkBotEnabled ? 'translate-x-6' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

@@ -3,6 +3,27 @@
 import { NextRequest, NextResponse } from "next/server";
 import { vkBotServer } from "@/lib/vk-bot/server";
 import { VKEvent } from "@/lib/vk-bot/types";
+import { readFileSync, existsSync } from "fs";
+import { join } from "path";
+
+const VK_BOT_STATUS_FILE = join(process.cwd(), '.vk-bot-status.json');
+
+/**
+ * Проверка статуса VK бота
+ */
+function isVkBotEnabled(): boolean {
+  try {
+    if (existsSync(VK_BOT_STATUS_FILE)) {
+      const statusData = readFileSync(VK_BOT_STATUS_FILE, 'utf-8');
+      const status = JSON.parse(statusData);
+      return status.enabled;
+    }
+    return true; // По умолчанию включен
+  } catch (error) {
+    console.error('Error reading VK bot status:', error);
+    return true; // В случае ошибки считаем включенным
+  }
+}
 
 /**
  * POST /api/vk-bot/webhook
@@ -15,7 +36,7 @@ export async function POST(request: NextRequest) {
     
     console.log('Received VK webhook:', JSON.stringify(event));
     
-    // Специальная обработка подтверждения сервера
+    // Специальная обработка подтверждения сервера (всегда отвечаем)
     if (event.type === 'confirmation') {
       console.log('VK confirmation request for group:', event.group_id);
       
@@ -37,6 +58,17 @@ export async function POST(request: NextRequest) {
           },
         });
       }
+    }
+    
+    // Проверяем статус бота для обычных сообщений
+    if (!isVkBotEnabled()) {
+      console.log('VK bot is disabled, ignoring message');
+      return new NextResponse('ok', {
+        status: 200,
+        headers: {
+          'Content-Type': 'text/plain',
+        },
+      });
     }
     
     // Обработка остальных событий через VK Bot Server
@@ -66,9 +98,12 @@ export async function POST(request: NextRequest) {
  * Проверка статуса webhook'а
  */
 export async function GET() {
+  const botEnabled = isVkBotEnabled();
+  
   return NextResponse.json({
     status: 'ok',
-    message: 'VK webhook is worked',
+    botEnabled,
+    message: `VK webhook is working, bot is ${botEnabled ? 'enabled' : 'disabled'}`,
     timestamp: new Date().toISOString()
   });
 }

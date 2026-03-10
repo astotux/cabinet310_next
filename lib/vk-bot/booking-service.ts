@@ -219,7 +219,7 @@ export class VKBookingService {
   /**
    * Получение ближайших доступных дат для услуги
    */
-  async getAvailableDates(service: string, daysAhead: number = 14): Promise<string[]> {
+  async getAvailableDates(service: string, daysAhead: number = 45): Promise<string[]> {
     const availableDates: string[] = [];
     const today = new Date();
 
@@ -227,11 +227,7 @@ export class VKBookingService {
       const date = new Date(today);
       date.setDate(today.getDate() + i);
       
-      // Пропускаем воскресенья (день недели 0)
-      if (date.getDay() === 0) {
-        continue;
-      }
-
+      // Теперь включаем все дни недели, включая воскресенья
       const dateStr = date.toISOString().split('T')[0]; // YYYY-MM-DD
       const slots = await this.getAvailableSlots(service, dateStr);
       

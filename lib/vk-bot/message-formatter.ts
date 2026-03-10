@@ -66,9 +66,9 @@ export class MessageFormatter {
   }
 
   /**
-   * Форматирование доступных слотов
+   * Форматирование доступных слотов с слайдером
    */
-  formatAvailableSlots(slots: string[], date: string, serviceName?: string): FormattedMessage {
+  formatAvailableSlots(slots: string[], date: string, serviceName?: string, currentIndex: number = 0): FormattedMessage {
     if (slots.length === 0) {
       return {
         text: `❌ На ${this.formatDate(date)} нет свободных слотов.\n\nПопробуйте выбрать другую дату.`,
@@ -76,72 +76,93 @@ export class MessageFormatter {
       };
     }
 
+    const maxSlotsPerPage = 6; // Максимум 6 слотов на страницу (3 ряда по 2)
+    const startIndex = currentIndex;
+    const endIndex = Math.min(startIndex + maxSlotsPerPage, slots.length);
+    const currentSlots = slots.slice(startIndex, endIndex);
+
     let text = `📅 СВОБОДНЫЕ СЛОТЫ\n\n`;
     if (serviceName) {
       text += `🎨 Услуга: ${serviceName}\n`;
     }
     text += `📆 Дата: ${this.formatDate(date)}\n\n`;
+    text += `⏰ Доступное время (${startIndex + 1}-${endIndex} из ${slots.length}):\n`;
 
-    text += '⏰ Доступное время:\n';
-    
     const buttons: any[][] = [];
     
-    // Группируем слоты по времени дня
-    const morningSlots = slots.filter(slot => this.isMorning(slot));
-    const afternoonSlots = slots.filter(slot => this.isAfternoon(slot));
-    const eveningSlots = slots.filter(slot => this.isEvening(slot));
-
-    // Добавляем кнопки по 2 в ряд для экономии места
-    const addSlotsToButtons = (timeSlots: string[], emoji: string) => {
-      for (let i = 0; i < timeSlots.length; i += 2) {
-        const row = [];
-        
-        // Первая кнопка в ряду
+    // Добавляем кнопки времени по 2 в ряд
+    for (let i = 0; i < currentSlots.length; i += 2) {
+      const row = [];
+      
+      // Первая кнопка в ряду
+      const slot1 = currentSlots[i];
+      const emoji1 = this.getTimeEmoji(slot1);
+      row.push({
+        action: {
+          type: 'text',
+          label: `${emoji1} ${slot1}`,
+          payload: JSON.stringify({ command: 'select_time', time: slot1 })
+        },
+        color: 'primary'
+      });
+      
+      // Вторая кнопка в ряду (если есть)
+      if (i + 1 < currentSlots.length) {
+        const slot2 = currentSlots[i + 1];
+        const emoji2 = this.getTimeEmoji(slot2);
         row.push({
           action: {
             type: 'text',
-            label: `${emoji} ${timeSlots[i]}`,
-            payload: JSON.stringify({ command: 'select_time', time: timeSlots[i] })
+            label: `${emoji2} ${slot2}`,
+            payload: JSON.stringify({ command: 'select_time', time: slot2 })
           },
           color: 'primary'
         });
-        
-        // Вторая кнопка в ряду (если есть)
-        if (i + 1 < timeSlots.length) {
-          row.push({
-            action: {
-              type: 'text',
-              label: `${emoji} ${timeSlots[i + 1]}`,
-              payload: JSON.stringify({ command: 'select_time', time: timeSlots[i + 1] })
-            },
-            color: 'primary'
-          });
-        }
-        
-        buttons.push(row);
       }
-    };
-
-    if (morningSlots.length > 0) {
-      text += `🌅 Утро: ${morningSlots.join(', ')}\n`;
-      addSlotsToButtons(morningSlots, '🌅');
-    }
-    
-    if (afternoonSlots.length > 0) {
-      text += `☀️ День: ${afternoonSlots.join(', ')}\n`;
-      addSlotsToButtons(afternoonSlots, '☀️');
-    }
-    
-    if (eveningSlots.length > 0) {
-      text += `🌆 Вечер: ${eveningSlots.join(', ')}\n`;
-      addSlotsToButtons(eveningSlots, '🌆');
+      
+      buttons.push(row);
+      
+      // Добавляем время в текст
+      text += `${emoji1} ${slot1}`;
+      if (i + 1 < currentSlots.length) {
+        const emoji2 = this.getTimeEmoji(currentSlots[i + 1]);
+        text += `  ${emoji2} ${currentSlots[i + 1]}`;
+      }
+      text += '\n';
     }
 
-    // Ограничиваем количество кнопок до 8 рядов (VK лимит 10, оставляем место для навигации)
-    const maxRows = 8;
-    if (buttons.length > maxRows) {
-      buttons.splice(maxRows);
-      text += '\n⚠️ Показаны не все слоты. Выберите из доступных или попробуйте другую дату.';
+    // Добавляем навигационные кнопки для времени
+    const navButtons = [];
+    if (startIndex > 0) {
+      navButtons.push({
+        action: {
+          type: 'text',
+          label: '⬅️ Пред.',
+          payload: JSON.stringify({ 
+            command: 'prev_times', 
+            index: Math.max(0, startIndex - maxSlotsPerPage)
+          })
+        },
+        color: 'secondary'
+      });
+    }
+    
+    if (endIndex < slots.length) {
+      navButtons.push({
+        action: {
+          type: 'text',
+          label: 'След. ➡️',
+          payload: JSON.stringify({ 
+            command: 'next_times', 
+            index: endIndex
+          })
+        },
+        color: 'secondary'
+      });
+    }
+    
+    if (navButtons.length > 0) {
+      buttons.push(navButtons);
     }
 
     // Добавляем кнопку "Назад"
@@ -161,6 +182,16 @@ export class MessageFormatter {
     };
 
     return { text, keyboard };
+  }
+
+  /**
+   * Получение эмодзи для времени
+   */
+  private getTimeEmoji(time: string): string {
+    if (this.isMorning(time)) return '🌅';
+    if (this.isAfternoon(time)) return '☀️';
+    if (this.isEvening(time)) return '🌆';
+    return '⏰';
   }
 
   /**
@@ -281,8 +312,8 @@ export class MessageFormatter {
 5. Подтвердите запись
 
 📞 Контакты:
-Телефон: +7 (999) 123-45-67
-Адрес: г. Москва, ул. Примерная, д. 123
+Телефон: +7 (908) 695-49-04
+Адрес: г. Сыктывкар, ул. Куратов, д. 4, кабинет 310
 
 Если у вас есть вопросы, обращайтесь к администратору! 😊`;
 
