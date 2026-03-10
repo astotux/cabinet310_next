@@ -225,6 +225,14 @@ export class CommandHandlers {
         await this.handleTimeSelection(userId, payload.time);
         break;
         
+      case 'confirm_booking':
+        await this.createBooking(userId);
+        break;
+        
+      case 'cancel_booking':
+        await this.handleCancelCommand(message);
+        break;
+        
       case 'next_dates':
       case 'prev_dates':
         await this.handleDateNavigation(userId, payload);
@@ -287,10 +295,6 @@ export class CommandHandlers {
           
         case DialogState.SELECTING_TIME:
           await this.handleTimeSelection(userId, text);
-          break;
-          
-        case DialogState.ENTERING_NAME:
-          await this.handleNameInput(userId, text);
           break;
           
         case DialogState.CONFIRMING_BOOKING:
@@ -413,15 +417,27 @@ export class CommandHandlers {
       return;
     }
     
-    // Сохраняем выбранное время
-    await stateManager.updateBookingData(userId, { time: timeInput });
+    // Получаем информацию о пользователе из VK
+    const userInfo = await vkBotServer.getUserInfo(userId);
+    let clientName = 'Пользователь VK';
     
-    // Переходим к вводу имени
-    await stateManager.transitionTo(userId, DialogState.ENTERING_NAME);
+    if (userInfo) {
+      clientName = `${userInfo.first_name} ${userInfo.last_name}`;
+    }
     
-    const text = `✅ Услуга: ${service}\n✅ Дата: ${vkBookingService.formatDateForDisplay(date)}\n✅ Время: ${timeInput}\n\n👤 Как вас зовут?\n\nНапишите ваше имя:`;
+    // Сохраняем выбранное время и имя
+    await stateManager.updateBookingData(userId, { 
+      time: timeInput,
+      clientName: clientName,
+      vkUserId: userId,
+      vkProfile: vkBookingService.generateVKProfile(userId)
+    });
     
-    await vkBotServer.sendMessage(userId, text);
+    // Переходим сразу к подтверждению
+    await stateManager.transitionTo(userId, DialogState.CONFIRMING_BOOKING);
+    
+    const confirmationMessage = messageFormatter.formatBookingConfirmation(currentState.bookingData as any);
+    await vkBotServer.sendMessage(userId, confirmationMessage.text, confirmationMessage.keyboard);
   }
 
   /**
@@ -468,12 +484,12 @@ export class CommandHandlers {
   private async handleBookingConfirmation(userId: number, confirmation: string): Promise<void> {
     const confirmText = confirmation.toLowerCase().trim();
     
-    if (confirmText === 'да' || confirmText === 'yes' || confirmText === 'подтверждаю') {
+    if (confirmText === 'да' || confirmText === 'yes' || confirmText === 'подтверждаю' || confirmText === '✅ подтвердить') {
       await this.createBooking(userId);
-    } else if (confirmText === 'нет' || confirmText === 'no' || confirmText === 'отмена') {
+    } else if (confirmText === 'нет' || confirmText === 'no' || confirmText === 'отмена' || confirmText === '❌ отменить') {
       await this.handleCancelCommand({ from_id: userId } as VKMessage);
     } else {
-      await vkBotServer.sendMessage(userId, '❓ Напишите "Да" для подтверждения записи или "Нет" для отмены.');
+      await vkBotServer.sendMessage(userId, '❓ Используйте кнопки "Подтвердить" или "Отменить" для выбора.');
     }
   }
 
@@ -505,7 +521,7 @@ export class CommandHandlers {
       
       if (result.success && result.booking) {
         // Успешное создание
-        const confirmationMessage = messageFormatter.formatBookingConfirmation(result.booking);
+        const confirmationMessage = messageFormatter.formatCreatedBookingConfirmation(result.booking);
         await vkBotServer.sendMessage(userId, confirmationMessage.text, confirmationMessage.keyboard);
         
         // Очищаем состояние

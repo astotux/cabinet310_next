@@ -168,8 +168,7 @@ export class StateManager {
       [DialogState.IDLE]: DialogState.SELECTING_SERVICE,
       [DialogState.SELECTING_SERVICE]: DialogState.SELECTING_DATE,
       [DialogState.SELECTING_DATE]: DialogState.SELECTING_TIME,
-      [DialogState.SELECTING_TIME]: DialogState.ENTERING_NAME,
-      [DialogState.ENTERING_NAME]: DialogState.CONFIRMING_BOOKING,
+      [DialogState.SELECTING_TIME]: DialogState.CONFIRMING_BOOKING,
       [DialogState.CONFIRMING_BOOKING]: null, // Конечное состояние
     };
 

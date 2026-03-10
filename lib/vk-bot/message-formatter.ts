@@ -164,9 +164,49 @@ export class MessageFormatter {
   }
 
   /**
-   * Форматирование подтверждения бронирования
+   * Форматирование подтверждения бронирования с кнопками
    */
-  formatBookingConfirmation(booking: VKBookingData): FormattedMessage {
+  formatBookingConfirmation(bookingData: Partial<VKBookingData>): FormattedMessage {
+    let text = `📋 ПОДТВЕРЖДЕНИЕ ЗАПИСИ\n\n`;
+    text += `🎨 Услуга: ${bookingData.service}\n`;
+    text += `📅 Дата: ${this.formatDate(bookingData.date!)}\n`;
+    text += `⏰ Время: ${bookingData.time}\n`;
+    text += `👥 Клиент: ${bookingData.clientName}\n\n`;
+    text += `📍 Адрес студии:\nг. Сыктывкар, ул. Куратов, д. 4, кабинет 310\n\n📞 Контакты:\nТелефон: +7 (908) 695-49-04\n\n`;
+    text += `❓ Подтвердить запись?`;
+
+    const keyboard: VKKeyboard = {
+      one_time: false,
+      inline: true,
+      buttons: [
+        [
+          {
+            action: {
+              type: 'text',
+              label: '✅ Подтвердить',
+              payload: JSON.stringify({ command: 'confirm_booking' })
+            },
+            color: 'positive'
+          },
+          {
+            action: {
+              type: 'text',
+              label: '❌ Отменить',
+              payload: JSON.stringify({ command: 'cancel_booking' })
+            },
+            color: 'negative'
+          }
+        ]
+      ]
+    };
+
+    return { text, keyboard };
+  }
+
+  /**
+   * Форматирование подтверждения созданной записи
+   */
+  formatCreatedBookingConfirmation(booking: VKBookingData): FormattedMessage {
     const text = `✅ ЗАПИСЬ ПОДТВЕРЖДЕНА!
 
 🎨 Услуга: ${booking.service}
@@ -175,10 +215,10 @@ export class MessageFormatter {
 👥 Клиент: ${booking.clientName}
 
 📍 Адрес студии:
-г. Москва, ул. Примерная, д. 123
+г. Сыктывкар, ул. Куратов, д. 4, кабинет 310
 
 📞 Контакты:
-Телефон: +7 (999) 123-45-67
+Телефон: +7 (908) 695-49-04
 
 ⚠️ Важно:
 • Приходите за 5 минут до начала
@@ -192,14 +232,6 @@ export class MessageFormatter {
       inline: true,
       buttons: [
         [
-          {
-            action: {
-              type: 'text',
-              label: '📋 Прайс-лист',
-              payload: JSON.stringify({ command: 'price' })
-            },
-            color: 'secondary'
-          },
           {
             action: {
               type: 'text',

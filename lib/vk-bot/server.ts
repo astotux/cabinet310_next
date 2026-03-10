@@ -138,8 +138,50 @@ export class VKBotServer {
   }
 
   /**
-   * Запуск сервера
+   * Получение информации о пользователе VK
    */
+  async getUserInfo(userId: number): Promise<{ first_name: string; last_name: string } | null> {
+    if (!VK_ACCESS_TOKEN) {
+      console.warn('VK_BOT_ACCESS_TOKEN not configured');
+      return null;
+    }
+
+    try {
+      const params = new URLSearchParams({
+        access_token: VK_ACCESS_TOKEN,
+        v: '5.131',
+        user_ids: userId.toString(),
+        fields: 'first_name,last_name'
+      });
+
+      const response = await fetch('https://api.vk.com/method/users.get', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: params,
+      });
+
+      const data = await response.json();
+      
+      if (data.error) {
+        console.error('VK API error getting user info:', data.error);
+        return null;
+      }
+
+      if (data.response && data.response[0]) {
+        return {
+          first_name: data.response[0].first_name,
+          last_name: data.response[0].last_name
+        };
+      }
+
+      return null;
+    } catch (error) {
+      console.error('Failed to get VK user info:', error);
+      return null;
+    }
+  }
   async start(): Promise<void> {
     if (this.isRunning) {
       console.log('VK Bot Server is already running');

@@ -84,7 +84,7 @@ export class VKNotificationService {
 
 Спасибо за выбор нашей студии! 💅✨`;
 
-    return messageFormatter.formatBookingConfirmation({
+    return messageFormatter.formatCreatedBookingConfirmation({
       service: notification.service,
       date: notification.date,
       time: notification.time,

@@ -80,7 +80,6 @@ export enum DialogState {
   SELECTING_SERVICE = 'selecting_service',
   SELECTING_DATE = 'selecting_date',
   SELECTING_TIME = 'selecting_time',
-  ENTERING_NAME = 'entering_name',
   CONFIRMING_BOOKING = 'confirming_booking'
 }
 
