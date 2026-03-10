@@ -81,6 +81,7 @@ export default function RootLayout({
     <html lang="ru">
       <head>
         <link rel="canonical" href="https://cabinet310.ru" />
+        <link rel="icon" href="https://cabinet310.ru/favicon.ico" type="image/x-icon" />
         <meta name="yandex-verification" content="050e9e29482539ba" />
         <Script id="yandex-metrika" strategy="afterInteractive">
           {`
