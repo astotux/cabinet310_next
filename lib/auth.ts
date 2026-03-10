@@ -85,3 +85,19 @@ export function extractToken(
   
   return null;
 }
+
+/**
+ * Проверяет, является ли пользователь админом по токену из заголовков
+ */
+export async function isAdminFromHeaders(headers: Headers): Promise<boolean> {
+  try {
+    const adminId = headers.get('x-admin-id');
+    const adminUsername = headers.get('x-admin-username');
+    
+    // Если заголовки установлены middleware, значит пользователь админ
+    return !!(adminId && adminUsername);
+  } catch (error) {
+    console.error('Error checking admin status:', error);
+    return false;
+  }
+}

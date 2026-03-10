@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { validateBookingWithAvailability, BookingData } from "@/lib/booking/validator";
 import { notifyNewBooking, notifyNewVKBooking } from "@/lib/vkNotifications";
 import { vkNotificationService } from "@/lib/vk-bot/notification-service";
+import { isAdminFromHeaders } from "@/lib/auth";
 
 /**
  * POST /api/bookings
@@ -41,6 +42,9 @@ export async function POST(request: NextRequest) {
       skipNotification 
     } = body;
 
+    // Проверяем, является ли пользователь админом
+    const isAdmin = await isAdminFromHeaders(request.headers);
+
     const bookingData: BookingData = {
       service,
       master,
@@ -65,9 +69,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Валидируем данные и проверяем доступность ДО транзакции
+    // Передаем флаг isAdmin для пропуска ограничений
     const validation = await validateBookingWithAvailability(
       bookingData,
-      serviceInfo.duration
+      serviceInfo.duration,
+      isAdmin
     );
 
     if (!validation.valid) {

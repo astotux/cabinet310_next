@@ -63,9 +63,10 @@ function validateVKProfile(vkProfile: string): boolean {
  * - Дата в формате YYYY-MM-DD
  * - Время в формате HH:mm
  * - Контактные данные: либо телефон, либо VK профиль
- * - Дата не в прошлом
+ * - Дата не в прошлом (кроме админа)
  * 
  * @param data - Данные бронирования
+ * @param isAdmin - Является ли пользователь админом (пропускает ограничения)
  * @returns Результат валидации с списком ошибок
  * 
  * @example
@@ -90,7 +91,7 @@ function validateVKProfile(vkProfile: string): boolean {
  *   vkUserId: 123456
  * });
  */
-export function validateBooking(data: BookingData): ValidationResult {
+export function validateBooking(data: BookingData, isAdmin: boolean = false): ValidationResult {
   const errors: string[] = [];
 
   // Проверка обязательных полей
@@ -136,16 +137,18 @@ export function validateBooking(data: BookingData): ValidationResult {
   if (!dateRegex.test(data.date)) {
     errors.push('Неверный формат даты. Используйте YYYY-MM-DD');
   } else {
-    // Проверка, что дата не в прошлом
-    try {
-      const bookingDate = parse(data.date, 'yyyy-MM-dd', new Date());
-      const today = startOfDay(new Date());
-      
-      if (isBefore(bookingDate, today)) {
-        errors.push('Нельзя создать бронирование на прошедшую дату');
+    // Проверка, что дата не в прошлом (только для не-админов)
+    if (!isAdmin) {
+      try {
+        const bookingDate = parse(data.date, 'yyyy-MM-dd', new Date());
+        const today = startOfDay(new Date());
+        
+        if (isBefore(bookingDate, today)) {
+          errors.push('Нельзя создать бронирование на прошедшую дату');
+        }
+      } catch (error) {
+        errors.push('Некорректная дата');
       }
-    } catch (error) {
-      errors.push('Некорректная дата');
     }
   }
 
@@ -179,6 +182,7 @@ export function validateBooking(data: BookingData): ValidationResult {
  * 
  * @param data - Данные бронирования
  * @param serviceDuration - Длительность услуги в минутах
+ * @param isAdmin - Является ли пользователь админом (пропускает блокировки)
  * @returns true если слот доступен, false если занят
  * 
  * @example
@@ -194,19 +198,22 @@ export function validateBooking(data: BookingData): ValidationResult {
  */
 export async function checkSlotAvailability(
   data: BookingData,
-  serviceDuration: number
+  serviceDuration: number,
+  isAdmin: boolean = false
 ): Promise<boolean> {
-  // Проверяем, не заблокирован ли этот слот
-  const blockedSlot = await prisma.blockedSlot.findFirst({
-    where: {
-      master: data.master,
-      date: data.date,
-      time: data.time
-    }
-  });
+  // Проверяем, не заблокирован ли этот слот (только для не-админов)
+  if (!isAdmin) {
+    const blockedSlot = await prisma.blockedSlot.findFirst({
+      where: {
+        master: data.master,
+        date: data.date,
+        time: data.time
+      }
+    });
 
-  if (blockedSlot) {
-    return false; // Слот заблокирован
+    if (blockedSlot) {
+      return false; // Слот заблокирован
+    }
   }
 
   // Получаем все существующие бронирования на эту дату
@@ -274,21 +281,23 @@ export async function checkSlotAvailability(
  * 
  * @param data - Данные бронирования
  * @param serviceDuration - Длительность услуги в минутах
+ * @param isAdmin - Является ли пользователь админом (пропускает ограничения)
  * @returns Результат валидации
  */
 export async function validateBookingWithAvailability(
   data: BookingData,
-  serviceDuration: number
+  serviceDuration: number,
+  isAdmin: boolean = false
 ): Promise<ValidationResult> {
   // Сначала валидируем данные
-  const validation = validateBooking(data);
+  const validation = validateBooking(data, isAdmin);
   
   if (!validation.valid) {
     return validation;
   }
 
   // Затем проверяем доступность
-  const available = await checkSlotAvailability(data, serviceDuration);
+  const available = await checkSlotAvailability(data, serviceDuration, isAdmin);
   
   if (!available) {
     return {

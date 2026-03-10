@@ -692,7 +692,8 @@ export default function AdminPage() {
     for (let day = 1; day <= daysInMonth; day++) {
       const date = new Date(year, month, day);
       date.setHours(0, 0, 0, 0);
-      const isPast = date < today;
+      // Админ может выбирать любые даты, включая прошедшие
+      const isPast = false;
       
       // Сравниваем даты правильно
       const isSelected = selectedCalendarDate && 
@@ -1951,7 +1952,6 @@ export default function AdminPage() {
                     type="date"
                     value={bookingForm.date}
                     onChange={(e) => setBookingForm({ ...bookingForm, date: e.target.value })}
-                    min={new Date().toISOString().split('T')[0]}
                     required
                     className="w-full p-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
                   />
