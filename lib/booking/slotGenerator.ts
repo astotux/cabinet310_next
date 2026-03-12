@@ -79,13 +79,24 @@ export function generateTimeSlots(
   const workEnd = setMinutes(setHours(targetDate, endHour), endMinute);
 
   // Если это сегодня, начинаем с текущего времени + 3 часа (округленного вверх)
+  // Если это сегодня, начинаем с текущего времени + 3 часа (округленного вверх)
   const isToday = targetDate.getTime() === startOfDay(now).getTime();
   if (isToday) {
-    // Добавляем 3 часа к текущему времени (минимальное время для бронирования)
-    const minBookingTime = addMinutes(now, 3 * 60);
+    // Получаем текущее время в московском часовом поясе (UTC+3)
+    // Сервер может быть в UTC, поэтому конвертируем
+    const moscowOffset = 3 * 60; // Москва UTC+3 в минутах
+    const localOffset = now.getTimezoneOffset(); // Смещение сервера от UTC в минутах (отрицательное для UTC+)
+    const offsetDiff = moscowOffset + localOffset; // Разница между Москвой и сервером
     
-    console.log('[slotGenerator] Current time:', now.toISOString(), '(local:', now.toLocaleString('ru-RU') + ')');
-    console.log('[slotGenerator] Min booking time (+3h):', minBookingTime.toISOString(), '(local:', minBookingTime.toLocaleString('ru-RU') + ')');
+    const moscowTime = addMinutes(now, offsetDiff);
+    
+    console.log('[slotGenerator] Server time:', now.toISOString(), '(offset:', localOffset, 'min)');
+    console.log('[slotGenerator] Moscow time:', moscowTime.toISOString());
+    
+    // Добавляем 3 часа к московскому времени (минимальное время для бронирования)
+    const minBookingTime = addMinutes(moscowTime, 3 * 60);
+    
+    console.log('[slotGenerator] Min booking time (+3h Moscow):', minBookingTime.toISOString());
     
     // Округляем время вверх до следующего получаса
     const minutes = minBookingTime.getMinutes();
@@ -102,7 +113,7 @@ export function generateTimeSlots(
     
     minBookingTime.setMinutes(roundedMinutes, 0, 0);
     
-    console.log('[slotGenerator] Rounded min booking time:', minBookingTime.toISOString(), '(local:', minBookingTime.toLocaleString('ru-RU') + ')');
+    console.log('[slotGenerator] Rounded min booking time:', minBookingTime.toISOString());
     console.log('[slotGenerator] Work start before:', workStart.toISOString());
     
     // Используем minBookingTime напрямую, если оно позже начала рабочего дня
