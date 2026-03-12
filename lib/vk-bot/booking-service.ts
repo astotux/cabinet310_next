@@ -260,12 +260,17 @@ export class VKBookingService {
 
   /**
    * Получение ближайших доступных дат для услуги
+   * Максимум 45 дней вперед (как на фронте)
    */
   async getAvailableDates(service: string, daysAhead: number = 45): Promise<string[]> {
     const availableDates: string[] = [];
     const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-    for (let i = 0; i < daysAhead; i++) {
+    // Ограничиваем максимум 45 днями
+    const maxDays = Math.min(daysAhead, 45);
+
+    for (let i = 0; i < maxDays; i++) {
       const date = new Date(today);
       date.setDate(today.getDate() + i);
       

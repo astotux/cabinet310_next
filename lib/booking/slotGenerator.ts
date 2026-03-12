@@ -39,7 +39,7 @@ export function addMinutesToTime(time: Date, minutes: number): Date {
  * - Слоты генерируются с шагом 30 минут (09:00, 09:30, 10:00, 10:30, ...)
  * - Услуга должна полностью помещаться в рабочие часы
  * - Слоты не генерируются для прошедших дат
- * - Для текущей даты не генерируются слоты для прошедших часов
+ * - Для текущей даты не генерируются слоты в ближайшие 3 часа
  * 
  * @param date - Дата, для которой генерируются слоты
  * @param serviceDuration - Длительность услуги в минутах
@@ -78,27 +78,30 @@ export function generateTimeSlots(
   let workStart = setMinutes(setHours(targetDate, startHour), startMinute);
   const workEnd = setMinutes(setHours(targetDate, endHour), endMinute);
 
-  // Если это сегодня, начинаем с текущего часа (округленного вверх)
+  // Если это сегодня, начинаем с текущего времени + 3 часа (округленного вверх)
   const isToday = targetDate.getTime() === startOfDay(now).getTime();
   if (isToday) {
-    const currentHour = now.getHours();
-    const currentMinute = now.getMinutes();
+    // Добавляем 3 часа к текущему времени (минимальное время для бронирования)
+    const minBookingTime = new Date(now);
+    minBookingTime.setHours(minBookingTime.getHours() + 3);
     
-    // Округляем текущее время вверх до следующего получаса
+    const currentHour = minBookingTime.getHours();
+    const currentMinute = minBookingTime.getMinutes();
+    
+    // Округляем время вверх до следующего получаса
     let nextMinute = 0;
+    let nextHour = currentHour;
+    
     if (currentMinute > 30) {
       nextMinute = 0;
-      const nextHour = currentHour + 1;
-      const currentTime = setMinutes(setHours(targetDate, nextHour), nextMinute);
-      if (isAfter(currentTime, workStart)) {
-        workStart = currentTime;
-      }
+      nextHour = currentHour + 1;
     } else if (currentMinute > 0) {
       nextMinute = 30;
-      const currentTime = setMinutes(setHours(targetDate, currentHour), nextMinute);
-      if (isAfter(currentTime, workStart)) {
-        workStart = currentTime;
-      }
+    }
+    
+    const currentTime = setMinutes(setHours(targetDate, nextHour), nextMinute);
+    if (isAfter(currentTime, workStart)) {
+      workStart = currentTime;
     }
   }
 
