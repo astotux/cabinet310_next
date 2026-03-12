@@ -54,7 +54,7 @@ export default function ContactInfo({
   };
 
   return (
-    <p className={`text-sm text-slate-500 ${className} max-[480px]:text-xs`}>
+    <p className={`text-sm text-slate-500 ${className} max-[480px]:text-center`}>
       <span className="font-medium">{clientName}</span>
       <span className="mx-1">•</span>
       {renderContactMethod()}

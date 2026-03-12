@@ -1160,7 +1160,7 @@ export default function AdminPage() {
             <Link href="/">
               <img src="/logo.svg" style={{ width: '100px' }} alt="Cabinet 310" />
             </Link>
-            <span className="text-xs font-bold uppercase tracking-widest text-primary">Админ</span>
+            <span className="text-xs font-black uppercase tracking-widest text-gradient">Админ</span>
           </div>
           <div className="flex items-center gap-4">
             <button 
@@ -1355,7 +1355,7 @@ export default function AdminPage() {
                       </div>
                       <div className="hidden sm:block h-16 w-px bg-slate-200"></div>
                       <div className="flex-1">
-                        <div className="flex flex-wrap items-center gap-2 mb-1">
+                        <div className="flex flex-wrap items-center gap-2 mb-1 max-[480px]:justify-center">
                           <span className="material-symbols-outlined text-sm text-accent-pink">face_3</span>
                           <h4 className="font-bold text-sm sm:text-base">{booking.service}</h4>
                           <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-semibold">
@@ -1376,18 +1376,21 @@ export default function AdminPage() {
                           <p className="text-sm text-slate-500 italic mt-1 max-[480px]:text-xs">💬 {booking.comment}</p>
                         )}
                       </div>
-                      <div className="flex gap-2 justify-end sm:justify-start">
+                      {/* Кнопки действий */}
+                      <div className="flex gap-2 p-3">
                         <button 
                           onClick={() => openEditBookingModal(booking)}
-                          className="size-9 max-[480px]:size-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center hover:bg-primary/20 transition-colors"
+                          className="flex-1 p-2.5 rounded-xl bg-primary/10 text-primary flex items-center justify-center gap-2 hover:bg-primary/20 transition-colors font-semibold text-sm"
                         >
-                          <span className="material-symbols-outlined text-lg max-[480px]:text-base">edit</span>
+                          <span className="material-symbols-outlined text-lg">edit</span>
+                          <span className="max-[480px]:hidden">Изменить</span>
                         </button>
                         <button 
                           onClick={() => deleteBooking(booking.id)}
-                          className="size-9 max-[480px]:size-8 rounded-xl bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 transition-colors"
+                          className="flex-1 p-2.5 rounded-xl bg-red-50 text-red-500 flex items-center justify-center gap-2 hover:bg-red-100 transition-colors font-semibold text-sm"
                         >
-                          <span className="material-symbols-outlined text-lg max-[480px]:text-base">close</span>
+                          <span className="material-symbols-outlined text-lg">delete</span>
+                          <span className="max-[480px]:hidden">Удалить</span>
                         </button>
                       </div>
                     </div>
