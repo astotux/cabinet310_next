@@ -6,6 +6,7 @@ import Link from "next/link";
 import { IMaskInput } from 'react-imask';
 import { Line } from 'react-chartjs-2';
 import ContactInfo from '../../components/ContactInfo';
+import toast, { Toaster } from 'react-hot-toast';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -393,20 +394,30 @@ export default function AdminPage() {
   };
 
   const approveReview = async (id: number) => {
-    await fetch(`/api/admin/reviews/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ approved: true }),
-    });
-    fetchData();
+    try {
+      await fetch(`/api/admin/reviews/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ approved: true }),
+      });
+      toast.success('Отзыв одобрен!');
+      fetchData();
+    } catch (error) {
+      toast.error('Ошибка при одобрении отзыва');
+    }
   };
 
   const rejectReview = async (id: number) => {
     if (!confirm("Отклонить этот отзыв? Он будет удален.")) return;
-    await fetch(`/api/admin/reviews/${id}`, {
-      method: "DELETE",
-    });
-    fetchData();
+    try {
+      await fetch(`/api/admin/reviews/${id}`, {
+        method: "DELETE",
+      });
+      toast.success('Отзыв отклонен!');
+      fetchData();
+    } catch (error) {
+      toast.error('Ошибка при отклонении отзыва');
+    }
   };
 
   const toggleExpandReview = (id: number) => {
@@ -423,8 +434,13 @@ export default function AdminPage() {
 
   const deleteBooking = async (id: number) => {
     if (!confirm("Удалить эту запись?")) return;
-    await fetch(`/api/bookings/${id}`, { method: "DELETE" });
-    fetchData();
+    try {
+      await fetch(`/api/bookings/${id}`, { method: "DELETE" });
+      toast.success('Запись успешно удалена!');
+      fetchData();
+    } catch (error) {
+      toast.error('Ошибка при удалении записи');
+    }
   };
 
   const handleLogout = async () => {
@@ -533,24 +549,31 @@ export default function AdminPage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(serviceForm),
         });
+        toast.success('Услуга успешно обновлена!');
       } else {
         await fetch("/api/services", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(serviceForm),
         });
+        toast.success('Услуга успешно добавлена!');
       }
       setShowServiceModal(false);
       fetchData();
     } catch (error) {
-      alert("Ошибка сохранения услуги");
+      toast.error("Ошибка сохранения услуги");
     }
   };
 
   const deleteService = async (id: number) => {
     if (!confirm("Удалить эту услугу?")) return;
-    await fetch(`/api/services/${id}`, { method: "DELETE" });
-    fetchData();
+    try {
+      await fetch(`/api/services/${id}`, { method: "DELETE" });
+      toast.success('Услуга успешно удалена!');
+      fetchData();
+    } catch (error) {
+      toast.error('Ошибка при удалении услуги');
+    }
   };
 
   // Функции для работы с записями
@@ -593,7 +616,7 @@ export default function AdminPage() {
     // Валидация телефона
     const phoneDigits = bookingForm.clientPhone.replace(/\D/g, '');
     if (phoneDigits.length !== 11) {
-      alert("Пожалуйста, введите полный номер телефона");
+      toast.error("Пожалуйста, введите полный номер телефона");
       return;
     }
 
@@ -613,18 +636,20 @@ export default function AdminPage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(dataToSend),
         });
+        toast.success('Запись успешно обновлена!');
       } else {
         await fetch("/api/bookings", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(dataToSend),
         });
+        toast.success('Запись успешно создана!');
       }
       setShowBookingModal(false);
       setIsEditingPrice(false);
       fetchData();
     } catch (error) {
-      alert("Ошибка сохранения записи");
+      toast.error("Ошибка сохранения записи");
     }
   };
 
@@ -1154,6 +1179,31 @@ export default function AdminPage() {
 
   return (
     <div className="font-display bg-background-light text-slate-900 min-h-screen overflow-x-hidden">
+      <Toaster 
+        position="top-right"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: '#fff',
+            color: '#1f2937',
+            padding: '16px',
+            borderRadius: '12px',
+            boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
+          },
+          success: {
+            iconTheme: {
+              primary: '#CD92F0',
+              secondary: '#fff',
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: '#ef4444',
+              secondary: '#fff',
+            },
+          },
+        }}
+      />
       <header className="sticky top-0 z-50 w-full glass border-b border-primary/10">
         <div className="max-w-7xl mx-auto px-6 max-[480px]:px-4 max-[320px]:px-3 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3">

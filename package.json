@@ -38,6 +38,7 @@
     "react-chartjs-2": "^5.3.1",
     "react-day-picker": "^9.14.0",
     "react-dom": "19.2.3",
+    "react-hot-toast": "^2.6.0",
     "react-imask": "^7.6.1",
     "swiper": "^12.1.2"
   },
