@@ -190,7 +190,8 @@ export class StateManager {
    */
   getNextBookingState(currentState: DialogState): DialogState | null {
     const stateFlow: Record<DialogState, DialogState | null> = {
-      [DialogState.IDLE]: DialogState.SELECTING_SERVICE,
+      [DialogState.IDLE]: DialogState.SELECTING_CATEGORY,
+      [DialogState.SELECTING_CATEGORY]: DialogState.SELECTING_SERVICE,
       [DialogState.SELECTING_SERVICE]: DialogState.SELECTING_DATE,
       [DialogState.SELECTING_DATE]: DialogState.SELECTING_TIME,
       [DialogState.SELECTING_TIME]: DialogState.CONFIRMING_BOOKING,

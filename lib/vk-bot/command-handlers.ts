@@ -76,21 +76,21 @@ export class CommandHandlers {
     const userId = message.from_id;
     
     try {
-      // Переводим пользователя в состояние выбора услуги
-      await stateManager.transitionTo(userId, DialogState.SELECTING_SERVICE);
+      // Переводим пользователя в состояние выбора категории
+      await stateManager.transitionTo(userId, DialogState.SELECTING_CATEGORY);
       
-      // Получаем список услуг
-      const services = await vkBookingService.getAvailableServices();
+      // Получаем список категорий
+      const categories = await vkBookingService.getAvailableCategories();
       
-      if (services.length === 0) {
-        const errorMessage = messageFormatter.formatError('Услуги временно недоступны. Попробуйте позже.');
+      if (categories.length === 0) {
+        const errorMessage = messageFormatter.formatError('Категории услуг временно недоступны. Попробуйте позже.');
         await vkBotServer.sendMessage(userId, errorMessage.text, errorMessage.keyboard);
         return;
       }
       
-      // Отправляем список услуг для выбора
-      const serviceMessage = messageFormatter.formatServiceSelection(services);
-      await vkBotServer.sendMessage(userId, serviceMessage.text, serviceMessage.keyboard);
+      // Отправляем список категорий для выбора
+      const categoryMessage = messageFormatter.formatCategorySelection(categories);
+      await vkBotServer.sendMessage(userId, categoryMessage.text, categoryMessage.keyboard);
       
       console.log(`Book command handled for user ${userId}`);
     } catch (error) {
@@ -221,6 +221,10 @@ export class CommandHandlers {
         await this.handleContactHumanCommand(message);
         break;
         
+      case 'select_category':
+        await this.handleCategorySelection(userId, payload.category);
+        break;
+        
       case 'select_service':
         await this.handleServiceSelection(userId, payload.service);
         break;
@@ -251,16 +255,25 @@ export class CommandHandlers {
         await this.handleTimeNavigation(userId, payload);
         break;
         
-      case 'back_to_services':
+      case 'back_to_categories':
         await this.handleBookCommand(message);
         break;
         
-      case 'back_to_date':
+      case 'back_to_services':
         const currentState = await stateManager.getUserState(userId);
-        if (currentState.bookingData.service) {
+        if (currentState.bookingData.category) {
+          await this.handleCategorySelection(userId, currentState.bookingData.category);
+        } else {
+          await this.handleBookCommand(message);
+        }
+        break;
+        
+      case 'back_to_date':
+        const state = await stateManager.getUserState(userId);
+        if (state.bookingData.service) {
           await stateManager.transitionTo(userId, DialogState.SELECTING_DATE);
-          const availableDates = await vkBookingService.getAvailableDates(currentState.bookingData.service);
-          const dateMessage = messageFormatter.formatDateSelection(availableDates, currentState.bookingData.service);
+          const availableDates = await vkBookingService.getAvailableDates(state.bookingData.service);
+          const dateMessage = messageFormatter.formatDateSelection(availableDates, state.bookingData.service);
           await vkBotServer.sendMessage(userId, dateMessage.text, dateMessage.keyboard);
         }
         break;
@@ -317,6 +330,10 @@ export class CommandHandlers {
     
     try {
       switch (state) {
+        case DialogState.SELECTING_CATEGORY:
+          await this.handleCategorySelection(userId, text);
+          break;
+          
         case DialogState.SELECTING_SERVICE:
           await this.handleServiceSelection(userId, text);
           break;
@@ -341,6 +358,38 @@ export class CommandHandlers {
       const errorMessage = messageFormatter.formatError('Ошибка обработки ввода. Попробуйте еще раз.');
       await vkBotServer.sendMessage(userId, errorMessage.text, errorMessage.keyboard);
     }
+  }
+
+  /**
+   * Обработка выбора категории
+   */
+  private async handleCategorySelection(userId: number, categoryName: string): Promise<void> {
+    // Получаем список всех категорий для проверки
+    const categories = await vkBookingService.getAvailableCategories();
+    
+    if (!categories.includes(categoryName)) {
+      await vkBotServer.sendMessage(userId, '❌ Категория не найдена. Выберите категорию из списка.');
+      return;
+    }
+    
+    // Сохраняем выбранную категорию
+    await stateManager.updateBookingData(userId, { category: categoryName });
+    
+    // Получаем услуги по категории
+    const services = await vkBookingService.getServicesByCategory(categoryName);
+    
+    if (services.length === 0) {
+      const errorMessage = messageFormatter.formatError('В этой категории нет доступных услуг.');
+      await vkBotServer.sendMessage(userId, errorMessage.text, errorMessage.keyboard);
+      return;
+    }
+    
+    // Переходим к выбору услуги
+    await stateManager.transitionTo(userId, DialogState.SELECTING_SERVICE);
+    
+    // Показываем услуги выбранной категории
+    const serviceMessage = messageFormatter.formatServiceSelectionByCategory(services, categoryName);
+    await vkBotServer.sendMessage(userId, serviceMessage.text, serviceMessage.keyboard);
   }
 
   /**

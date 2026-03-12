@@ -77,6 +77,7 @@ export interface ParsedCommand {
 
 export enum DialogState {
   IDLE = 'idle',
+  SELECTING_CATEGORY = 'selecting_category',
   SELECTING_SERVICE = 'selecting_service',
   SELECTING_DATE = 'selecting_date',
   SELECTING_TIME = 'selecting_time',
@@ -84,6 +85,7 @@ export enum DialogState {
 }
 
 export interface VKBookingData {
+  category?: string;
   service: string;
   date: string;
   time: string;

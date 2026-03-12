@@ -122,6 +122,48 @@ export class VKBookingService {
   }
 
   /**
+   * Получение доступных категорий услуг
+   */
+  async getAvailableCategories(): Promise<string[]> {
+    try {
+      const services = await prisma.price.findMany({
+        select: { category: true },
+        distinct: ['category'],
+        orderBy: { category: 'asc' }
+      });
+
+      return services.map(s => s.category);
+    } catch (error) {
+      console.error('Error getting available categories:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Получение услуг по категории
+   */
+  async getServicesByCategory(category: string): Promise<ServiceInfo[]> {
+    try {
+      const services = await prisma.price.findMany({
+        where: { category: category },
+        orderBy: { service: 'asc' }
+      });
+
+      return services.map(service => ({
+        service: service.service,
+        description: service.description || '',
+        category: service.category,
+        master: service.master,
+        duration: service.duration,
+        price: service.price
+      }));
+    } catch (error) {
+      console.error('Error getting services by category:', error);
+      return [];
+    }
+  }
+
+  /**
    * Получение доступных слотов для услуги на дату
    */
   async getAvailableSlots(service: string, date: string): Promise<string[]> {

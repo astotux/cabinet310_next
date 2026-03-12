@@ -398,6 +398,120 @@ export class MessageFormatter {
   }
 
   /**
+   * Форматирование выбора категории услуг
+   */
+  formatCategorySelection(categories: string[]): FormattedMessage {
+    if (categories.length === 0) {
+      return {
+        text: '❌ Категории услуг не найдены.',
+        keyboard: this.createMainMenuKeyboard()
+      };
+    }
+
+    let text = '🎨 ВЫБЕРИТЕ КАТЕГОРИЮ УСЛУГ\n\n';
+    
+    const buttons: any[][] = [];
+    
+    // Эмодзи для категорий
+    const categoryEmojis: Record<string, string> = {
+      'Перманент': '💄',
+      'Маникюр': '💅',
+      'Ламинирование': '👁️',
+    };
+    
+    categories.forEach(category => {
+      const emoji = categoryEmojis[category] || '🔸';
+      text += `${emoji} ${category}\n`;
+      
+      buttons.push([{
+        action: {
+          type: 'text',
+          label: `${emoji} ${category}`,
+          payload: JSON.stringify({ 
+            command: 'select_category', 
+            category: category 
+          })
+        },
+        color: 'primary'
+      }]);
+    });
+
+    // Добавляем кнопку "Назад"
+    buttons.push([{
+      action: {
+        type: 'text',
+        label: '⬅️ Назад',
+        payload: JSON.stringify({ command: 'cancel' })
+      },
+      color: 'secondary'
+    }]);
+
+    const keyboard: VKKeyboard = {
+      one_time: false,
+      inline: true,
+      buttons: buttons
+    };
+
+    return { text, keyboard };
+  }
+
+  /**
+   * Форматирование списка услуг по категории
+   */
+  formatServiceSelectionByCategory(services: ServiceInfo[], category: string): FormattedMessage {
+    if (services.length === 0) {
+      return {
+        text: `❌ В категории "${category}" нет доступных услуг.`,
+        keyboard: this.createBackKeyboard()
+      };
+    }
+
+    let text = `🎨 КАТЕГОРИЯ: ${category.toUpperCase()}\n\n`;
+    text += 'Выберите услугу:\n\n';
+    
+    const buttons: any[][] = [];
+    
+    services.forEach(service => {
+      text += `• ${service.service} - ${service.price} ₽\n`;
+      if (service.description) {
+        text += `  ${service.description}\n`;
+      }
+      text += `  ⏱ ${this.formatDuration(service.duration)}\n\n`;
+      
+      // Добавляем кнопку для каждой услуги
+      buttons.push([{
+        action: {
+          type: 'text',
+          label: service.service,
+          payload: JSON.stringify({ 
+            command: 'select_service', 
+            service: service.service 
+          })
+        },
+        color: 'primary'
+      }]);
+    });
+
+    // Добавляем кнопку "Назад к категориям"
+    buttons.push([{
+      action: {
+        type: 'text',
+        label: '⬅️ Назад к категориям',
+        payload: JSON.stringify({ command: 'back_to_categories' })
+      },
+      color: 'secondary'
+    }]);
+
+    const keyboard: VKKeyboard = {
+      one_time: false,
+      inline: true,
+      buttons: buttons.slice(0, 10) // Ограничиваем количество кнопок
+    };
+
+    return { text, keyboard };
+  }
+
+  /**
    * Форматирование выбора даты с кнопками-слайдером
    */
   formatDateSelection(availableDates: string[], serviceName: string, currentIndex: number = 0): FormattedMessage {
