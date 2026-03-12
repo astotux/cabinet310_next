@@ -82,26 +82,26 @@ export function generateTimeSlots(
   const isToday = targetDate.getTime() === startOfDay(now).getTime();
   if (isToday) {
     // Добавляем 3 часа к текущему времени (минимальное время для бронирования)
-    const minBookingTime = new Date(now);
-    minBookingTime.setHours(minBookingTime.getHours() + 3);
-    
-    const currentHour = minBookingTime.getHours();
-    const currentMinute = minBookingTime.getMinutes();
+    const minBookingTime = addMinutes(now, 3 * 60);
     
     // Округляем время вверх до следующего получаса
-    let nextMinute = 0;
-    let nextHour = currentHour;
+    const minutes = minBookingTime.getMinutes();
+    let roundedMinutes = 0;
     
-    if (currentMinute > 30) {
-      nextMinute = 0;
-      nextHour = currentHour + 1;
-    } else if (currentMinute > 0) {
-      nextMinute = 30;
+    if (minutes > 30) {
+      // Округляем до следующего часа
+      roundedMinutes = 0;
+      minBookingTime.setHours(minBookingTime.getHours() + 1);
+    } else if (minutes > 0) {
+      // Округляем до 30 минут
+      roundedMinutes = 30;
     }
     
-    const currentTime = setMinutes(setHours(targetDate, nextHour), nextMinute);
-    if (isAfter(currentTime, workStart)) {
-      workStart = currentTime;
+    minBookingTime.setMinutes(roundedMinutes, 0, 0);
+    
+    // Используем minBookingTime напрямую, если оно позже начала рабочего дня
+    if (isAfter(minBookingTime, workStart)) {
+      workStart = minBookingTime;
     }
   }
 
