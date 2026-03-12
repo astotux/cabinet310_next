@@ -4,6 +4,10 @@ import { generateTimeSlots, DEFAULT_WORKING_HOURS } from "@/lib/booking/slotGene
 import { hasConflict, BookingInterval } from "@/lib/booking/conflictDetection";
 import { parse, format } from "date-fns";
 
+// Отключаем кэширование для этого API route
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 /**
  * GET /api/availability
  * 

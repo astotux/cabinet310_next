@@ -84,6 +84,9 @@ export function generateTimeSlots(
     // Добавляем 3 часа к текущему времени (минимальное время для бронирования)
     const minBookingTime = addMinutes(now, 3 * 60);
     
+    console.log('[slotGenerator] Current time:', now.toISOString(), '(local:', now.toLocaleString('ru-RU') + ')');
+    console.log('[slotGenerator] Min booking time (+3h):', minBookingTime.toISOString(), '(local:', minBookingTime.toLocaleString('ru-RU') + ')');
+    
     // Округляем время вверх до следующего получаса
     const minutes = minBookingTime.getMinutes();
     let roundedMinutes = 0;
@@ -99,9 +102,13 @@ export function generateTimeSlots(
     
     minBookingTime.setMinutes(roundedMinutes, 0, 0);
     
+    console.log('[slotGenerator] Rounded min booking time:', minBookingTime.toISOString(), '(local:', minBookingTime.toLocaleString('ru-RU') + ')');
+    console.log('[slotGenerator] Work start before:', workStart.toISOString());
+    
     // Используем minBookingTime напрямую, если оно позже начала рабочего дня
     if (isAfter(minBookingTime, workStart)) {
       workStart = minBookingTime;
+      console.log('[slotGenerator] Work start updated to:', workStart.toISOString());
     }
   }
 
