@@ -43,6 +43,7 @@ export default function AdminPage() {
     master: "",
     duration: "",
     price: "",
+    oldPrice: "",
     image: "",
   });
   const [uploading, setUploading] = useState(false);
@@ -501,6 +502,7 @@ export default function AdminPage() {
       master: "",
       duration: "",
       price: "",
+      oldPrice: "",
       image: "",
     });
     setShowServiceModal(true);
@@ -515,6 +517,7 @@ export default function AdminPage() {
       master: service.master,
       duration: service.duration,
       price: service.price.toString(),
+      oldPrice: service.oldPrice ? service.oldPrice.toString() : "",
       image: service.image || "",
     });
     setShowServiceModal(true);
@@ -1370,7 +1373,7 @@ export default function AdminPage() {
                           vkProfile={booking.vkProfile}
                         />
                         {booking.comment && (
-                          <p className="text-sm text-slate-500 italic mt-1">💬 {booking.comment}</p>
+                          <p className="text-sm text-slate-500 italic mt-1 max-[480px]:text-xs">💬 {booking.comment}</p>
                         )}
                       </div>
                       <div className="flex gap-2 justify-end sm:justify-start">
@@ -1650,7 +1653,16 @@ export default function AdminPage() {
                         <span className="text-sm font-semibold">{formatDuration(service.duration)}</span>
                       </td>
                       <td className="py-4 px-4">
-                        <span className="text-lg font-black text-gradient">{service.price.toLocaleString()} ₽</span>
+                        <div className="flex items-center gap-2">
+                          <span className={`text-base font-black text-gradient`}>
+                            {service.price.toLocaleString()} ₽
+                          </span>
+                          {service.oldPrice && (
+                            <span className="text-sm line-through text-slate-400">
+                              {service.oldPrice.toLocaleString()} ₽
+                            </span>
+                          )}
+                        </div>
                       </td>
                       <td className="py-4 px-4">
                         <div className="flex gap-2 justify-end">
@@ -1715,9 +1727,16 @@ export default function AdminPage() {
                         <span className="text-xs font-semibold text-slate-600">
                           {formatDuration(service.duration)}
                         </span>
-                        <span className="text-base font-black text-gradient">
-                          {service.price.toLocaleString()} ₽
-                        </span>
+                        <div className="flex items-center gap-1">
+                          <span className={`text-base font-black text-gradient`}>
+                            {service.price.toLocaleString()} ₽
+                          </span>
+                          {service.oldPrice && (
+                            <span className="text-xs line-through text-slate-400">
+                              {service.oldPrice.toLocaleString()} ₽
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1829,16 +1848,30 @@ export default function AdminPage() {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-bold mb-2">Цена (₽) *</label>
-                <input
-                  type="number"
-                  value={serviceForm.price}
-                  onChange={(e) => setServiceForm({ ...serviceForm, price: e.target.value })}
-                  required
-                  className="w-full p-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
-                  placeholder="5000"
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-bold mb-2">Цена (₽) *</label>
+                  <input
+                    type="number"
+                    value={serviceForm.price}
+                    onChange={(e) => setServiceForm({ ...serviceForm, price: e.target.value })}
+                    required
+                    className="w-full p-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                    placeholder="5000"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-bold mb-2">Старая цена (₽)</label>
+                  <input
+                    type="number"
+                    value={serviceForm.oldPrice}
+                    onChange={(e) => setServiceForm({ ...serviceForm, oldPrice: e.target.value })}
+                    className="w-full p-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                    placeholder="7000"
+                  />
+                  <p className="text-xs text-slate-500 mt-1">Для акций - будет показана перечеркнутой</p>
+                </div>
               </div>
 
               <div>

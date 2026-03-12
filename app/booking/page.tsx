@@ -15,10 +15,25 @@ interface Service {
   master: string;
   duration: number;
   price: number;
+  oldPrice?: number | null;
   image: string | null;
 }
 
 type BookingStep = 1 | 2 | 3;
+
+// Функция для форматирования длительности из минут
+const formatDuration = (minutes: number): string => {
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  
+  if (hours === 0) {
+    return `${mins} мин`;
+  } else if (mins === 0) {
+    return `${hours} ч`;
+  } else {
+    return `${hours} ч ${mins} мин`;
+  }
+};
 
 export default function BookingPage() {
   const [services, setServices] = useState<Service[]>([]);
@@ -523,18 +538,29 @@ export default function BookingPage() {
                             <span className="material-symbols-outlined text-3xl">spa</span>
                           )}
                         </div>
-                        <div>
+                        <div className="flex-1">
                           <h4 className="text-lg font-bold text-slate-900 mb-1">{service.service}</h4>
                           {service.description && (
-                            <p className="text-sm text-slate-600 mb-2">{service.description}</p>
+                            <p className="text-sm text-slate-600 mb-3">{service.description}</p>
                           )}
-                          <div className="flex items-center gap-4 text-sm text-slate-500 font-medium">
-                            <span className="flex items-center gap-1">
-                              <span className="material-symbols-outlined text-sm">schedule</span> {service.duration} мин
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <span className="material-symbols-outlined text-sm">payments</span> {service.price.toLocaleString()} ₽
-                            </span>
+                          <div className="flex flex-wrap items-center gap-3 text-sm">
+                            <div className="flex items-center gap-1.5 text-slate-600">
+                              <span className="material-symbols-outlined text-base">schedule</span>
+                              <span className="font-medium">{formatDuration(service.duration)}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="material-symbols-outlined text-base text-slate-600">payments</span>
+                              <div className="flex items-baseline gap-1.5">
+                                <span className={`font-semibold text-slate-600 text-sm`}>
+                                  {service.price.toLocaleString()} ₽
+                                </span>
+                                {service.oldPrice && (
+                                  <span className="line-through text-slate-400 text-xs font-medium">
+                                    {service.oldPrice.toLocaleString()}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
