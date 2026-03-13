@@ -103,18 +103,18 @@ export default function Home() {
               <div className="absolute inset-0 grid grid-cols-2 gap-3 md:gap-4">
                 <div className="space-y-3 md:space-y-4 floating">
                   <div className="bento-card h-32 md:h-40 lg:h-48 rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl">
-                    <Image src="/photo1.png" alt="Перманент" width={400} height={300} className="w-full h-full object-cover" />
+                    <Image loading="lazy" src="/photo1.png" alt="Перманент" width={400} height={300} className="w-full h-full object-cover" />
                   </div>
                   <div className="bento-card h-44 md:h-56 lg:h-64 rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl">
-                    <Image src="/photo3.png" alt="Маникюр" width={400} height={500} className="w-full h-full object-cover" />
+                    <Image loading="lazy" src="/photo3.png" alt="Маникюр" width={400} height={500} className="w-full h-full object-cover" />
                   </div>
                 </div>
                 <div className="space-y-3 md:space-y-4 pt-8 md:pt-12 floating-undi">
                   <div className="bento-card h-44 md:h-56 lg:h-64 rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl">
-                    <Image src="/photo4.png" alt="Ресницы" width={400} height={500} className="w-full h-full object-cover" />
+                    <Image loading="lazy" src="/photo4.png" alt="Ресницы" width={400} height={500} className="w-full h-full object-cover" />
                   </div>
                   <div className="bento-card h-32 md:h-40 lg:h-48 rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl">
-                    <Image src="/photo2.png" alt="Интерьер" width={400} height={300} className="w-full h-full object-cover" />
+                    <Image loading="lazy" src="/photo2.png" alt="Интерьер" width={400} height={300} className="w-full h-full object-cover" />
                   </div>
                 </div>
               </div>

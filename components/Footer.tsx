@@ -7,7 +7,7 @@ export default function Footer() {
         <div className="space-y-6">
         <div className="flex items-center gap-3">
           <a href="./index.html">
-            <img src="/logo.svg" style={{"width": "100px"}} alt="Cabinet 310" />
+            <img loading="lazy" src="/logo.svg" style={{"width": "100px"}} alt="Cabinet 310" />
           </a>
         </div>
         <p className="text-slate-400 text-sm leading-relaxed">

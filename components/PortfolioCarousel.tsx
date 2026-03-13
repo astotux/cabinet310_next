@@ -119,6 +119,7 @@ export default function PortfolioCarousel() {
             <div key={index} className="swiper-slide">
               <div className="relative group overflow-hidden rounded-2xl md:rounded-3xl aspect-[3/4] w-full">
                 <img 
+                  loading="lazy"
                   src={image.src} 
                   alt={image.alt} 
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 

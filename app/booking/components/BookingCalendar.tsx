@@ -219,21 +219,25 @@ export default function BookingCalendar({
         aria-hidden="true"
       >
         <img
+          loading="lazy"
           src="/star.svg"
           alt=""
           className="absolute left-2 top-20 w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 opacity-30"
         />
         <img
+          loading="lazy"
           src="/star.svg"
           alt=""
           className="absolute left-2 top-44 w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 opacity-20 hidden sm:block"
         />
         <img
+          loading="lazy"
           src="/star.svg"
           alt=""
           className="absolute right-2 top-14 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 opacity-25"
         />
         <img
+          loading="lazy"
           src="/star.svg"
           alt=""
           className="absolute right-2 top-1/2 w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 opacity-20 hidden md:block"

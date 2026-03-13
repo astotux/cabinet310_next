@@ -7,10 +7,10 @@ export default function QRPage() {
       <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
         <div className="absolute -top-40 -right-40 size-96 gradient-bg opacity-20 blur-3xl rounded-full"></div>
         <div className="absolute -bottom-40 -left-40 size-96 bg-primary/20 opacity-20 blur-3xl rounded-full"></div>
-        <img src="/star.svg" alt="" className="absolute left-[10%] top-[15%] w-10 h-10 opacity-15" />
-        <img src="/star.svg" alt="" className="absolute right-[15%] top-[20%] w-12 h-12 opacity-15" />
-        <img src="/star.svg" alt="" className="absolute left-[20%] bottom-[25%] w-8 h-8 opacity-12" />
-        <img src="/star.svg" alt="" className="absolute right-[10%] bottom-[15%] w-10 h-10 opacity-12" />
+        <img loading="lazy" src="/star.svg" alt="" className="absolute left-[10%] top-[15%] w-10 h-10 opacity-15" />
+        <img loading="lazy" src="/star.svg" alt="" className="absolute right-[15%] top-[20%] w-12 h-12 opacity-15" />
+        <img loading="lazy" src="/star.svg" alt="" className="absolute left-[20%] bottom-[25%] w-8 h-8 opacity-12" />
+        <img loading="lazy" src="/star.svg" alt="" className="absolute right-[10%] bottom-[15%] w-10 h-10 opacity-12" />
       </div>
 
       <div className="w-full max-w-md relative z-10">

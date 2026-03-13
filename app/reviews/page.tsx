@@ -186,10 +186,10 @@ export default function ReviewsPage() {
           <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent" />
 
           <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-            <img src="/star.svg" alt="" className="absolute left-6 top-10 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 opacity-25 mix-blend-screen" />
-            <img src="/star.svg" alt="" className="absolute right-6 top-16 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 opacity-20 mix-blend-screen" />
-            <img src="/star.svg" alt="" className="absolute right-12 bottom-10 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 opacity-20 mix-blend-screen" />
-            <img src="/star.svg" alt="" className="hidden sm:block absolute left-10 bottom-8 w-7 h-7 md:w-9 md:h-9 opacity-15 mix-blend-screen" />
+            <img loading="lazy" src="/star.svg" alt="" className="absolute left-6 top-10 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 opacity-25 mix-blend-screen" />
+            <img loading="lazy" src="/star.svg" alt="" className="absolute right-6 top-16 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 opacity-20 mix-blend-screen" />
+            <img loading="lazy" src="/star.svg" alt="" className="absolute right-12 bottom-10 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 opacity-20 mix-blend-screen" />
+            <img loading="lazy" src="/star.svg" alt="" className="hidden sm:block absolute left-10 bottom-8 w-7 h-7 md:w-9 md:h-9 opacity-15 mix-blend-screen" />
           </div>
 
           <div className="relative z-10 max-w-2xl px-2 max-[480px]:px-1">

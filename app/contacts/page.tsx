@@ -54,16 +54,19 @@ export default function ContactsPage() {
 
           <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
             <img
+              loading="lazy"
               src="/star.svg"
               alt=""
               className="absolute left-6 top-10 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 opacity-25 mix-blend-screen"
             />
             <img
+              loading="lazy"
               src="/star.svg"
               alt=""
               className="absolute right-8 top-16 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 opacity-20 mix-blend-screen"
             />
             <img
+              loading="lazy"
               src="/star.svg"
               alt=""
               className="absolute right-12 bottom-10 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 opacity-20 mix-blend-screen"

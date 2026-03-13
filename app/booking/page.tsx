@@ -278,7 +278,7 @@ export default function BookingPage() {
           <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-6 h-16 md:h-20 flex items-center justify-between">
             <div className="flex items-center gap-2 md:gap-3">
               <a href="/">
-                <img src="/logo.svg" className="w-20 md:w-24 lg:w-28" alt="Logo" />
+                <img loading="lazy" src="/logo.svg" className="w-20 md:w-24 lg:w-28" alt="Logo" />
               </a>
             </div>
             <nav className="flex items-center gap-6 lg:gap-10">
@@ -304,7 +304,7 @@ export default function BookingPage() {
           
           <div className="glass rounded-2xl px-4 py-3 inline-flex items-center justify-center">
             <a href="/">
-              <img src="/logo.svg" className="w-24" alt="Logo" />
+              <img loading="lazy" src="/logo.svg" className="w-24" alt="Logo" />
             </a>
           </div>
 
@@ -533,7 +533,7 @@ export default function BookingPage() {
                       <div className="flex items-center gap-6 max-[480px]:gap-4">
                         <div className="size-16 max-[480px]:size-14 rounded-2xl bg-white shadow-inner flex items-center justify-center text-primary overflow-hidden shrink-0">
                           {service.image ? (
-                            <img alt={service.service} className="w-full h-full object-cover" src={service.image} />
+                            <img loading="lazy" alt={service.service} className="w-full h-full object-cover" src={service.image} />
                           ) : (
                             <span className="material-symbols-outlined text-3xl">spa</span>
                           )}
