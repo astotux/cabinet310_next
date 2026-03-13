@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "QR код для отзывов",
-  description: "Оставьте отзыв о студии красоты Кабинет 310",
+  title: "Админ панель",
   robots: {
     index: false,
     follow: false,
   },
 };
 
-export default function QRLayout({
+export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;

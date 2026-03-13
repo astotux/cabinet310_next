@@ -1,13 +1,4 @@
 import Header from "@/components/Header";
-import { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "Политика конфиденциальности",
-  description: "Политика конфиденциальности и обработки персональных данных студии красоты Кабинет 310.",
-  alternates: {
-    canonical: 'https://cabinet310.ru/privacy',
-  },
-};
 
 export default function PrivacyPage() {
   return (

@@ -7,6 +7,9 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  alternates: {
+    canonical: 'https://cabinet310.ru/privacy',
+  },
 };
 
 export default function PrivacyLayout({
