@@ -1,17 +1,24 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 
 export default function CookieConsent() {
   const [showConsent, setShowConsent] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
+    // Не показываем уведомление на странице QR
+    if (pathname === '/qr') {
+      return;
+    }
+
     // Проверяем, принял ли пользователь cookies
     const consent = localStorage.getItem('cookieConsent');
     if (!consent) {
       setShowConsent(true);
     }
-  }, []);
+  }, [pathname]);
 
   const acceptCookies = () => {
     localStorage.setItem('cookieConsent', 'true');
