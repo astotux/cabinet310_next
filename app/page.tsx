@@ -3,6 +3,13 @@ import Footer from "@/components/Footer";
 import PortfolioCarousel from "@/components/PortfolioCarousel";
 import Link from "next/link";
 import Image from "next/image";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: 'https://cabinet310.ru',
+  },
+};
 
 export default function Home() {
   return (

@@ -9,6 +9,9 @@ export const metadata: Metadata = {
     description: "Реальные отзывы и фото работ от наших клиентов. Узнайте, почему нам доверяют свою красоту.",
     images: ['/og-image.jpg'],
   },
+  alternates: {
+    canonical: 'https://cabinet310.ru/reviews',
+  },
 };
 
 export default function ReviewsLayout({

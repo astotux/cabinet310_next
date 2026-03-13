@@ -13,6 +13,9 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  alternates: {
+    canonical: 'https://cabinet310.ru/booking',
+  },
 };
 
 export default function BookingLayout({

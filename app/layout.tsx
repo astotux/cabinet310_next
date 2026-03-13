@@ -21,9 +21,15 @@ export const metadata: Metadata = {
   creator: "Кабинет 310",
   publisher: "Кабинет 310",
   icons: {
-    icon: '/favicon.ico',
+    icon: [
+      { url: '/favicon.ico', sizes: '48x48', type: 'image/x-icon' },
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
+    ],
     shortcut: '/favicon.ico',
-    apple: '/favicon.ico',
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
   },
   formatDetection: {
     email: false,
@@ -78,7 +84,6 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <head>
-        <link rel="canonical" href="https://cabinet310.ru" />
         <meta name="yandex-verification" content="050e9e29482539ba" />
         <Script id="yandex-metrika" strategy="afterInteractive">
           {`

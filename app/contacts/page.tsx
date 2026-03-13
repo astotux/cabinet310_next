@@ -12,6 +12,9 @@ export const metadata: Metadata = {
     description: "Адрес, телефон, график работы студии красоты. Ждем вас ежедневно с 09:00 до 20:00.",
     images: ['/og-image.jpg'],
   },
+  alternates: {
+    canonical: 'https://cabinet310.ru/contacts',
+  },
 };
 
 export default function ContactsPage() {

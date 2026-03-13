@@ -20,6 +20,9 @@ export const metadata: Metadata = {
     description: "Профессиональные услуги красоты: перманентный макияж, маникюр, ламинирование ресниц. Опытные мастера, стерильность, гарантия качества.",
     images: ['/og-services.jpg'],
   },
+  alternates: {
+    canonical: 'https://cabinet310.ru/services',
+  },
 };
 
 export default function ServicesPage() {
