@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   publisher: "Кабинет 310",
   icons: {
     icon: [
-      { url: '/favicon.ico', sizes: '48x48', type: 'image/x-icon' },
+      { url: '/favicon.ico', type: 'image/x-icon' },
       { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
       { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
     ],
@@ -85,6 +85,8 @@ export default function RootLayout({
     <html lang="ru">
       <head>
         <meta name="yandex-verification" content="050e9e29482539ba" />
+        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+        <link rel="icon" href="/favicon.ico" type="image/x-icon" />
         <Script id="yandex-metrika" strategy="afterInteractive">
           {`
             (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
