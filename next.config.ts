@@ -10,6 +10,12 @@ const nextConfig: NextConfig = {
           { key: 'Cache-Control', value: 'public, max-age=86400' },
         ],
       },
+      {
+        source: '/sitemap.xml',
+        headers: [
+          { key: 'Content-Type', value: 'application/xml; charset=utf-8' },
+        ],
+      },
     ];
   },
   images: {
