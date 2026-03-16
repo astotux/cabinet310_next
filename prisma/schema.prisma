@@ -16,11 +16,12 @@ model Booking {
   date        String
   time        String
   clientName  String
-  clientPhone String?  // Теперь необязательное поле для VK записей
-  vkProfile   String?  // Ссылка на VK профиль (vk.com/id123456 или vk.com/username)
-  vkUserId    Int?     // ID пользователя ВК для уведомлений
+  clientPhone String?
+  vkProfile   String?
+  vkUserId    Int?
   comment     String?
-  customPrice Int?     // Свободная цена, установленная вручную
+  adminNote   String?
+  customPrice Int?
   createdAt   DateTime @default(now())
 }
 

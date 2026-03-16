@@ -12,7 +12,7 @@ export async function PATCH(
     const id = parseInt(idStr);
     const body = await request.json();
     
-    const { service, master, date, time, clientName, clientPhone, comment, customPrice } = body;
+    const { service, master, date, time, clientName, clientPhone, comment, customPrice, adminNote } = body;
 
     // Проверяем, является ли пользователь админом
     const isAdmin = await isAdminFromHeaders(request.headers);
@@ -86,6 +86,7 @@ export async function PATCH(
         clientName,
         clientPhone,
         comment: comment || null,
+        adminNote: adminNote !== undefined ? (adminNote || null) : undefined,
         customPrice: customPrice ? parseInt(customPrice) : null,
       },
     });

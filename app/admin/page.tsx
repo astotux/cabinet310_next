@@ -102,6 +102,16 @@ export default function AdminPage() {
   // Состояние VK бота
   const [vkBotEnabled, setVkBotEnabled] = useState(true);
   const [vkBotLoading, setVkBotLoading] = useState(false);
+
+  // Клиенты
+  const [clients, setClients] = useState<any[]>([]);
+  const [clientSearch, setClientSearch] = useState('');
+  const [showClientModal, setShowClientModal] = useState(false);
+  const [editingClient, setEditingClient] = useState<any>(null);
+  const [clientForm, setClientForm] = useState({ name: '', phone: '', note: '' });
+  const [viewingClient, setViewingClient] = useState<any>(null);
+  const [editingNoteBookingId, setEditingNoteBookingId] = useState<number | null>(null);
+  const [noteText, setNoteText] = useState('');
   
   const router = useRouter();
   
@@ -272,6 +282,9 @@ export default function AdminPage() {
 
       const servicesRes = await fetch("/api/services");
       const servicesData = await servicesRes.json();
+
+      const clientsRes = await fetch("/api/admin/clients");
+      const clientsData = await clientsRes.json();
       
       // Обогащаем bookings ценами из services
       const enrichedBookings = Array.isArray(bookingsData) 
@@ -290,6 +303,7 @@ export default function AdminPage() {
       setBookings(enrichedBookings);
       setReviews(Array.isArray(reviewsData) ? reviewsData : []);
       setServices(Array.isArray(servicesData) ? servicesData : []);
+      setClients(Array.isArray(clientsData) ? clientsData : []);
       
       // Подсчет статистики
       calculateStats(enrichedBookings, reviewsData, servicesData);
@@ -441,6 +455,53 @@ export default function AdminPage() {
     } catch (error) {
       toast.error('Ошибка при удалении записи');
     }
+  };
+
+  // Клиенты CRUD
+  const openAddClient = () => { setEditingClient(null); setClientForm({ name: '', phone: '', note: '' }); setShowClientModal(true); };
+  const openEditClient = (c: any) => { setEditingClient(c); setClientForm({ name: c.name, phone: c.phone || '', note: c.note || '' }); setShowClientModal(true); };
+
+  const handleClientSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const token = localStorage.getItem('adminToken') || '';
+    const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
+    try {
+      if (editingClient) {
+        await fetch(`/api/admin/clients/${editingClient.id}`, { method: 'PATCH', headers, body: JSON.stringify(clientForm) });
+        toast.success('Клиент обновлён');
+      } else {
+        await fetch('/api/admin/clients', { method: 'POST', headers, body: JSON.stringify(clientForm) });
+        toast.success('Клиент добавлен');
+      }
+      setShowClientModal(false);
+      fetchData();
+    } catch { toast.error('Ошибка сохранения'); }
+  };
+
+  const deleteClient = async (id: number) => {
+    if (!confirm('Удалить клиента?')) return;
+    const token = localStorage.getItem('adminToken') || '';
+    await fetch(`/api/admin/clients/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
+    toast.success('Клиент удалён');
+    fetchData();
+  };
+
+  const clientBookings = (c: any) =>
+    bookings.filter(b => b.clientName === c.name && (!c.phone || !b.clientPhone || b.clientPhone === c.phone))
+      .sort((a: any, b: any) => b.date.localeCompare(a.date) || b.time.localeCompare(a.time));
+
+  const saveBookingNote = async (bookingId: number) => {
+    const token = localStorage.getItem('adminToken') || '';
+    try {
+      await fetch(`/api/bookings/${bookingId}/note`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ adminNote: noteText }),
+      });
+      setBookings(prev => prev.map(b => b.id === bookingId ? { ...b, adminNote: noteText || null } : b));
+      setEditingNoteBookingId(null);
+      toast.success('Заметка сохранена');
+    } catch { toast.error('Ошибка сохранения'); }
   };
 
   const handleLogout = async () => {
@@ -1632,6 +1693,62 @@ export default function AdminPage() {
         </div>
 
         <div className="mt-6 service-card-glass rounded-3xl p-8 max-[480px]:p-6 max-[320px]:p-5">
+          {/* Clients section */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between mb-6 gap-4">
+            <h2 className="text-2xl max-[480px]:text-xl font-black tracking-tight">Клиенты</h2>
+            <div className="flex gap-3">
+              <input
+                value={clientSearch} onChange={e => setClientSearch(e.target.value)}
+                placeholder="Поиск по имени или телефону"
+                className="flex-1 px-4 py-2 rounded-xl border border-slate-200 bg-white focus:outline-none focus:border-primary text-sm"
+              />
+              <button onClick={openAddClient}
+                className="px-4 py-2 rounded-xl gradient-bg text-white text-sm font-bold shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity whitespace-nowrap">
+                + Добавить
+              </button>
+            </div>
+          </div>
+
+          {clients.filter(c =>
+            c.name.toLowerCase().includes(clientSearch.toLowerCase()) ||
+            (c.phone || '').includes(clientSearch)
+          ).length === 0 ? (
+            <p className="text-slate-500 text-sm text-center py-8">{clientSearch ? 'Не найдено' : 'Клиентов пока нет'}</p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {clients.filter(c =>
+                c.name.toLowerCase().includes(clientSearch.toLowerCase()) ||
+                (c.phone || '').includes(clientSearch)
+              ).map((c: any) => {
+                const count = clientBookings(c).length;
+                return (
+                  <div key={c.id} className="bg-white/60 border border-slate-200/60 rounded-2xl p-4 flex items-center gap-3">
+                    <button onClick={() => setViewingClient(c)} className="flex-1 flex items-center gap-3 text-left min-w-0">
+                      <div className="size-10 rounded-xl gradient-bg text-white flex items-center justify-center font-black text-base shrink-0">
+                        {c.name[0].toUpperCase()}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-bold text-sm truncate">{c.name}</p>
+                        {c.phone && <p className="text-xs text-slate-500">{c.phone}</p>}
+                        <p className="text-xs text-slate-400">{count} {count === 1 ? 'запись' : count < 5 ? 'записи' : 'записей'}</p>
+                      </div>
+                    </button>
+                    <div className="flex gap-1 shrink-0">
+                      <button onClick={() => openEditClient(c)} className="size-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center hover:bg-primary/20 transition-colors">
+                        <span className="material-symbols-outlined text-sm">edit</span>
+                      </button>
+                      <button onClick={() => deleteClient(c.id)} className="size-8 rounded-lg bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 transition-colors">
+                        <span className="material-symbols-outlined text-sm">delete</span>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        <div className="mt-6 service-card-glass rounded-3xl p-8 max-[480px]:p-6 max-[320px]:p-5">
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between mb-6 gap-4">
             <h2 className="text-2xl max-[480px]:text-xl font-black tracking-tight">Управление ценами</h2>
             <button 
@@ -2721,6 +2838,128 @@ export default function AdminPage() {
           <p>С любовью к вашей красоте ✨</p>
         </div>
       </footer>
+
+      {/* Client Add/Edit Modal */}
+      {showClientModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl w-full max-w-md max-h-[90vh] overflow-y-auto p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-black">{editingClient ? 'Редактировать клиента' : 'Новый клиент'}</h2>
+              <button onClick={() => setShowClientModal(false)} className="size-10 rounded-xl hover:bg-slate-100 flex items-center justify-center">
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+            <form onSubmit={handleClientSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-bold mb-2">Имя *</label>
+                <input value={clientForm.name} onChange={e => setClientForm({ ...clientForm, name: e.target.value })} required
+                  className="w-full p-3 rounded-xl border border-slate-200 focus:outline-none focus:border-primary text-base" placeholder="Имя клиента" />
+              </div>
+              <div>
+                <label className="block text-sm font-bold mb-2">Телефон</label>
+                <input value={clientForm.phone} onChange={e => setClientForm({ ...clientForm, phone: e.target.value })}
+                  className="w-full p-3 rounded-xl border border-slate-200 focus:outline-none focus:border-primary text-base" placeholder="+7 (___) ___-__-__" />
+              </div>
+              <div>
+                <label className="block text-sm font-bold mb-2">Заметка</label>
+                <textarea value={clientForm.note} onChange={e => setClientForm({ ...clientForm, note: e.target.value })} rows={4}
+                  className="w-full p-3 rounded-xl border border-slate-200 focus:outline-none focus:border-primary text-base resize-none"
+                  placeholder="Аллергии, предпочтения, особенности..." />
+              </div>
+              <div className="flex gap-3 pt-2">
+                <button type="button" onClick={() => setShowClientModal(false)} className="flex-1 py-3 rounded-2xl border border-slate-200 font-bold">Отмена</button>
+                <button type="submit" className="flex-1 gradient-bg py-3 rounded-2xl text-white font-bold">{editingClient ? 'Сохранить' : 'Добавить'}</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Client View Modal */}
+      {viewingClient && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-6">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="size-12 rounded-2xl gradient-bg text-white flex items-center justify-center text-xl font-black">
+                  {viewingClient.name[0].toUpperCase()}
+                </div>
+                <div>
+                  <h2 className="text-xl font-black">{viewingClient.name}</h2>
+                  {viewingClient.phone && <p className="text-sm text-slate-500">{viewingClient.phone}</p>}
+                </div>
+              </div>
+              <button onClick={() => setViewingClient(null)} className="size-10 rounded-xl hover:bg-slate-100 flex items-center justify-center">
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+
+            {viewingClient.note && (
+              <div className="bg-slate-50 rounded-2xl p-4 mb-4">
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Заметка</p>
+                <p className="text-sm text-slate-700 whitespace-pre-wrap">{viewingClient.note}</p>
+              </div>
+            )}
+
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">История записей</p>
+            {(() => {
+              const cb = clientBookings(viewingClient);
+              if (!cb.length) return <p className="text-slate-400 text-sm text-center py-6">Записей нет</p>;
+              return (
+                <div className="space-y-2">
+                  {cb.map((b: any) => (
+                    <div key={b.id} className="bg-slate-50 rounded-xl p-3">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="font-bold text-sm">{b.service}</span>
+                            <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold ${b.master === 'Лиза' ? 'bg-pink-100 text-pink-600' : 'bg-purple-100 text-purple-600'}`}>{b.master}</span>
+                          </div>
+                          <p className="text-xs text-slate-500 mt-0.5">{formatReadableDate(b.date)} · {b.time}</p>
+                          {b.comment && <p className="text-xs text-slate-400 italic mt-0.5">💬 {b.comment}</p>}
+                        </div>
+                        {b.price && <span className="text-sm font-black text-gradient shrink-0">{b.price}₽</span>}
+                      </div>
+                      {editingNoteBookingId === b.id ? (
+                        <div className="mt-2 flex gap-2">
+                          <textarea value={noteText} onChange={e => setNoteText(e.target.value)} rows={2} autoFocus
+                            className="flex-1 p-2 rounded-xl border border-primary bg-white text-xs focus:outline-none resize-none" placeholder="Заметка к записи..." />
+                          <div className="flex flex-col gap-1">
+                            <button onClick={() => saveBookingNote(b.id)} className="size-8 rounded-xl gradient-bg text-white flex items-center justify-center">
+                              <span className="material-symbols-outlined text-sm">check</span>
+                            </button>
+                            <button onClick={() => setEditingNoteBookingId(null)} className="size-8 rounded-xl bg-slate-200 text-slate-500 flex items-center justify-center">
+                              <span className="material-symbols-outlined text-sm">close</span>
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="mt-1.5 flex items-start gap-2">
+                          {b.adminNote
+                            ? <p className="flex-1 text-xs text-amber-700 bg-amber-50 rounded-lg px-2 py-1">📝 {b.adminNote}</p>
+                            : <p className="flex-1 text-xs text-slate-300 italic">нет заметки</p>
+                          }
+                          <button onClick={() => { setEditingNoteBookingId(b.id); setNoteText(b.adminNote || ''); }}
+                            className="size-6 rounded-lg bg-slate-200 text-slate-400 flex items-center justify-center hover:bg-slate-300 transition-colors shrink-0">
+                            <span className="material-symbols-outlined text-xs">edit</span>
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
+
+            <div className="mt-4 flex gap-2">
+              <button onClick={() => { setViewingClient(null); openEditClient(viewingClient); }}
+                className="flex-1 py-3 rounded-2xl bg-primary/10 text-primary font-bold text-sm flex items-center justify-center gap-2 hover:bg-primary/20 transition-colors">
+                <span className="material-symbols-outlined text-base">edit</span> Редактировать
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
