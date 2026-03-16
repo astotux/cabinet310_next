@@ -51,3 +51,5 @@ prisma/dev.db-journal
 !/public/uploads/.gitkeep
 
 .kiro
+
+/mobile-admin/*
