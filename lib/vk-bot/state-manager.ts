@@ -101,9 +101,12 @@ export class StateManager {
         where: { vkUserId: userId }
       });
       console.log(`Cleared state for user ${userId}`);
-    } catch (error) {
-      // Игнорируем ошибку если запись не найдена
-      if (error instanceof Error && error.message.includes('Record to delete does not exist')) {
+    } catch (error: any) {
+      // Игнорируем ошибку если запись не найдена (Prisma P2025)
+      if (
+        error?.code === 'P2025' ||
+        (error instanceof Error && error.message.includes('Record to delete does not exist'))
+      ) {
         console.log(`No state to clear for user ${userId}`);
       } else {
         console.error('Error clearing user state:', error);

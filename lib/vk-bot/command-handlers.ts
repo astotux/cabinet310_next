@@ -36,7 +36,8 @@ export class CommandHandlers {
         await vkBotServer.sendMessage(userId, welcomeMessage.text, welcomeMessage.keyboard);
       } catch (fallbackError) {
         console.error('Fallback error in start command:', fallbackError);
-        await vkBotServer.sendMessage(userId, 'Добро пожаловать! Используйте кнопки меню для навигации.');
+        const welcomeMessage = messageFormatter.formatWelcome();
+        await vkBotServer.sendMessage(userId, welcomeMessage.text, welcomeMessage.keyboard);
       }
     }
   }
