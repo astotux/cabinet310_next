@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { IMaskInput } from 'react-imask';
 import Footer from "@/components/Footer";
 import BookingCalendar from "./components/BookingCalendar";
@@ -75,8 +76,9 @@ function MapLightbox({ onClose }: { onClose: () => void }) {
     if (next === 1) setPos({ x: 0, y: 0 });
   };
 
-  return (
-    <div className="fixed inset-0 z-[100] bg-black/90 flex flex-col" onClick={onClose}>
+
+  return createPortal(
+    <div className="fixed inset-0 bg-black/90 flex flex-col" style={{ zIndex: 9999 }} onClick={onClose}>
       <div className="flex items-center justify-between px-4 py-3 shrink-0" onClick={e => e.stopPropagation()}>
         <span className="text-white/70 text-sm">Схема входа в студию</span>
         <div className="flex items-center gap-2">
@@ -107,7 +109,8 @@ function MapLightbox({ onClose }: { onClose: () => void }) {
         </div>
       </div>
       <p className="text-center text-white/40 text-xs pb-3 shrink-0">Колёсико или кнопки для зума · Перетащите для перемещения</p>
-    </div>
+    </div>,
+    document.body
   );
 }
 
