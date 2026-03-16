@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { IMaskInput } from 'react-imask';
 import Footer from "@/components/Footer";
 import BookingCalendar from "./components/BookingCalendar";
@@ -21,6 +21,95 @@ interface Service {
 }
 
 type BookingStep = 1 | 2 | 3;
+
+// Лайтбокс для карты с зумом и перетаскиванием
+function MapLightbox({ onClose }: { onClose: () => void }) {
+  const [scale, setScale] = useState(1);
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+  const dragging = useRef(false);
+  const lastPointer = useRef({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = '';
+    };
+  }, [onClose]);
+
+  const clampPos = (x: number, y: number, s: number) => {
+    const maxX = Math.max(0, (s - 1) * 300);
+    const maxY = Math.max(0, (s - 1) * 200);
+    return { x: Math.min(maxX, Math.max(-maxX, x)), y: Math.min(maxY, Math.max(-maxY, y)) };
+  };
+
+  const onWheel = (e: React.WheelEvent) => {
+    e.preventDefault();
+    const next = Math.min(5, Math.max(1, scale - e.deltaY * 0.002));
+    setScale(next);
+    if (next === 1) setPos({ x: 0, y: 0 });
+  };
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    if (scale <= 1) return;
+    dragging.current = true;
+    lastPointer.current = { x: e.clientX, y: e.clientY };
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+  };
+
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (!dragging.current) return;
+    const dx = e.clientX - lastPointer.current.x;
+    const dy = e.clientY - lastPointer.current.y;
+    lastPointer.current = { x: e.clientX, y: e.clientY };
+    setPos(p => clampPos(p.x + dx, p.y + dy, scale));
+  };
+
+  const onPointerUp = () => { dragging.current = false; };
+
+  const zoom = (delta: number) => {
+    const next = Math.min(5, Math.max(1, scale + delta));
+    setScale(next);
+    if (next === 1) setPos({ x: 0, y: 0 });
+  };
+
+  return (
+    <div className="fixed inset-0 z-[100] bg-black/90 flex flex-col" onClick={onClose}>
+      <div className="flex items-center justify-between px-4 py-3 shrink-0" onClick={e => e.stopPropagation()}>
+        <span className="text-white/70 text-sm">Схема входа в студию</span>
+        <div className="flex items-center gap-2">
+          <button onClick={() => zoom(-0.5)} className="bg-white/10 hover:bg-white/20 text-white rounded-full p-2 transition-colors" aria-label="Уменьшить">
+            <span className="material-symbols-outlined text-xl">remove</span>
+          </button>
+          <span className="text-white/70 text-sm w-12 text-center">{Math.round(scale * 100)}%</span>
+          <button onClick={() => zoom(0.5)} className="bg-white/10 hover:bg-white/20 text-white rounded-full p-2 transition-colors" aria-label="Увеличить">
+            <span className="material-symbols-outlined text-xl">add</span>
+          </button>
+          <button onClick={onClose} className="bg-white/10 hover:bg-white/20 text-white rounded-full p-2 transition-colors ml-2" aria-label="Закрыть">
+            <span className="material-symbols-outlined text-xl">close</span>
+          </button>
+        </div>
+      </div>
+      <div
+        className="flex-1 overflow-hidden flex items-center justify-center"
+        onClick={e => e.stopPropagation()}
+        onWheel={onWheel}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerLeave={onPointerUp}
+        style={{ cursor: scale > 1 ? 'grab' : 'default' }}
+      >
+        <div style={{ transform: `translate(${pos.x}px, ${pos.y}px) scale(${scale})`, transition: dragging.current ? 'none' : 'transform 0.15s ease', transformOrigin: 'center center' }}>
+          <Image src="/inmap.png" alt="Схема входа в студию" width={1200} height={800} className="max-w-[90vw] max-h-[80vh] w-auto h-auto rounded-xl shadow-2xl select-none" draggable={false} />
+        </div>
+      </div>
+      <p className="text-center text-white/40 text-xs pb-3 shrink-0">Колёсико или кнопки для зума · Перетащите для перемещения</p>
+    </div>
+  );
+}
 
 // Функция для форматирования длительности из минут
 const formatDuration = (minutes: number): string => {

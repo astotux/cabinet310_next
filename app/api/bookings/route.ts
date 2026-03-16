@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { validateBookingWithAvailability, BookingData } from "@/lib/booking/validator";
 import { notifyNewBooking, notifyNewVKBooking } from "@/lib/vkNotifications";
-import { vkNotificationService } from "@/lib/vk-bot/notification-service";
 import { isAdminFromHeaders } from "@/lib/auth";
 
 /**
@@ -135,15 +134,7 @@ export async function POST(request: NextRequest) {
           comment,
         }).catch(err => console.error('Failed to send VK admin notification:', err));
         
-        // Подтверждение пользователю ВК
-        vkNotificationService.sendBookingConfirmation({
-          vkUserId,
-          clientName,
-          service,
-          date,
-          time,
-          type: 'confirmation'
-        }).catch(err => console.error('Failed to send VK user confirmation:', err));
+        // Подтверждение пользователю отправляется через бота (command-handlers.ts)
       } else if (clientPhone) {
         // Обычное уведомление
         notifyNewBooking({
