@@ -10,6 +10,8 @@ const VK_CONFIRMATION_TOKEN = process.env.VK_CONFIRMATION_TOKEN;
 
 export class VKBotServer {
   private isRunning = false;
+  private processedEventIds = new Set<string>();
+  private readonly EVENT_ID_TTL_MS = 60_000; // 1 минута
 
   /**
    * Обработка входящих webhook'ов от ВКонтакте
@@ -25,6 +27,17 @@ export class VKBotServer {
 
       // Обработка новых сообщений
       if (event.type === 'message_new' && event.object.message) {
+        // Дедупликация: игнорируем повторные доставки одного события
+        if (event.event_id) {
+          if (this.processedEventIds.has(event.event_id)) {
+            console.log(`Duplicate event ignored: ${event.event_id}`);
+            return 'ok';
+          }
+          this.processedEventIds.add(event.event_id);
+          // Чистим старые id через минуту
+          setTimeout(() => this.processedEventIds.delete(event.event_id), this.EVENT_ID_TTL_MS);
+        }
+
         await this.handleMessage(event.object.message);
         return 'ok';
       }
