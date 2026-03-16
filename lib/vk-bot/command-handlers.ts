@@ -606,7 +606,7 @@ export class CommandHandlers {
       if (result.success && result.booking) {
         // Успешное создание
         const confirmationMessage = messageFormatter.formatCreatedBookingConfirmation(result.booking);
-        await vkBotServer.sendMessage(userId, confirmationMessage.text, confirmationMessage.keyboard);
+        await vkBotServer.sendMessageWithMap(userId, confirmationMessage.text, confirmationMessage.keyboard);
         
         // Очищаем состояние
         await stateManager.transitionTo(userId, DialogState.IDLE);

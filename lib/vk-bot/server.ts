@@ -104,13 +104,94 @@ export class VKBotServer {
     }
   }
 
+  // Кеш attachment_id для inmap.png чтобы не загружать каждый раз
+  private cachedMapAttachment: string | null = null;
+
+  /**
+   * Загружает inmap.png в VK один раз и возвращает attachment string
+   */
+  private async getMapAttachment(): Promise<string | null> {
+    if (this.cachedMapAttachment) return this.cachedMapAttachment;
+
+    if (!VK_ACCESS_TOKEN) return null;
+
+    try {
+      // 1. Получаем URL для загрузки
+      const uploadServerRes = await fetch('https://api.vk.com/method/photos.getMessagesUploadServer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ access_token: VK_ACCESS_TOKEN, v: '5.131' }),
+      });
+      const uploadServerData = await uploadServerRes.json();
+      if (uploadServerData.error || !uploadServerData.response?.upload_url) {
+        console.error('VK upload server error:', uploadServerData.error);
+        return null;
+      }
+
+      // 2. Читаем файл и загружаем
+      const fs = await import('fs');
+      const path = await import('path');
+      const filePath = path.join(process.cwd(), 'public', 'inmap.png');
+      const fileBuffer = fs.readFileSync(filePath);
+      const blob = new Blob([fileBuffer], { type: 'image/png' });
+      const formData = new FormData();
+      formData.append('photo', blob, 'inmap.png');
+
+      const uploadRes = await fetch(uploadServerData.response.upload_url, {
+        method: 'POST',
+        body: formData,
+      });
+      const uploadData = await uploadRes.json();
+
+      // 3. Сохраняем фото
+      const saveRes = await fetch('https://api.vk.com/method/photos.saveMessagesPhoto', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          access_token: VK_ACCESS_TOKEN,
+          v: '5.131',
+          photo: uploadData.photo,
+          server: String(uploadData.server),
+          hash: uploadData.hash,
+        }),
+      });
+      const saveData = await saveRes.json();
+
+      if (saveData.error || !saveData.response?.[0]) {
+        console.error('VK save photo error:', saveData.error);
+        return null;
+      }
+
+      const photo = saveData.response[0];
+      this.cachedMapAttachment = `photo${photo.owner_id}_${photo.id}`;
+      console.log('Map photo uploaded to VK:', this.cachedMapAttachment);
+      return this.cachedMapAttachment;
+    } catch (error) {
+      console.error('Failed to upload map photo to VK:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Отправка сообщения с картинкой inmap.png
+   */
+  async sendMessageWithMap(
+    userId: number,
+    message: string,
+    keyboard?: VKKeyboard
+  ): Promise<void> {
+    const attachment = await this.getMapAttachment();
+    await this.sendMessage(userId, message, keyboard, attachment ?? undefined);
+  }
+
   /**
    * Отправка сообщения пользователю
    */
   async sendMessage(
     userId: number, 
     message: string, 
-    keyboard?: VKKeyboard
+    keyboard?: VKKeyboard,
+    attachment?: string
   ): Promise<void> {
     if (!VK_ACCESS_TOKEN) {
       console.warn('VK_BOT_ACCESS_TOKEN not configured');
@@ -128,6 +209,10 @@ export class VKBotServer {
 
       if (keyboard) {
         params.append('keyboard', JSON.stringify(keyboard));
+      }
+
+      if (attachment) {
+        params.append('attachment', attachment);
       }
 
       const response = await fetch('https://api.vk.com/method/messages.send', {

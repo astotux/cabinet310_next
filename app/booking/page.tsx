@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import BookingCalendar from "./components/BookingCalendar";
 import Cookies from 'js-cookie';
 import Link from "next/link";
+import Image from "next/image";
 
 interface Service {
   id: number;
@@ -52,6 +53,7 @@ export default function BookingPage() {
   const [privacyConsent, setPrivacyConsent] = useState(false);
   const [bookingError, setBookingError] = useState<string>("");
   const [bookingSuccess, setBookingSuccess] = useState(false);
+  const [mapOpen, setMapOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -403,6 +405,54 @@ export default function BookingPage() {
                     </div>
                   </div>
                 </div>
+
+                {/* Как найти вход */}
+                <div className="mb-8">
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Как нас найти</p>
+                  <button
+                    onClick={() => setMapOpen(true)}
+                    className="relative w-full rounded-2xl overflow-hidden border border-white/40 shadow-md hover:scale-[1.01] transition-transform group"
+                    aria-label="Открыть схему входа"
+                  >
+                    <Image
+                      src="/inmap.png"
+                      alt="Схема входа в студию"
+                      width={600}
+                      height={400}
+                      className="w-full h-auto object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 rounded-full p-2 shadow-lg">
+                        <span className="material-symbols-outlined text-slate-700">zoom_in</span>
+                      </div>
+                    </div>
+                  </button>
+                </div>
+
+                {/* Лайтбокс */}
+                {mapOpen && (
+                  <div
+                    className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
+                    onClick={() => setMapOpen(false)}
+                  >
+                    <div className="relative max-w-3xl w-full" onClick={e => e.stopPropagation()}>
+                      <button
+                        onClick={() => setMapOpen(false)}
+                        className="absolute -top-10 right-0 text-white/80 hover:text-white flex items-center gap-1 text-sm"
+                      >
+                        <span className="material-symbols-outlined">close</span>
+                        Закрыть
+                      </button>
+                      <Image
+                        src="/inmap.png"
+                        alt="Схема входа в студию"
+                        width={1200}
+                        height={800}
+                        className="w-full h-auto rounded-2xl shadow-2xl"
+                      />
+                    </div>
+                  </div>
+                )}
 
                 {/* Кнопка на главную */}
                 <div className="flex gap-4 max-[480px]:flex-col">
