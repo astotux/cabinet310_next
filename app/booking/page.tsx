@@ -29,6 +29,9 @@ function MapLightbox({ onClose }: { onClose: () => void }) {
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const dragging = useRef(false);
   const lastPointer = useRef({ x: 0, y: 0 });
+  // Pinch zoom
+  const pinchRef = useRef<{ dist: number; midX: number; midY: number } | null>(null);
+  const activePointers = useRef<Map<number, { x: number; y: number }>>(new Map());
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
@@ -54,28 +57,55 @@ function MapLightbox({ onClose }: { onClose: () => void }) {
   };
 
   const onPointerDown = (e: React.PointerEvent) => {
-    if (scale <= 1) return;
-    dragging.current = true;
-    lastPointer.current = { x: e.clientX, y: e.clientY };
-    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    activePointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+
+    if (activePointers.current.size === 1 && scale > 1) {
+      dragging.current = true;
+      lastPointer.current = { x: e.clientX, y: e.clientY };
+    }
   };
 
   const onPointerMove = (e: React.PointerEvent) => {
-    if (!dragging.current) return;
-    const dx = e.clientX - lastPointer.current.x;
-    const dy = e.clientY - lastPointer.current.y;
-    lastPointer.current = { x: e.clientX, y: e.clientY };
-    setPos(p => clampPos(p.x + dx, p.y + dy, scale));
+    activePointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    const pts = Array.from(activePointers.current.values());
+
+    if (pts.length === 2) {
+      // Pinch zoom
+      dragging.current = false;
+      const dx = pts[0].x - pts[1].x;
+      const dy = pts[0].y - pts[1].y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      if (pinchRef.current) {
+        const ratio = dist / pinchRef.current.dist;
+        setScale(prev => {
+          const next = Math.min(5, Math.max(1, prev * ratio));
+          if (next === 1) setPos({ x: 0, y: 0 });
+          return next;
+        });
+      }
+      pinchRef.current = { dist, midX: (pts[0].x + pts[1].x) / 2, midY: (pts[0].y + pts[1].y) / 2 };
+    } else if (pts.length === 1 && dragging.current) {
+      // Pan
+      const dx = e.clientX - lastPointer.current.x;
+      const dy = e.clientY - lastPointer.current.y;
+      lastPointer.current = { x: e.clientX, y: e.clientY };
+      setPos(p => clampPos(p.x + dx, p.y + dy, scale));
+    }
   };
 
-  const onPointerUp = () => { dragging.current = false; };
+  const onPointerUp = (e: React.PointerEvent) => {
+    activePointers.current.delete(e.pointerId);
+    if (activePointers.current.size < 2) pinchRef.current = null;
+    if (activePointers.current.size === 0) dragging.current = false;
+  };
 
   const zoom = (delta: number) => {
     const next = Math.min(5, Math.max(1, scale + delta));
     setScale(next);
     if (next === 1) setPos({ x: 0, y: 0 });
   };
-
 
   return createPortal(
     <div className="fixed inset-0 bg-black/90 flex flex-col" style={{ zIndex: 9999 }} onClick={onClose}>
@@ -95,7 +125,7 @@ function MapLightbox({ onClose }: { onClose: () => void }) {
         </div>
       </div>
       <div
-        className="flex-1 overflow-hidden flex items-center justify-center"
+        className="flex-1 overflow-hidden flex items-center justify-center touch-none"
         onClick={e => e.stopPropagation()}
         onWheel={onWheel}
         onPointerDown={onPointerDown}
@@ -108,7 +138,7 @@ function MapLightbox({ onClose }: { onClose: () => void }) {
           <Image src="/inmap.png" alt="Схема входа в студию" width={1200} height={800} className="max-w-[90vw] max-h-[80vh] w-auto h-auto rounded-xl shadow-2xl select-none" draggable={false} />
         </div>
       </div>
-      <p className="text-center text-white/40 text-xs pb-3 shrink-0">Колёсико или кнопки для зума · Перетащите для перемещения</p>
+      <p className="hidden sm:block text-center text-white/40 text-xs pb-3 shrink-0">Колёсико или кнопки для зума · Перетащите для перемещения</p>
     </div>,
     document.body
   );
