@@ -2857,8 +2857,13 @@ export default function AdminPage() {
               </div>
               <div>
                 <label className="block text-sm font-bold mb-2">Телефон</label>
-                <input value={clientForm.phone} onChange={e => setClientForm({ ...clientForm, phone: e.target.value })}
-                  className="w-full p-3 rounded-xl border border-slate-200 focus:outline-none focus:border-primary text-base" placeholder="+7 (___) ___-__-__" />
+                <IMaskInput
+                  mask="+7 (000) 000-00-00"
+                  value={clientForm.phone}
+                  onAccept={(value: string) => setClientForm({ ...clientForm, phone: value })}
+                  placeholder="+7 (___) ___-__-__"
+                  className="w-full p-3 rounded-xl border border-slate-200 focus:outline-none focus:border-primary text-base"
+                />
               </div>
               <div>
                 <label className="block text-sm font-bold mb-2">Заметка</label>
@@ -2936,7 +2941,7 @@ export default function AdminPage() {
                       ) : (
                         <div className="mt-1.5 flex items-start gap-2">
                           {b.adminNote
-                            ? <p className="flex-1 text-xs text-amber-700 bg-amber-50 rounded-lg px-2 py-1">📝 {b.adminNote}</p>
+                            ? <p className="flex-1 text-xs text-amber-700 bg-amber-50 rounded-lg px-2 py-1 whitespace-pre-wrap">{b.adminNote}</p>
                             : <p className="flex-1 text-xs text-slate-300 italic">нет заметки</p>
                           }
                           <button onClick={() => { setEditingNoteBookingId(b.id); setNoteText(b.adminNote || ''); }}
