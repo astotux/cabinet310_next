@@ -519,29 +519,7 @@ export default function BookingPage() {
                 </div>
 
                 {/* Лайтбокс */}
-                {mapOpen && (
-                  <div
-                    className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
-                    onClick={() => setMapOpen(false)}
-                  >
-                    <div className="relative max-w-3xl w-full" onClick={e => e.stopPropagation()}>
-                      <button
-                        onClick={() => setMapOpen(false)}
-                        className="absolute -top-10 right-0 text-white/80 hover:text-white flex items-center gap-1 text-sm"
-                      >
-                        <span className="material-symbols-outlined">close</span>
-                        Закрыть
-                      </button>
-                      <Image
-                        src="/inmap.png"
-                        alt="Схема входа в студию"
-                        width={1200}
-                        height={800}
-                        className="w-full h-auto rounded-2xl shadow-2xl"
-                      />
-                    </div>
-                  </div>
-                )}
+                {mapOpen && <MapLightbox onClose={() => setMapOpen(false)} />}
 
                 {/* Кнопка на главную */}
                 <div className="flex gap-4 max-[480px]:flex-col">
