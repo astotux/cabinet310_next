@@ -192,18 +192,8 @@ export class CommandHandlers {
         return;
       }
       
-      // Иначе показываем сообщение о неизвестной команде
-      let text_msg = `❓ Не понимаю команду "${message.text}"\n\n`;
-      text_msg += 'Доступные команды:\n';
-      text_msg += '• 📋 Прайс - посмотреть услуги и цены\n';
-      text_msg += '• ✍️ Записаться - записаться на услугу\n';
-      text_msg += '• 👤 Связаться с человеком - получить помощь\n\n';
-      text_msg += 'Или выберите действие из меню:';
-      
-      const welcomeMessage = messageFormatter.formatWelcome();
-      await vkBotServer.sendMessage(userId, text_msg, welcomeMessage.keyboard);
-      
-      console.log(`Unknown command handled for user ${userId}: ${message.text}`);
+      // Пользователь в IDLE и написал что-то непонятное — молчим
+      console.log(`Unknown command ignored for user ${userId}: ${message.text}`);
     } catch (error) {
       console.error('Error handling unknown command:', error);
       const errorMessage = messageFormatter.formatError('Ошибка обработки команды.');
