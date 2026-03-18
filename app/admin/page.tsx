@@ -1931,6 +1931,38 @@ export default function AdminPage() {
             )}
           </div>
         </div>
+
+        {/* Скачать базу данных */}
+        <div className="mt-6 mb-2 flex justify-center">
+          <button
+            onClick={() => {
+              const token = localStorage.getItem("adminToken") || "";
+              const a = document.createElement("a");
+              a.href = "/api/admin/db-download";
+              // Передаём токен через fetch и создаём blob
+              fetch("/api/admin/db-download", {
+                headers: { Authorization: `Bearer ${token}` },
+              })
+                .then((res) => {
+                  if (!res.ok) throw new Error("Ошибка");
+                  return res.blob();
+                })
+                .then((blob) => {
+                  const url = URL.createObjectURL(blob);
+                  const date = new Date().toISOString().slice(0, 10);
+                  a.href = url;
+                  a.download = `backup-${date}.db`;
+                  a.click();
+                  URL.revokeObjectURL(url);
+                })
+                .catch(() => toast.error("Ошибка скачивания базы данных"));
+            }}
+            className="flex items-center gap-2 px-5 py-3 rounded-2xl border border-slate-200 text-slate-500 text-sm font-semibold hover:border-slate-300 hover:text-slate-700 transition-colors"
+          >
+            <span className="material-symbols-outlined text-base">download</span>
+            Скачать базу данных
+          </button>
+        </div>
       </main>
 
       {showServiceModal && (
