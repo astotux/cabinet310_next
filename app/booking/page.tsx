@@ -489,7 +489,8 @@ export default function BookingPage() {
 
                 {/* Описание */}
                 <p className="text-lg max-[480px]:text-base text-slate-600 mb-8 leading-relaxed">
-                  Спасибо за вашу запись! Мы свяжемся с вами в ближайшее время для подтверждения.
+                  Спасибо за вашу запись! Мы свяжемся с вами в ближайшее время для подтверждения.<br />
+                  Будем благодарны за оплату наличными.
                 </p>
 
                 {/* Детали бронирования */}
@@ -550,6 +551,37 @@ export default function BookingPage() {
                     </div>
                   </button>
                 </div>
+
+                {/* Контактная информация */}
+                {(() => {
+                  const master = selectedServiceObjects[0]?.master ?? "";
+                  const phone = master === "Лиза" ? "+7 (912) 509-59-09" : "+7 (908) 695-49-04";
+                  const phoneHref = master === "Лиза" ? "tel:+79125095909" : "tel:+79086954904";
+                  return (
+                    <div className="mt-4 space-y-3 text-left">
+                      <div className="flex items-start gap-3">
+                        <div className="size-9 rounded-xl bg-primary/15 text-primary flex items-center justify-center shrink-0">
+                          <span className="material-symbols-outlined text-base">location_on</span>
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-0.5">Адрес</p>
+                          <p className="font-bold text-slate-900 text-sm">г. Сыктывкар, ул. Куратова, д. 4</p>
+                          <p className="text-xs text-slate-500">Кабинет 310</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <div className="size-9 rounded-xl bg-accent-purple/15 text-accent-purple flex items-center justify-center shrink-0">
+                          <span className="material-symbols-outlined text-base">call</span>
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-0.5">Телефон</p>
+                          <a className="font-bold text-slate-900 text-sm hover:text-primary transition-colors" href={phoneHref}>{phone}</a>
+                          <p className="text-xs text-slate-500">Можно писать в мессенджеры</p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
 
                 {/* Лайтбокс */}
                 {mapOpen && <MapLightbox onClose={() => setMapOpen(false)} />}

@@ -81,6 +81,7 @@ export class VKBookingService {
         success: true,
         booking: {
           ...bookingData,
+          master: serviceInfo.master,
           vkProfile: vkProfile
         },
         errors: []

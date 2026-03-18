@@ -87,6 +87,7 @@ export enum DialogState {
 export interface VKBookingData {
   category?: string;
   service: string;
+  master?: string;
   date: string;
   time: string;
   clientName: string;
