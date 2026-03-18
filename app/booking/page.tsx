@@ -558,7 +558,7 @@ export default function BookingPage() {
                   const phone = master === "Лиза" ? "+7 (912) 509-59-09" : "+7 (908) 695-49-04";
                   const phoneHref = master === "Лиза" ? "tel:+79125095909" : "tel:+79086954904";
                   return (
-                    <div className="mt-4 space-y-3 text-left">
+                    <div className="mt-4 mb-8 flex flex-col sm:flex-row gap-3 text-left">
                       <div className="flex items-start gap-3">
                         <div className="size-9 rounded-xl bg-primary/15 text-primary flex items-center justify-center shrink-0">
                           <span className="material-symbols-outlined text-base">location_on</span>
