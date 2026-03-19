@@ -69,6 +69,19 @@ export async function GET(request: NextRequest) {
       where: { date: dateStr }
     });
 
+    // Для мастера Женя: если на эту дату уже есть хоть одна запись — день полностью занят
+    if (master === 'Женя') {
+      const zhenyaBookingsOnDate = existingBookings.filter(b => b.master === 'Женя');
+      if (zhenyaBookingsOnDate.length > 0) {
+        // Возвращаем все слоты как недоступные
+        const allSlots = generateTimeSlots(date, service.duration, DEFAULT_WORKING_HOURS);
+        return NextResponse.json({
+          date: dateStr,
+          slots: allSlots.map(time => ({ time, available: false }))
+        });
+      }
+    }
+
     // Получаем все заблокированные слоты для этого мастера на эту дату
     const blockedSlots = await prisma.blockedSlot.findMany({
       where: {

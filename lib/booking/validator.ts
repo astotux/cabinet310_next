@@ -221,6 +221,14 @@ export async function checkSlotAvailability(
     where: { date: data.date }
   });
 
+  // Для мастера Женя (не-админ): если на эту дату уже есть запись — день занят
+  if (!isAdmin && data.master === 'Женя') {
+    const zhenyaBookingsOnDate = existingBookings.filter(b => b.master === 'Женя');
+    if (zhenyaBookingsOnDate.length > 0) {
+      return false;
+    }
+  }
+
   // Если нет существующих бронирований - слот доступен
   if (existingBookings.length === 0) {
     return true;
