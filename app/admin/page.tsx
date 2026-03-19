@@ -117,6 +117,7 @@ export default function AdminPage() {
   
   // Состояние для календаря
   const [viewMode, setViewMode] = useState<'day' | 'week' | 'month'>('day');
+  const [calendarMasterFilter, setCalendarMasterFilter] = useState<'all' | 'Лиза' | 'Женя'>('all');
   const [currentDate, setCurrentDate] = useState<Date | null>(null);
   
   // Функция для форматирования даты
@@ -202,41 +203,35 @@ export default function AdminPage() {
   const getFilteredBookings = () => {
     if (!currentDate) return [];
     
+    const byMaster = (arr: any[]) =>
+      calendarMasterFilter === 'all' ? arr : arr.filter(b => b.master === calendarMasterFilter);
+
     if (viewMode === 'day') {
-      // Форматируем дату вручную, избегая проблем с часовыми поясами
       const year = currentDate.getFullYear();
       const month = String(currentDate.getMonth() + 1).padStart(2, '0');
       const day = String(currentDate.getDate()).padStart(2, '0');
       const dateStr = `${year}-${month}-${day}`;
-      return bookings.filter(b => b.date === dateStr);
+      return byMaster(bookings.filter(b => b.date === dateStr));
     } else if (viewMode === 'week') {
       const { start, end } = getWeekRange(currentDate);
-      return bookings.filter(b => {
-        // Парсим дату как локальную
+      return byMaster(bookings.filter(b => {
         const [year, month, day] = b.date.split('-').map(Number);
         const bookingDate = new Date(year, month - 1, day);
         return bookingDate >= start && bookingDate <= end;
       }).sort((a, b) => {
-        // Сортировка по дате, затем по времени
-        if (a.date !== b.date) {
-          return a.date.localeCompare(b.date);
-        }
+        if (a.date !== b.date) return a.date.localeCompare(b.date);
         return a.time.localeCompare(b.time);
-      });
+      }));
     } else {
       const { start, end } = getMonthRange(currentDate);
-      return bookings.filter(b => {
-        // Парсим дату как локальную
+      return byMaster(bookings.filter(b => {
         const [year, month, day] = b.date.split('-').map(Number);
         const bookingDate = new Date(year, month - 1, day);
         return bookingDate >= start && bookingDate <= end;
       }).sort((a, b) => {
-        // Сортировка по дате, затем по времени
-        if (a.date !== b.date) {
-          return a.date.localeCompare(b.date);
-        }
+        if (a.date !== b.date) return a.date.localeCompare(b.date);
         return a.time.localeCompare(b.time);
-      });
+      }));
     }
   };
 
@@ -1384,42 +1379,45 @@ export default function AdminPage() {
             <div className="service-card-glass rounded-3xl p-8 max-[480px]:p-6 max-[320px]:p-5">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
                 <h2 className="text-2xl max-[480px]:text-xl font-black tracking-tight">Календарь записей</h2>
-                <div className="flex gap-2 flex-wrap">
-                  <button 
-                    onClick={() => {
-                      setViewMode('day');
-                      const now = new Date();
-                      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12, 0, 0);
-                      setCurrentDate(today);
-                    }}
-                    className={`px-4 py-2 max-[480px]:px-3 max-[480px]:py-1.5 rounded-xl text-sm max-[480px]:text-xs font-semibold transition-colors ${
-                      viewMode === 'day'
-                        ? 'bg-gradient-to-r from-accent-pink to-accent-purple text-white'
-                        : 'border border-slate-200 hover:border-primary'
-                    }`}
-                  >
-                    День
-                  </button>
-                  <button 
-                    onClick={() => setViewMode('week')}
-                    className={`px-4 py-2 max-[480px]:px-3 max-[480px]:py-1.5 rounded-xl text-sm max-[480px]:text-xs font-semibold transition-colors ${
-                      viewMode === 'week'
-                        ? 'bg-gradient-to-r from-accent-pink to-accent-purple text-white'
-                        : 'border border-slate-200 hover:border-primary'
-                    }`}
-                  >
-                    Неделя
-                  </button>
-                  <button 
-                    onClick={() => setViewMode('month')}
-                    className={`px-4 py-2 max-[480px]:px-3 max-[480px]:py-1.5 rounded-xl text-sm max-[480px]:text-xs font-semibold transition-colors ${
-                      viewMode === 'month'
-                        ? 'bg-gradient-to-r from-accent-pink to-accent-purple text-white'
-                        : 'border border-slate-200 hover:border-primary'
-                    }`}
-                  >
-                    Месяц
-                  </button>
+                <div className="flex flex-col sm:flex-row gap-2 flex-wrap">
+                  {/* Фильтр по мастеру */}
+                  <div className="flex gap-1 bg-white rounded-xl p-1 border border-slate-200">
+                    {(['all', 'Лиза', 'Женя'] as const).map(m => (
+                      <button
+                        key={m}
+                        onClick={() => setCalendarMasterFilter(m)}
+                        className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-all ${
+                          calendarMasterFilter === m
+                            ? 'bg-gradient-to-r from-accent-pink to-accent-purple text-white shadow'
+                            : 'text-slate-400 hover:text-slate-600'
+                        }`}
+                      >
+                        {m === 'all' ? 'Все' : m}
+                      </button>
+                    ))}
+                  </div>
+                  {/* Переключатель вида */}
+                  <div className="flex gap-1 bg-white rounded-xl p-1 border border-slate-200">
+                    {(['day', 'week', 'month'] as const).map(mode => (
+                      <button
+                        key={mode}
+                        onClick={() => {
+                          setViewMode(mode);
+                          if (mode === 'day') {
+                            const now = new Date();
+                            setCurrentDate(new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12, 0, 0));
+                          }
+                        }}
+                        className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-all ${
+                          viewMode === mode
+                            ? 'bg-gradient-to-r from-accent-pink to-accent-purple text-white shadow'
+                            : 'text-slate-400 hover:text-slate-600'
+                        }`}
+                      >
+                        {mode === 'day' ? 'День' : mode === 'week' ? 'Неделя' : 'Месяц'}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
 
@@ -1456,7 +1454,8 @@ export default function AdminPage() {
                   <p className="text-slate-500 text-center py-8">
                     {viewMode === 'day' ? 'Записей на этот день нет' : viewMode === 'week' ? 'Записей на эту неделю нет' : 'Записей на этот месяц нет'}
                   </p>
-                ) : (
+                ) : viewMode === 'day' ? (
+                  // Day view — полные карточки
                   getFilteredBookings().map((booking) => (
                     <div key={booking.id} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 p-4 max-[480px]:p-3 rounded-2xl bg-white/60 border border-slate-200/60">
                       <div className="text-center sm:text-left min-w-[80px] max-[480px]:min-w-0">
@@ -1487,7 +1486,6 @@ export default function AdminPage() {
                           <p className="text-sm text-slate-500 italic mt-1 max-[480px]:text-xs">💬 {booking.comment}</p>
                         )}
                       </div>
-                      {/* Кнопки действий */}
                       <div className="flex gap-2 p-3">
                         <button 
                           onClick={() => openEditBookingModal(booking)}
@@ -1506,6 +1504,72 @@ export default function AdminPage() {
                       </div>
                     </div>
                   ))
+                ) : (
+                  // Week / Month view — группировка по дням
+                  (() => {
+                    const filtered = getFilteredBookings();
+                    const byDate: Record<string, typeof filtered> = {};
+                    for (const b of filtered) {
+                      if (!byDate[b.date]) byDate[b.date] = [];
+                      byDate[b.date].push(b);
+                    }
+                    const now = new Date();
+                    const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+                    return Object.entries(byDate).map(([date, dayBookings]) => {
+                      const isToday = date === todayStr;
+                      const [y, mo, d] = date.split('-').map(Number);
+                      const dateObj = new Date(y, mo - 1, d);
+                      const dayName = dateObj.toLocaleDateString('ru-RU', { weekday: 'short' });
+                      const dayLabel = dateObj.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
+                      const totalRevenue = dayBookings.reduce((s: number, b: any) => s + (b.price || 0), 0);
+                      return (
+                        <div key={date}>
+                          {/* Day header */}
+                          <div className="flex items-center gap-3 mb-2 px-1">
+                            <div className={`size-12 rounded-2xl flex flex-col items-center justify-center shrink-0 ${isToday ? 'gradient-bg text-white' : 'bg-white border border-slate-200'}`}>
+                              <span className="text-[10px] font-bold uppercase leading-none">{dayName}</span>
+                              <span className="text-base font-black leading-tight">{d}</span>
+                            </div>
+                            <div className="flex-1">
+                              <p className={`text-sm font-bold ${isToday ? 'text-primary' : 'text-slate-700'}`}>{dayLabel}{isToday ? ' · Сегодня' : ''}</p>
+                              <p className="text-xs text-slate-400">
+                                {dayBookings.length} {dayBookings.length === 1 ? 'запись' : dayBookings.length < 5 ? 'записи' : 'записей'}
+                                {totalRevenue > 0 ? ` · ${totalRevenue.toLocaleString()}₽` : ''}
+                              </p>
+                            </div>
+                          </div>
+                          {/* Compact booking rows */}
+                          <div className="rounded-2xl bg-white/60 border border-slate-200/60 overflow-hidden mb-3">
+                            {dayBookings.map((b: any, i: number) => (
+                              <div key={b.id} className={`flex items-center gap-3 px-4 py-3 ${i < dayBookings.length - 1 ? 'border-b border-slate-100' : ''}`}>
+                                <div className="w-12 shrink-0 text-center">
+                                  <span className="text-sm font-black text-primary">{b.time}</span>
+                                </div>
+                                <div className="w-px h-8 bg-slate-200 shrink-0" />
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-1.5 flex-wrap">
+                                    <span className="text-sm font-bold truncate">{b.clientName}</span>
+                                    <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold ${b.master === 'Лиза' ? 'bg-pink-100 text-pink-600' : 'bg-purple-100 text-purple-600'}`}>{b.master}</span>
+                                    {b.price && <span className="px-1.5 py-0.5 rounded-full bg-green-100 text-green-700 text-[10px] font-bold">{b.price}₽{b.customPrice ? ' (своб.)' : ''}</span>}
+                                  </div>
+                                  <p className="text-xs text-slate-500 truncate">{b.service}</p>
+                                  {b.comment && <p className="text-xs text-slate-400 italic truncate">💬 {b.comment}</p>}
+                                </div>
+                                <div className="flex gap-1 shrink-0">
+                                  <button onClick={() => openEditBookingModal(b)} className="size-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center hover:bg-primary/20 transition-colors">
+                                    <span className="material-symbols-outlined text-base">edit</span>
+                                  </button>
+                                  <button onClick={() => deleteBooking(b.id)} className="size-8 rounded-xl bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 transition-colors">
+                                    <span className="material-symbols-outlined text-base">delete</span>
+                                  </button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    });
+                  })()
                 )}
 
                 <button 
