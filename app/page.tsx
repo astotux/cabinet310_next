@@ -125,9 +125,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Promo Banner */}
-        <PromoBanner />
-
         {/* About Section */}
         <section className="mb-24 md:mb-28 lg:mb-32 max-[480px]:mb-20 max-[320px]:mb-16" id="about">
           <div className="relative rounded-2xl md:rounded-[3rem] overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100 p-8 md:p-12 lg:p-16 max-[480px]:p-6">
@@ -192,6 +189,9 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        {/* Promo Banner */}
+        <PromoBanner />
 
         {/* Services Section */}
         <section className="mb-24 md:mb-28 lg:mb-32 max-[480px]:mb-20 max-[320px]:mb-16" id="services">
