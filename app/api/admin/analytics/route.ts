@@ -1,18 +1,25 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
-    const [bookings, services] = await Promise.all([
+    const { searchParams } = new URL(req.url);
+    const masterFilter = searchParams.get("master"); // null = all
+
+    const [allBookings, services] = await Promise.all([
       prisma.booking.findMany({ orderBy: { date: "asc" } }),
       prisma.price.findMany(),
     ]);
 
+    // Apply master filter
+    const bookings = masterFilter
+      ? allBookings.filter((b) => b.master === masterFilter)
+      : allBookings;
+
     const now = new Date();
     const currentYear = now.getFullYear();
-    const currentMonth = now.getMonth(); // 0-indexed
+    const currentMonth = now.getMonth();
 
-    // Helper: parse "YYYY-MM-DD" to Date
     const parseDate = (d: string) => {
       const [y, m, day] = d.split("-").map(Number);
       return new Date(y, m - 1, day);
@@ -24,7 +31,6 @@ export async function GET() {
       return svc?.price || 0;
     };
 
-    // --- Period filters ---
     const thisMonthBookings = bookings.filter((b) => {
       const d = parseDate(b.date);
       return d.getFullYear() === currentYear && d.getMonth() === currentMonth;
@@ -41,45 +47,47 @@ export async function GET() {
       return parseDate(b.date).getFullYear() === currentYear;
     });
 
-    // --- Revenue ---
     const revenueThisMonth = thisMonthBookings.reduce((s, b) => s + getPrice(b), 0);
     const revenueLastMonth = lastMonthBookings.reduce((s, b) => s + getPrice(b), 0);
     const revenueThisYear = thisYearBookings.reduce((s, b) => s + getPrice(b), 0);
 
-    // --- Revenue by master this month ---
     const revenueByMaster: Record<string, number> = {};
-    thisMonthBookings.forEach((b) => {
-      revenueByMaster[b.master] = (revenueByMaster[b.master] || 0) + getPrice(b);
-    });
+    const bookingsByMaster: Record<string, number> = {};
+    // Always compute by master from unfiltered this-month data
+    allBookings
+      .filter((b) => {
+        const d = parseDate(b.date);
+        return d.getFullYear() === currentYear && d.getMonth() === currentMonth;
+      })
+      .forEach((b) => {
+        revenueByMaster[b.master] = (revenueByMaster[b.master] || 0) +
+          (b.customPrice || services.find((s) => s.service === b.service && s.master === b.master)?.price || 0);
+        bookingsByMaster[b.master] = (bookingsByMaster[b.master] || 0) + 1;
+      });
 
-    // --- Bookings count ---
     const totalBookings = bookings.length;
     const bookingsThisMonth = thisMonthBookings.length;
     const bookingsLastMonth = lastMonthBookings.length;
 
-    // --- Today ---
     const todayStr = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
     const todayBookings = bookings.filter((b) => b.date === todayStr).length;
 
-    // --- Repeat clients (phone appears more than once) ---
     const phoneCounts: Record<string, number> = {};
-    bookings.forEach((b) => {
+    allBookings.forEach((b) => {
       if (b.clientPhone) phoneCounts[b.clientPhone] = (phoneCounts[b.clientPhone] || 0) + 1;
     });
     const uniqueClients = Object.keys(phoneCounts).length;
     const newClients = Object.values(phoneCounts).filter((c) => c === 1).length;
 
-    // --- Top services this year ---
     const serviceCounts: Record<string, number> = {};
     thisYearBookings.forEach((b) => {
       serviceCounts[b.service] = (serviceCounts[b.service] || 0) + 1;
     });
     const topServices = Object.entries(serviceCounts)
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 5)
+      .slice(0, 6)
       .map(([name, count]) => ({ name, count }));
 
-    // --- Monthly revenue for last 6 months ---
     const monthlyRevenue: { month: string; revenue: number; count: number }[] = [];
     for (let i = 5; i >= 0; i--) {
       const d = new Date(currentYear, currentMonth - i, 1);
@@ -96,45 +104,32 @@ export async function GET() {
       });
     }
 
-    // --- Bookings by day of week (this year) ---
     const dayNames = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
     const byDayOfWeek = Array(7).fill(0);
     thisYearBookings.forEach((b) => {
-      const dow = parseDate(b.date).getDay();
-      byDayOfWeek[dow]++;
+      byDayOfWeek[parseDate(b.date).getDay()]++;
     });
     const bookingsByDay = dayNames.map((name, i) => ({ name, count: byDayOfWeek[i] }));
 
-    // --- Avg bookings per week this month ---
     const weeksInMonth = Math.ceil(new Date(currentYear, currentMonth + 1, 0).getDate() / 7);
     const avgPerWeek = Math.round(bookingsThisMonth / weeksInMonth);
 
-    // --- Bookings by master this month ---
-    const bookingsByMaster: Record<string, number> = {};
-    thisMonthBookings.forEach((b) => {
-      bookingsByMaster[b.master] = (bookingsByMaster[b.master] || 0) + 1;
-    });
+    // Get unique masters list
+    const masters = [...new Set(allBookings.map((b) => b.master))].sort();
 
     return NextResponse.json({
       overview: {
-        totalBookings,
-        bookingsThisMonth,
-        bookingsLastMonth,
-        todayBookings,
-        revenueThisMonth,
-        revenueLastMonth,
-        revenueThisYear,
-        avgPerWeek,
+        totalBookings, bookingsThisMonth, bookingsLastMonth,
+        todayBookings, revenueThisMonth, revenueLastMonth,
+        revenueThisYear, avgPerWeek,
       },
-      clients: {
-        uniqueClients,
-        newClients,
-      },
+      clients: { uniqueClients, newClients },
       topServices,
       monthlyRevenue,
       bookingsByDay,
       revenueByMaster,
       bookingsByMaster,
+      masters,
     });
   } catch (e) {
     console.error(e);
