@@ -2423,6 +2423,12 @@ export default function AdminPage() {
                 <label className="block text-sm font-bold mb-2">Телефон клиента *</label>
                 <IMaskInput
                   mask="+7 (000) 000-00-00"
+                  prepare={(str: string) => {
+                    const digits = str.replace(/\D/g, '');
+                    if (digits.startsWith('8') && digits.length >= 10) return '+7' + digits.slice(1);
+                    if (digits.startsWith('7') && digits.length >= 10) return '+' + digits;
+                    return str;
+                  }}
                   value={bookingForm.clientPhone}
                   onAccept={(value) => setBookingForm({ ...bookingForm, clientPhone: value })}
                   placeholder="+7 (___) ___-__-__"
@@ -3162,6 +3168,12 @@ export default function AdminPage() {
                 <label className="block text-sm font-bold mb-2">Телефон</label>
                 <IMaskInput
                   mask="+7 (000) 000-00-00"
+                  prepare={(str: string) => {
+                    const digits = str.replace(/\D/g, '');
+                    if (digits.startsWith('8') && digits.length >= 10) return '+7' + digits.slice(1);
+                    if (digits.startsWith('7') && digits.length >= 10) return '+' + digits;
+                    return str;
+                  }}
                   value={clientForm.phone}
                   onAccept={(value: string) => setClientForm({ ...clientForm, phone: value })}
                   placeholder="+7 (___) ___-__-__"

@@ -7,10 +7,10 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   const { id } = await params;
-  const { name, phone, note } = await request.json();
+  const { name, phone, vk, note } = await request.json();
   const client = await prisma.client.update({
     where: { id: parseInt(id) },
-    data: { name, phone: phone || null, note: note || null },
+    data: { name, phone: phone || null, vk: vk || null, note: note || null },
   });
   return NextResponse.json(client);
 }

@@ -904,6 +904,12 @@ export default function BookingPage() {
                       <label className="text-sm font-bold text-slate-700 ml-1" htmlFor="phone">Телефон</label>
                       <IMaskInput
                         mask="+7 (000) 000-00-00"
+                        prepare={(str: string) => {
+                          const digits = str.replace(/\D/g, '');
+                          if (digits.startsWith('8') && digits.length >= 10) return '+7' + digits.slice(1);
+                          if (digits.startsWith('7') && digits.length >= 10) return '+' + digits;
+                          return str;
+                        }}
                         value={clientPhone}
                         onAccept={(value) => setClientPhone(value)}
                         placeholder="+7 (___) ___-__-__"

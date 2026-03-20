@@ -89,6 +89,7 @@ model Client {
   id        Int      @id @default(autoincrement())
   name      String
   phone     String?
+  vk        String?
   note      String?
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt

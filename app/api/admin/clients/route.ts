@@ -14,8 +14,8 @@ export async function POST(request: NextRequest) {
   if (!await isAdminFromHeaders(request.headers)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
-  const { name, phone, note } = await request.json();
+  const { name, phone, vk, note } = await request.json();
   if (!name) return NextResponse.json({ error: 'Имя обязательно' }, { status: 400 });
-  const client = await prisma.client.create({ data: { name, phone: phone || null, note: note || null } });
+  const client = await prisma.client.create({ data: { name, phone: phone || null, vk: vk || null, note: note || null } });
   return NextResponse.json(client, { status: 201 });
 }
