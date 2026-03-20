@@ -1,6 +1,7 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PortfolioCarousel from "@/components/PortfolioCarousel";
+import PromoBanner from "@/components/PromoBanner";
 import Link from "next/link";
 import Image from "next/image";
 import { Metadata } from "next";
@@ -123,6 +124,9 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        {/* Promo Banner */}
+        <PromoBanner />
 
         {/* About Section */}
         <section className="mb-24 md:mb-28 lg:mb-32 max-[480px]:mb-20 max-[320px]:mb-16" id="about">

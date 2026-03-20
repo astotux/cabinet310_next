@@ -99,6 +99,13 @@ export default function AdminPage() {
   // Фильтр для экспорта записей
   const [exportMasterFilter, setExportMasterFilter] = useState<'all' | 'Лиза' | 'Женя'>('all');
   
+  // Акции
+  const [promotions, setPromotions] = useState<any[]>([]);
+  const [showPromoModal, setShowPromoModal] = useState(false);
+  const [editingPromo, setEditingPromo] = useState<any>(null);
+  const [promoForm, setPromoForm] = useState({ title: '', text: '', image: '', active: false });
+  const [uploadingPromo, setUploadingPromo] = useState(false);
+  
   // Состояние VK бота
   const [vkBotEnabled, setVkBotEnabled] = useState(true);
   const [vkBotLoading, setVkBotLoading] = useState(false);
@@ -265,6 +272,7 @@ export default function AdminPage() {
     
     fetchData();
     fetchVkBotStatus();
+    fetchPromotions();
   }, []);
 
   const fetchData = async () => {
@@ -539,6 +547,87 @@ export default function AdminPage() {
     } catch (error) {
       console.error('Error fetching VK bot status:', error);
     }
+  };
+
+  const fetchPromotions = async () => {
+    try {
+      const res = await fetch('/api/admin/promotions');
+      const data = await res.json();
+      setPromotions(Array.isArray(data) ? data : []);
+    } catch { setPromotions([]); }
+  };
+
+  const openAddPromo = () => {
+    setEditingPromo(null);
+    setPromoForm({ title: '', text: '', image: '', active: false });
+    setShowPromoModal(true);
+  };
+
+  const openEditPromo = (p: any) => {
+    setEditingPromo(p);
+    setPromoForm({ title: p.title, text: p.text, image: p.image || '', active: p.active });
+    setShowPromoModal(true);
+  };
+
+  const handlePromoImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingPromo(true);
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+      const res = await fetch('/api/upload', { method: 'POST', body: formData });
+      const data = await res.json();
+      if (data.filename) setPromoForm(prev => ({ ...prev, image: data.filename }));
+    } catch { toast.error('Ошибка загрузки изображения'); }
+    finally { setUploadingPromo(false); }
+  };
+
+  const handlePromoSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const token = localStorage.getItem('adminToken') || '';
+    const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
+    try {
+      if (editingPromo) {
+        await fetch(`/api/admin/promotions/${editingPromo.id}`, { method: 'PATCH', headers, body: JSON.stringify(promoForm) });
+        toast.success('Акция обновлена');
+      } else {
+        await fetch('/api/admin/promotions', { method: 'POST', headers, body: JSON.stringify(promoForm) });
+        toast.success('Акция добавлена');
+      }
+      setShowPromoModal(false);
+      fetchPromotions();
+    } catch { toast.error('Ошибка сохранения'); }
+  };
+
+  const applyPromo = async (id: number) => {
+    const token = localStorage.getItem('adminToken') || '';
+    await fetch(`/api/admin/promotions/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ active: true }),
+    });
+    toast.success('Акция применена');
+    fetchPromotions();
+  };
+
+  const deactivatePromo = async (id: number) => {
+    const token = localStorage.getItem('adminToken') || '';
+    await fetch(`/api/admin/promotions/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ active: false }),
+    });
+    toast.success('Акция деактивирована');
+    fetchPromotions();
+  };
+
+  const deletePromo = async (id: number) => {
+    if (!confirm('Удалить акцию?')) return;
+    const token = localStorage.getItem('adminToken') || '';
+    await fetch(`/api/admin/promotions/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
+    toast.success('Акция удалена');
+    fetchPromotions();
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1584,6 +1673,56 @@ export default function AdminPage() {
           </div>
 
           <div className="lg:col-span-4 space-y-6">
+            {/* Акции */}
+            <div className="service-card-glass rounded-3xl p-6 max-[480px]:p-5">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl max-[480px]:text-lg font-black tracking-tight">Акции</h2>
+                <button
+                  onClick={openAddPromo}
+                  className="size-9 rounded-xl gradient-bg text-white flex items-center justify-center hover:opacity-90 transition-opacity"
+                >
+                  <span className="material-symbols-outlined text-lg">add</span>
+                </button>
+              </div>
+              {promotions.length === 0 ? (
+                <p className="text-sm text-slate-400 text-center py-4">Акций нет. Добавьте первую.</p>
+              ) : (
+                <div className="space-y-3">
+                  {promotions.map((p: any) => (
+                    <div key={p.id} className={`rounded-2xl border p-3 ${p.active ? 'border-primary/40 bg-primary/5' : 'border-slate-200/60 bg-white/60'}`}>
+                      {p.image && (
+                        <div className="h-20 rounded-xl overflow-hidden mb-2">
+                          <img src={`/uploads/${p.image}`} alt="" className="w-full h-full object-cover" />
+                        </div>
+                      )}
+                      <div className="flex items-start justify-between gap-2 mb-1">
+                        <p className="font-bold text-sm flex-1 leading-tight">{p.title}</p>
+                        {p.active && <span className="px-2 py-0.5 rounded-full bg-primary/15 text-primary text-[10px] font-bold shrink-0">Активна</span>}
+                      </div>
+                      <p className="text-xs text-slate-500 mb-3 line-clamp-2">{p.text}</p>
+                      <div className="flex gap-1.5 flex-wrap">
+                        {!p.active ? (
+                          <button onClick={() => applyPromo(p.id)} className="flex-1 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-semibold hover:bg-primary/20 transition-colors">
+                            Применить
+                          </button>
+                        ) : (
+                          <button onClick={() => deactivatePromo(p.id)} className="flex-1 py-1.5 rounded-lg bg-slate-100 text-slate-500 text-xs font-semibold hover:bg-slate-200 transition-colors">
+                            Деактивировать
+                          </button>
+                        )}
+                        <button onClick={() => openEditPromo(p)} className="px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-semibold hover:bg-primary/20 transition-colors">
+                          <span className="material-symbols-outlined text-sm">edit</span>
+                        </button>
+                        <button onClick={() => deletePromo(p.id)} className="px-3 py-1.5 rounded-lg bg-red-50 text-red-500 text-xs font-semibold hover:bg-red-100 transition-colors">
+                          <span className="material-symbols-outlined text-sm">delete</span>
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <div className="service-card-glass rounded-3xl p-6 max-[480px]:p-5">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl max-[480px]:text-lg font-black tracking-tight">Быстрые действия</h2>
@@ -2667,6 +2806,74 @@ export default function AdminPage() {
                 >
                   Сохранить
                 </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Модальное окно акции */}
+      {showPromoModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-background-light rounded-3xl p-8 max-[480px]:p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-black">{editingPromo ? 'Редактировать акцию' : 'Новая акция'}</h2>
+              <button onClick={() => setShowPromoModal(false)} className="size-10 rounded-xl hover:bg-slate-100 flex items-center justify-center">
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+            <form onSubmit={handlePromoSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-bold mb-2">Заголовок *</label>
+                <input
+                  type="text"
+                  value={promoForm.title}
+                  onChange={e => setPromoForm({ ...promoForm, title: e.target.value })}
+                  required
+                  className="w-full p-3 rounded-xl border border-slate-200 bg-white focus:outline-none focus:border-primary"
+                  placeholder="Например: Скидка 20% на маникюр"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold mb-2">Текст *</label>
+                <textarea
+                  value={promoForm.text}
+                  onChange={e => setPromoForm({ ...promoForm, text: e.target.value })}
+                  required
+                  rows={3}
+                  className="w-full p-3 rounded-xl border border-slate-200 bg-white focus:outline-none focus:border-primary resize-none"
+                  placeholder="Описание акции..."
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold mb-2">Фоновое изображение</label>
+                {promoForm.image && (
+                  <div className="h-32 rounded-xl overflow-hidden mb-2 relative">
+                    <img src={`/uploads/${promoForm.image}`} alt="" className="w-full h-full object-cover" />
+                    <button type="button" onClick={() => setPromoForm({ ...promoForm, image: '' })} className="absolute top-2 right-2 size-7 rounded-lg bg-black/50 text-white flex items-center justify-center">
+                      <span className="material-symbols-outlined text-sm">close</span>
+                    </button>
+                  </div>
+                )}
+                <label className="flex items-center gap-2 px-4 py-3 rounded-xl border-2 border-dashed border-slate-300 hover:border-primary cursor-pointer transition-colors">
+                  <span className="material-symbols-outlined text-slate-400">image</span>
+                  <span className="text-sm text-slate-500">{uploadingPromo ? 'Загрузка...' : 'Выбрать изображение'}</span>
+                  <input type="file" accept="image/*" className="hidden" onChange={handlePromoImageUpload} disabled={uploadingPromo} />
+                </label>
+              </div>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setPromoForm({ ...promoForm, active: !promoForm.active })}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${promoForm.active ? 'bg-primary' : 'bg-slate-200'}`}
+                >
+                  <span className={`inline-block h-4 w-4 rounded-full bg-white shadow transition-transform ${promoForm.active ? 'translate-x-6' : 'translate-x-1'}`} />
+                </button>
+                <span className="text-sm font-semibold">Сделать активной сразу</span>
+              </div>
+              <div className="flex gap-3 pt-2">
+                <button type="button" onClick={() => setShowPromoModal(false)} className="flex-1 py-3 rounded-2xl border border-slate-200 font-bold">Отмена</button>
+                <button type="submit" className="flex-1 gradient-bg py-3 rounded-2xl text-white font-bold">{editingPromo ? 'Сохранить' : 'Добавить'}</button>
               </div>
             </form>
           </div>

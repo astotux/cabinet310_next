@@ -20,9 +20,17 @@ export class CommandHandlers {
       
       // Создаем новое чистое состояние
       await stateManager.transitionTo(userId, DialogState.IDLE);
+
+      // Получаем активную акцию
+      let activePromo = null;
+      try {
+        const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+        const promoRes = await fetch(`${baseUrl}/api/promotions`);
+        if (promoRes.ok) activePromo = await promoRes.json();
+      } catch {}
       
       // Отправляем приветственное сообщение
-      const welcomeMessage = messageFormatter.formatWelcome();
+      const welcomeMessage = messageFormatter.formatWelcome(activePromo);
       await vkBotServer.sendMessage(userId, welcomeMessage.text, welcomeMessage.keyboard);
       
       console.log(`Start command handled for user ${userId}`);
