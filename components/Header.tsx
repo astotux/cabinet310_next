@@ -56,20 +56,20 @@ export default function Header() {
         </div>
       </div>
 
-      <div className="md:hidden p-3 w-full flex justify-between items-center">
+      <div className="md:hidden p-2 w-full flex justify-between items-center">
         
-        <div className="w-10"></div>
-        <div className="glass rounded-2xl px-4 py-3 inline-flex items-center justify-center">
+        <div className="w-8"></div>
+        <div className="glass rounded-xl px-3 py-2 inline-flex items-center justify-center">
           <Link href="/">
-            <Image src="/logo.svg" width={96} height={34} className="w-24" alt="Logo" />
+            <Image src="/logo.svg" width={80} height={28} className="w-20" alt="Logo" />
           </Link>
         </div>
         <button
           onClick={toggleMenu}
-          className="glass rounded-xl p-2 flex items-center justify-center hover:bg-white/80 transition-colors"
+          className="glass rounded-lg p-1.5 flex items-center justify-center hover:bg-white/80 transition-colors"
           aria-label={isMenuVisible ? "Скрыть меню" : "Показать меню"}
         >
-          <span className="material-symbols-outlined text-xl text-primary">
+          <span className="material-symbols-outlined text-lg text-primary">
             {isMenuVisible ? "expand_more" : "expand_less"}
           </span>
         </button>
@@ -79,29 +79,29 @@ export default function Header() {
       <div className={`md:hidden fixed bottom-0 left-0 right-0 z-50 transition-transform duration-300 ${
         isMenuVisible ? 'translate-y-0' : 'translate-y-full'
       }`}>
-        <div className="flex flex-col gap-3 p-3">
+        <div className="flex flex-col gap-2 p-2">
           <Link
             href="/booking"
-            className="gradient-bg rounded-2xl px-6 py-3 text-sm font-bold text-white shadow-lg hover:opacity-90 transition-opacity text-center"
+            className="gradient-bg rounded-xl px-6 py-2 text-xs font-bold text-white shadow-lg hover:opacity-90 transition-opacity text-center"
           >
             Записаться
           </Link>
 
-          <nav className="glass rounded-2xl px-4 py-3 flex items-center justify-around">
-            <Link className="flex flex-col items-center gap-1 text-xs font-semibold hover:text-primary transition-colors" href="/">
-              <span className="material-symbols-outlined text-xl">home</span>
+          <nav className="glass rounded-xl px-2.5 py-1.5 flex items-center justify-around">
+            <Link className="flex flex-col items-center gap-0.5 text-[10px] font-semibold hover:text-primary transition-colors" href="/">
+              <span className="material-symbols-outlined text-lg">home</span>
               <span>Главная</span>
             </Link>
-            <Link className="flex flex-col items-center gap-1 text-xs font-semibold hover:text-primary transition-colors" href="/services">
-              <span className="material-symbols-outlined text-xl">spa</span>
+            <Link className="flex flex-col items-center gap-0.5 text-[10px] font-semibold hover:text-primary transition-colors" href="/services">
+              <span className="material-symbols-outlined text-lg">spa</span>
               <span>Услуги</span>
             </Link>
-            <Link className="flex flex-col items-center gap-1 text-xs font-semibold hover:text-primary transition-colors" href="/reviews">
-              <span className="material-symbols-outlined text-xl">star</span>
+            <Link className="flex flex-col items-center gap-0.5 text-[10px] font-semibold hover:text-primary transition-colors" href="/reviews">
+              <span className="material-symbols-outlined text-lg">star</span>
               <span>Отзывы</span>
             </Link>
-            <Link className="flex flex-col items-center gap-1 text-xs font-semibold hover:text-primary transition-colors" href="/contacts">
-              <span className="material-symbols-outlined text-xl">account_box</span>
+            <Link className="flex flex-col items-center gap-0.5 text-[10px] font-semibold hover:text-primary transition-colors" href="/contacts">
+              <span className="material-symbols-outlined text-lg">account_box</span>
               <span>Контакты</span>
             </Link>
           </nav>

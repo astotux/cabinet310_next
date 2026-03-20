@@ -23,17 +23,17 @@ export default async function PromoBanner() {
   if (!promo) return null;
 
   const bgStyle = promo.image
-    ? { backgroundImage: `url(/uploads/${promo.image})` }
-    : { backgroundImage: `url(/photo1.png)` };
+    ? { backgroundImage: `url(${promo.image.startsWith('/') ? promo.image : `/uploads/${promo.image}`})` }
+    : { backgroundImage: `url(promo.png)`};
 
   return (
     <section className="mb-24 md:mb-28 lg:mb-32 max-[480px]:mb-16">
       <div
-        className="relative rounded-2xl md:rounded-[2.5rem] overflow-hidden min-h-[280px] md:min-h-[320px] flex items-center bg-cover bg-center"
+        className="relative rounded-2xl md:rounded-[2.5rem] overflow-hidden min-h-[280px] md:min-h-[320px] flex items-center bg-white bg-cover bg-center"
         style={bgStyle}
       >
         {/* Затемнение */}
-        <div className="absolute inset-0 bg-black/55" />
+        <div className="absolute inset-0 bg-black/40" />
 
         {/* Декоративные звёздочки */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">

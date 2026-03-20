@@ -447,21 +447,21 @@ export default function BookingPage() {
         <div className={`md:hidden fixed bottom-0 left-0 right-0 z-50 transition-transform duration-300 ${
           isMenuVisible ? 'translate-y-0' : 'translate-y-full'
         }`}>
-          <nav className="glass rounded-2xl px-4 py-3 flex items-center justify-around m-3">
-            <Link className="flex flex-col items-center gap-1 text-xs font-semibold hover:text-primary transition-colors" href="/">
-              <span className="material-symbols-outlined text-xl">home</span>
+          <nav className="glass rounded-xl px-2.5 py-1.5 flex items-center justify-around m-3">
+            <Link className="flex flex-col items-center gap-0.5 text-[10px] font-semibold hover:text-primary transition-colors" href="/">
+              <span className="material-symbols-outlined text-lg">home</span>
               <span>Главная</span>
             </Link>
-            <Link className="flex flex-col items-center gap-1 text-xs font-semibold hover:text-primary transition-colors" href="/services">
-              <span className="material-symbols-outlined text-xl">spa</span>
+            <Link className="flex flex-col items-center gap-0.5 text-[10px] font-semibold hover:text-primary transition-colors" href="/services">
+              <span className="material-symbols-outlined text-lg">spa</span>
               <span>Услуги</span>
             </Link>
-            <Link className="flex flex-col items-center gap-1 text-xs font-semibold hover:text-primary transition-colors" href="/reviews">
-              <span className="material-symbols-outlined text-xl">star</span>
+            <Link className="flex flex-col items-center gap-0.5 text-[10px] font-semibold hover:text-primary transition-colors" href="/reviews">
+              <span className="material-symbols-outlined text-lg">star</span>
               <span>Отзывы</span>
             </Link>
-            <Link className="flex flex-col items-center gap-1 text-xs font-semibold hover:text-primary transition-colors" href="/contacts">
-              <span className="material-symbols-outlined text-xl">account_box</span>
+            <Link className="flex flex-col items-center gap-0.5 text-[10px] font-semibold hover:text-primary transition-colors" href="/contacts">
+              <span className="material-symbols-outlined text-lg">account_box</span>
               <span>Контакты</span>
             </Link>
           </nav>

@@ -1692,7 +1692,7 @@ export default function AdminPage() {
                     <div key={p.id} className={`rounded-2xl border p-3 ${p.active ? 'border-primary/40 bg-primary/5' : 'border-slate-200/60 bg-white/60'}`}>
                       {p.image && (
                         <div className="h-20 rounded-xl overflow-hidden mb-2">
-                          <img src={`/uploads/${p.image}`} alt="" className="w-full h-full object-cover" />
+                          <img src={p.image.startsWith('/') ? p.image : `/uploads/${p.image}`} alt="" className="w-full h-full object-cover" />
                         </div>
                       )}
                       <div className="flex items-start justify-between gap-2 mb-1">
@@ -2849,7 +2849,7 @@ export default function AdminPage() {
                 <label className="block text-sm font-bold mb-2">Фоновое изображение</label>
                 {promoForm.image && (
                   <div className="h-32 rounded-xl overflow-hidden mb-2 relative">
-                    <img src={`/uploads/${promoForm.image}`} alt="" className="w-full h-full object-cover" />
+                    <img src={promoForm.image.startsWith('/') ? promoForm.image : `/uploads/${promoForm.image}`} alt="" className="w-full h-full object-cover" />
                     <button type="button" onClick={() => setPromoForm({ ...promoForm, image: '' })} className="absolute top-2 right-2 size-7 rounded-lg bg-black/50 text-white flex items-center justify-center">
                       <span className="material-symbols-outlined text-sm">close</span>
                     </button>
