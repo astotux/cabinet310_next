@@ -82,12 +82,12 @@ export default function Header() {
         <div className="flex flex-col gap-2 p-2">
           <Link
             href="/booking"
-            className="gradient-bg rounded-xl px-6 py-2 text-xs font-bold text-white shadow-lg hover:opacity-90 transition-opacity text-center"
+            className="gradient-bg rounded-xl px-6 py-3 text-xs font-bold text-white shadow-lg hover:opacity-90 transition-opacity text-center"
           >
             Записаться
           </Link>
 
-          <nav className="glass rounded-xl px-2.5 py-1.5 flex items-center justify-around">
+          <nav className="glass rounded-xl px-2.5 py-2 flex items-center justify-around">
             <Link className="flex flex-col items-center gap-0.5 text-[10px] font-semibold hover:text-primary transition-colors" href="/">
               <span className="material-symbols-outlined text-lg">home</span>
               <span>Главная</span>

@@ -447,7 +447,7 @@ export default function BookingPage() {
         <div className={`md:hidden fixed bottom-0 left-0 right-0 z-50 transition-transform duration-300 ${
           isMenuVisible ? 'translate-y-0' : 'translate-y-full'
         }`}>
-          <nav className="glass rounded-xl px-2.5 py-1.5 flex items-center justify-around m-3">
+          <nav className="glass rounded-xl px-2.5 py-2 flex items-center justify-around m-3">
             <Link className="flex flex-col items-center gap-0.5 text-[10px] font-semibold hover:text-primary transition-colors" href="/">
               <span className="material-symbols-outlined text-lg">home</span>
               <span>Главная</span>
