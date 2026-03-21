@@ -46,7 +46,7 @@ export default function ReviewPhotosCarousel({ photos, reviewId }: ReviewPhotosC
             <div key={photo.id} className="swiper-slide">
               <div className="relative overflow-hidden rounded-xl aspect-[4/3] w-full">
                 <Image 
-                  src={photo.imageUrl} 
+                  src={photo.imageUrl.startsWith('/') ? photo.imageUrl : `/uploads/${photo.imageUrl}`}
                   width={400}
                   height={400}
                   alt="Фото отзыва" 
