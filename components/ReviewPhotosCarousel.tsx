@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect } from 'react';
-import Image from 'next/image';
 
 interface ReviewPhotosCarouselProps {
   photos: { id: number; imageUrl: string }[];
@@ -44,15 +43,32 @@ export default function ReviewPhotosCarousel({ photos, reviewId }: ReviewPhotosC
         <div className="swiper-wrapper">
           {photos.map((photo) => (
             <div key={photo.id} className="swiper-slide">
-              <div className="relative overflow-hidden rounded-xl aspect-[4/3] w-full">
-                <Image 
-                  src={photo.imageUrl.startsWith('/') ? photo.imageUrl : `/uploads/${photo.imageUrl}`}
-                  width={400}
-                  height={400}
-                  alt="Фото отзыва" 
-                  className="w-full h-full object-cover" 
-                />
-              </div>
+              {(() => {
+                const src = photo.imageUrl.startsWith('/') ? photo.imageUrl : `/uploads/${photo.imageUrl}`;
+                return (
+                  <div className="relative overflow-hidden rounded-xl w-full flex items-center justify-center" style={{ minHeight: 180 }}>
+                    {/* Blurred background */}
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={src}
+                      alt=""
+                      aria-hidden="true"
+                      className="absolute inset-0 w-full h-full object-cover scale-110"
+                      style={{ filter: 'blur(18px)', opacity: 0.7 }}
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-black/20" />
+                    {/* Actual photo */}
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={src}
+                      alt="Фото отзыва"
+                      className="relative z-10 max-w-full max-h-[420px] object-contain"
+                      loading="lazy"
+                    />
+                  </div>
+                );
+              })()}
             </div>
           ))}
         </div>
