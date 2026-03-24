@@ -127,21 +127,37 @@ export class VKBotServer {
         console.error('VK upload server error:', uploadServerData.error);
         return null;
       }
+      const uploadUrl = uploadServerData.response.upload_url;
 
-      // 2. Читаем файл и загружаем
+      // 2. Читаем файл и загружаем через node-form-data совместимый multipart
       const fs = await import('fs');
       const path = await import('path');
       const filePath = path.join(process.cwd(), 'public', 'inmap.png');
       const fileBuffer = fs.readFileSync(filePath);
-      const blob = new Blob([fileBuffer], { type: 'image/png' });
-      const formData = new FormData();
-      formData.append('photo', blob, 'inmap.png');
 
-      const uploadRes = await fetch(uploadServerData.response.upload_url, {
+      // Строим multipart вручную чтобы гарантировать правильный Content-Type
+      const boundary = `----FormBoundary${Date.now()}`;
+      const CRLF = '\r\n';
+      const header = Buffer.from(
+        `--${boundary}${CRLF}` +
+        `Content-Disposition: form-data; name="photo"; filename="inmap.png"${CRLF}` +
+        `Content-Type: image/png${CRLF}${CRLF}`
+      );
+      const footer = Buffer.from(`${CRLF}--${boundary}--${CRLF}`);
+      const body = Buffer.concat([header, fileBuffer, footer]);
+
+      const uploadRes = await fetch(uploadUrl, {
         method: 'POST',
-        body: formData,
+        headers: { 'Content-Type': `multipart/form-data; boundary=${boundary}` },
+        body,
       });
       const uploadData = await uploadRes.json();
+      console.log('VK upload response:', JSON.stringify(uploadData));
+
+      if (!uploadData.photo || !uploadData.server || !uploadData.hash) {
+        console.error('VK upload missing fields:', uploadData);
+        return null;
+      }
 
       // 3. Сохраняем фото
       const saveRes = await fetch('https://api.vk.com/method/photos.saveMessagesPhoto', {
@@ -156,6 +172,7 @@ export class VKBotServer {
         }),
       });
       const saveData = await saveRes.json();
+      console.log('VK save response:', JSON.stringify(saveData));
 
       if (saveData.error || !saveData.response?.[0]) {
         console.error('VK save photo error:', saveData.error);
