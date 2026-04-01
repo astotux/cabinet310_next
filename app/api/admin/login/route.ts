@@ -4,7 +4,7 @@ import { verifyPassword, generateToken } from "@/lib/auth";
 
 export async function POST(request: NextRequest) {
   try {
-    const { username, password } = await request.json();
+    const { username, password, isMobile } = await request.json();
 
     // Валидация входных данных
     if (!username || !password) {
@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
     const token = generateToken({
       adminId: admin.id,
       username: admin.username,
-    });
+    }, isMobile === true);
 
     console.log('[Login] Token generated, setting cookie...');
     
@@ -70,11 +70,12 @@ export async function POST(request: NextRequest) {
     });
     
     // Устанавливаем httpOnly cookie для дополнительной безопасности
+    const maxAge = isMobile === true ? 60 * 60 * 24 * 365 * 10 : 60 * 60 * 24 * 7;
     response.cookies.set('adminToken', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax', // Изменено с strict на lax для совместимости
-      maxAge: 60 * 60 * 24 * 7, // 7 дней
+      maxAge: maxAge, // 10 years for mobile or 7 days
       path: '/'
     });
 

@@ -31,10 +31,9 @@ export async function verifyPassword(
 /**
  * Генерирует JWT токен для админа (Node.js runtime)
  */
-export function generateToken(payload: JWTPayload): string {
-  return jwt.sign(payload, JWT_SECRET, {
-    expiresIn: JWT_EXPIRES_IN,
-  });
+export function generateToken(payload: JWTPayload, isMobile: boolean = false): string {
+  const options: jwt.SignOptions = isMobile ? {} : { expiresIn: JWT_EXPIRES_IN as any };
+  return jwt.sign(payload, JWT_SECRET, options);
 }
 
 /**
@@ -77,12 +76,12 @@ export function extractToken(
   if (authHeader?.startsWith('Bearer ')) {
     return authHeader.substring(7);
   }
-  
+
   // Проверяем токен в cookie
   if (cookieToken) {
     return cookieToken;
   }
-  
+
   return null;
 }
 
@@ -93,7 +92,7 @@ export async function isAdminFromHeaders(headers: Headers): Promise<boolean> {
   try {
     const adminId = headers.get('x-admin-id');
     const adminUsername = headers.get('x-admin-username');
-    
+
     // Если заголовки установлены middleware, значит пользователь админ
     return !!(adminId && adminUsername);
   } catch (error) {
