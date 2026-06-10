@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Админ панель",
-  manifest: '/admin/manifest.webmanifest',
+  manifest: '/api/admin/manifest',
   appleWebApp: {
     capable: true,
     title: "Админ 310",

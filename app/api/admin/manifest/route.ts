@@ -1,7 +1,7 @@
-import { MetadataRoute } from 'next';
+import { NextResponse } from 'next/server';
 
-export default function manifest(): MetadataRoute.Manifest {
-  return {
+export async function GET() {
+  const manifest = {
     name: 'Админ 310',
     short_name: 'Админ 310',
     description: 'Панель управления Кабинет 310',
@@ -27,4 +27,10 @@ export default function manifest(): MetadataRoute.Manifest {
       },
     ],
   };
+
+  return new NextResponse(JSON.stringify(manifest), {
+    headers: {
+      'Content-Type': 'application/manifest+json',
+    },
+  });
 }
