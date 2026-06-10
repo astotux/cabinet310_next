@@ -132,6 +132,7 @@ export default function AdminPage() {
     comment: "",
     customPrice: "",
   });
+  const [showAutocomplete, setShowAutocomplete] = useState(false);
 
   // Состояние для модального окна блокировки времени
   const [showBlockTimeModal, setShowBlockTimeModal] = useState(false);
@@ -1681,7 +1682,7 @@ export default function AdminPage() {
 
           {activeTab === 'bookings' && (
             <div className="animate-slide-up space-y-6">
-              <div className="service-card-glass rounded-3xl p-8 max-[480px]:p-6 max-[320px]:p-5">
+              <div className="service-card-glass rounded-3xl p-8 max-[480px]:p-4 max-[320px]:p-3">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
                   <h2 className="text-2xl max-[480px]:text-xl font-black tracking-tight">Календарь записей</h2>
                   <div className="flex flex-col sm:flex-row gap-2 flex-wrap">
@@ -1889,18 +1890,22 @@ export default function AdminPage() {
 
           {activeTab === 'clients' && (
             <div className="animate-slide-up space-y-6">
-              <div className="service-card-glass rounded-3xl p-8 max-[480px]:p-6 max-[320px]:p-5">
+              <div className="service-card-glass rounded-3xl p-8 max-[480px]:p-4 max-[320px]:p-3">
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between mb-6 gap-4">
                   <h2 className="text-2xl max-[480px]:text-xl font-black tracking-tight">Клиенты</h2>
-                  <div className="flex gap-3">
-                    <input
-                      value={clientSearch} onChange={e => setClientSearch(e.target.value)}
-                      placeholder="Поиск по имени или телефону"
-                      className="flex-1 px-4 py-2 rounded-xl border border-slate-200 bg-white focus:outline-none focus:border-primary text-sm"
-                    />
+                  <div className="flex gap-2">
+                    <div className="flex-1 relative">
+                      <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
+                      <input
+                        value={clientSearch} onChange={e => setClientSearch(e.target.value)}
+                        placeholder="Поиск клиента"
+                        className="w-full pl-10 pr-4 py-2 max-[480px]:py-3 rounded-2xl border border-slate-200 bg-white focus:outline-none focus:border-primary text-sm"
+                      />
+                    </div>
                     <button onClick={openAddClient}
-                      className="px-4 py-2 rounded-xl gradient-bg text-white text-sm font-bold shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity whitespace-nowrap">
-                      + Добавить
+                      className="px-4 max-[480px]:px-0 max-[480px]:w-12 rounded-2xl gradient-bg text-white text-sm font-bold shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity flex items-center justify-center shrink-0">
+                      <span className="material-symbols-outlined max-[480px]:text-xl hidden max-[480px]:block">add</span>
+                      <span className="max-[480px]:hidden">+ Добавить</span>
                     </button>
                   </div>
                 </div>
@@ -1918,7 +1923,7 @@ export default function AdminPage() {
                     ).map((c: any) => {
                       const count = clientBookings(c).length;
                       return (
-                        <div key={c.id} className="bg-white/60 border border-slate-200/60 rounded-2xl p-4 flex items-center gap-3">
+                        <div key={c.id} className="bg-white/60 border border-slate-200/60 rounded-2xl p-4 max-[480px]:p-3 flex items-center gap-3">
                           <button onClick={() => setViewingClient(c)} className="flex-1 flex items-center gap-3 text-left min-w-0">
                             <div className="size-10 rounded-xl gradient-bg text-white flex items-center justify-center font-black text-base shrink-0">
                               {c.name[0].toUpperCase()}
@@ -2850,16 +2855,42 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                <div>
+                <div className="relative">
                   <label className="block text-sm font-bold mb-2">Имя клиента *</label>
                   <input
                     type="text"
                     value={bookingForm.clientName}
-                    onChange={(e) => setBookingForm({ ...bookingForm, clientName: e.target.value })}
+                    onChange={(e) => {
+                      setBookingForm({ ...bookingForm, clientName: e.target.value });
+                      setShowAutocomplete(true);
+                    }}
+                    onFocus={() => setShowAutocomplete(true)}
+                    onBlur={() => setShowAutocomplete(false)}
                     required
                     className="w-full p-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
                     placeholder="Александр Пушкин"
                   />
+                  {showAutocomplete && bookingForm.clientName && clients.filter((c: any) => (c.name || '').toLowerCase().includes(bookingForm.clientName.toLowerCase())).length > 0 && (
+                    <div className="absolute z-[60] w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-48 overflow-y-auto">
+                      {clients
+                        .filter((c: any) => (c.name || '').toLowerCase().includes(bookingForm.clientName.toLowerCase()))
+                        .map((c: any) => (
+                          <button
+                            key={c.id}
+                            type="button"
+                            onMouseDown={(e) => {
+                              e.preventDefault(); // Prevent onBlur from firing before click
+                              setBookingForm({ ...bookingForm, clientName: c.name, clientPhone: c.phone || bookingForm.clientPhone });
+                              setShowAutocomplete(false);
+                            }}
+                            className="w-full text-left px-4 py-2 hover:bg-slate-50 transition-colors flex items-center justify-between"
+                          >
+                            <span className="font-semibold text-sm">{c.name}</span>
+                            {c.phone && <span className="text-xs text-slate-500">{c.phone}</span>}
+                          </button>
+                        ))}
+                    </div>
+                  )}
                 </div>
 
                 <div>
@@ -3522,7 +3553,7 @@ export default function AdminPage() {
         {/* Client Add/Edit Modal */}
         {showClientModal && (
           <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-3xl w-full max-w-md max-h-[90vh] overflow-y-auto p-6">
+            <div className="bg-white rounded-3xl w-full max-w-md max-h-[90vh] overflow-y-auto p-6 max-[480px]:p-4">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-black">{editingClient ? 'Редактировать клиента' : 'Новый клиент'}</h2>
                 <button onClick={() => setShowClientModal(false)} className="size-10 rounded-xl hover:bg-slate-100 flex items-center justify-center">
@@ -3569,7 +3600,7 @@ export default function AdminPage() {
         {/* Client View Modal */}
         {viewingClient && (
           <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-3xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-6">
+            <div className="bg-white rounded-3xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-6 max-[480px]:p-4">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                   <div className="size-12 rounded-2xl gradient-bg text-white flex items-center justify-center text-xl font-black">
