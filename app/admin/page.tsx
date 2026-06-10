@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { IMaskInput } from 'react-imask';
-import { Line } from 'react-chartjs-2';
+import { Line, Bar } from 'react-chartjs-2';
 import ContactInfo from '../../components/ContactInfo';
 import toast, { Toaster } from 'react-hot-toast';
 import {
@@ -13,6 +13,7 @@ import {
   LinearScale,
   PointElement,
   LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend,
@@ -25,6 +26,7 @@ ChartJS.register(
   LinearScale,
   PointElement,
   LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend,
@@ -33,6 +35,51 @@ ChartJS.register(
 
 
 import React, { Component, ErrorInfo, ReactNode } from "react";
+
+
+type MasterFilter = 'all' | string;
+
+interface Analytics {
+  overview: {
+    totalBookings: number; bookingsThisMonth: number; bookingsLastMonth: number;
+    todayBookings: number; revenueThisMonth: number; revenueLastMonth: number;
+    revenueThisYear: number; avgPerWeek: number;
+  };
+  clients: { uniqueClients: number; newClients: number };
+  topServices: { name: string; count: number }[];
+  monthlyRevenue: { month: string; revenue: number; count: number }[];
+  bookingsByDay: { name: string; count: number }[];
+  revenueByMaster: Record<string, number>;
+  bookingsByMaster: Record<string, number>;
+  masters: string[];
+}
+
+function DeltaBadge({ current, prev }: { current: number; prev: number }) {
+  if (prev === 0) return null;
+  const pct = Math.round(((current - prev) / prev) * 100);
+  const up = pct >= 0;
+  return (
+    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${up ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-500'}`}>
+      {up ? '+' : ''}{pct}%
+    </span>
+  );
+}
+
+const analyticsChartOpts = {
+  responsive: true,
+  plugins: { legend: { display: false } },
+  scales: {
+    x: { grid: { display: false }, ticks: { font: { size: 10 } } },
+    y: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { font: { size: 10 } }, beginAtZero: true },
+  },
+};
+
+const MASTER_COLORS: Record<string, string> = {
+  'Лиза': 'rgba(254,185,229,0.9)',
+  'Женя': 'rgba(159,109,252,0.85)',
+};
+const DEFAULT_COLOR = 'rgba(159,109,252,0.7)';
+
 
 export default function AdminPage() {
   const navItems = [
@@ -47,6 +94,12 @@ export default function AdminPage() {
 
   const [activeTab, setActiveTab] = useState<'dashboard' | 'bookings' | 'services' | 'reviews' | 'clients' | 'promotions' | 'analytics'>('dashboard');
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const [analyticsData, setAnalyticsData] = useState<Analytics | null>(null);
+  const [analyticsLoading, setAnalyticsLoading] = useState(true);
+  const [analyticsMaster, setAnalyticsMaster] = useState<MasterFilter>('all');
+  const [revenueMode, setRevenueMode] = useState<'revenue' | 'count'>('revenue');
+
   const [bookings, setBookings] = useState<any[]>([]);
   const [reviews, setReviews] = useState<any[]>([]);
   const [services, setServices] = useState<any[]>([]);
@@ -287,8 +340,30 @@ export default function AdminPage() {
 
     fetchData();
     fetchVkBotStatus();
+    fetchAnalytics();
     fetchPromotions();
   }, []);
+
+
+  const fetchAnalytics = async (m: MasterFilter = 'all') => {
+    setAnalyticsLoading(true);
+    try {
+      const url = `/api/admin/analytics${m !== 'all' ? `?master=${encodeURIComponent(m)}` : ''}`;
+      const res = await fetch(url);
+      if (res.ok) {
+        setAnalyticsData(await res.json());
+      }
+    } catch (error) {
+      console.error('Error fetching analytics:', error);
+    } finally {
+      setAnalyticsLoading(false);
+    }
+  };
+
+  const handleAnalyticsMaster = (m: MasterFilter) => {
+    setAnalyticsMaster(m);
+    fetchAnalytics(m);
+  };
 
   const fetchData = async () => {
     try {
@@ -1410,7 +1485,7 @@ export default function AdminPage() {
           </button>
         </header>
 
-        <main className="p-6 max-[480px]:p-4 max-[320px]:p-3 pb-24 w-full max-w-7xl mx-auto transition-all">
+        <main className="p-6 max-[480px]:p-4 max-[320px]:p-3 pb-24 max-[480px]:pb-32 w-full max-w-7xl mx-auto transition-all">
           {activeTab === 'dashboard' && (
             <div className="animate-slide-up space-y-6">
               <div className="mb-2">
@@ -1497,6 +1572,108 @@ export default function AdminPage() {
                   </div>
                   <h3 className="font-bold mb-1">Отзывов на модерации</h3>
                   <p className="text-xs text-slate-500">Требуют одобрения</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+                <div className="service-card-glass rounded-3xl p-6 max-[480px]:p-5">
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-xl max-[480px]:text-lg font-black tracking-tight">Быстрые действия</h2>
+                  </div>
+                  <div className="space-y-3">
+                    <button
+                      onClick={() => setShowStatsModal(true)}
+                      className="w-full p-4 max-[480px]:p-3 rounded-2xl bg-white/60 border border-slate-200/60 hover:border-primary transition-colors flex items-center gap-3"
+                    >
+                      <div className="size-10 max-[480px]:size-9 rounded-xl bg-gradient-to-r from-accent-pink to-accent-purple text-white flex items-center justify-center">
+                        <span className="material-symbols-outlined max-[480px]:text-lg">analytics</span>
+                      </div>
+                      <div className="text-left flex-1">
+                        <p className="font-bold text-sm max-[480px]:text-xs">Статистика</p>
+                        <p className="text-xs max-[480px]:text-[10px] text-slate-500">График за месяц</p>
+                      </div>
+                    </button>
+
+                    <div className="w-full p-4 max-[480px]:p-3 rounded-2xl bg-white/60 border border-slate-200/60">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="size-10 max-[480px]:size-9 rounded-xl bg-accent-purple/20 text-accent-purple flex items-center justify-center">
+                          <span className="material-symbols-outlined max-[480px]:text-lg">download</span>
+                        </div>
+                        <div className="text-left flex-1">
+                          <p className="font-bold text-sm max-[480px]:text-xs">Экспорт записей</p>
+                          <p className="text-xs max-[480px]:text-[10px] text-slate-500">За текущий месяц</p>
+                        </div>
+                      </div>
+                      <div className="flex gap-1 bg-slate-50 rounded-lg p-1 mb-3">
+                        <button
+                          onClick={() => setExportMasterFilter('all')}
+                          className={`flex-1 px-3 py-1.5 rounded text-xs font-semibold transition-all ${exportMasterFilter === 'all'
+                            ? 'bg-gradient-to-r from-accent-pink to-accent-purple text-white'
+                            : 'text-slate-400 hover:text-slate-600'
+                            }`}
+                        >
+                          Все
+                        </button>
+                        <button
+                          onClick={() => setExportMasterFilter('Лиза')}
+                          className={`flex-1 px-3 py-1.5 rounded text-xs font-semibold transition-all ${exportMasterFilter === 'Лиза'
+                            ? 'bg-gradient-to-r from-accent-pink to-accent-purple text-white'
+                            : 'text-slate-400 hover:text-slate-600'
+                            }`}
+                        >
+                          Лиза
+                        </button>
+                        <button
+                          onClick={() => setExportMasterFilter('Женя')}
+                          className={`flex-1 px-3 py-1.5 rounded text-xs font-semibold transition-all ${exportMasterFilter === 'Женя'
+                            ? 'bg-gradient-to-r from-accent-pink to-accent-purple text-white'
+                            : 'text-slate-400 hover:text-slate-600'
+                            }`}
+                        >
+                          Женя
+                        </button>
+                      </div>
+                      <button
+                        onClick={handleExportPDF}
+                        className="w-full px-4 py-2 rounded-xl bg-gradient-to-r from-accent-pink to-accent-purple text-white font-bold text-sm hover:scale-105 transition-transform"
+                      >
+                        Скачать PDF
+                      </button>
+                    </div>
+
+                    {/* VK Бот переключатель */}
+                    <div className="w-full p-4 max-[480px]:p-3 rounded-2xl bg-white/60 border border-slate-200/60">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className={`size-10 max-[480px]:size-9 rounded-xl flex items-center justify-center ${vkBotEnabled
+                            ? 'bg-green-100 text-green-600'
+                            : 'bg-red-100 text-red-600'
+                            }`}>
+                            <span className="material-symbols-outlined max-[480px]:text-lg">
+                              smart_toy
+                            </span>
+                          </div>
+                          <div className="text-left flex-1">
+                            <p className="font-bold text-sm max-[480px]:text-xs">VK Бот</p>
+                            <p className="text-xs max-[480px]:text-[10px] text-slate-500">
+                              {vkBotEnabled ? 'Включен' : 'Выключен'}
+                            </p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={toggleVkBot}
+                          disabled={vkBotLoading}
+                          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${vkBotEnabled ? 'bg-green-500' : 'bg-gray-300'
+                            } ${vkBotLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                        >
+                          <span
+                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${vkBotEnabled ? 'translate-x-6' : 'translate-x-1'
+                              }`}
+                          />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -2076,113 +2253,243 @@ export default function AdminPage() {
             </div>
           )}
 
+
           {activeTab === 'analytics' && (
             <div className="animate-slide-up space-y-6">
               <div className="mb-2">
                 <h1 className="text-3xl max-[480px]:text-2xl font-black tracking-tight">Аналитика</h1>
-                <p className="text-slate-500 text-sm">Действия и статистика</p>
+                <p className="text-slate-500 text-sm">Статистика и доходы</p>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="service-card-glass rounded-3xl p-6 max-[480px]:p-5">
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl max-[480px]:text-lg font-black tracking-tight">Быстрые действия</h2>
-                  </div>
-                  <div className="space-y-3">
-                    <button
-                      onClick={() => setShowStatsModal(true)}
-                      className="w-full p-4 max-[480px]:p-3 rounded-2xl bg-white/60 border border-slate-200/60 hover:border-primary transition-colors flex items-center gap-3"
-                    >
-                      <div className="size-10 max-[480px]:size-9 rounded-xl bg-gradient-to-r from-accent-pink to-accent-purple text-white flex items-center justify-center">
-                        <span className="material-symbols-outlined max-[480px]:text-lg">analytics</span>
-                      </div>
-                      <div className="text-left flex-1">
-                        <p className="font-bold text-sm max-[480px]:text-xs">Статистика</p>
-                        <p className="text-xs max-[480px]:text-[10px] text-slate-500">График за месяц</p>
-                      </div>
-                    </button>
 
-                    <div className="w-full p-4 max-[480px]:p-3 rounded-2xl bg-white/60 border border-slate-200/60">
-                      <div className="flex items-center gap-3 mb-3">
-                        <div className="size-10 max-[480px]:size-9 rounded-xl bg-accent-purple/20 text-accent-purple flex items-center justify-center">
-                          <span className="material-symbols-outlined max-[480px]:text-lg">download</span>
-                        </div>
-                        <div className="text-left flex-1">
-                          <p className="font-bold text-sm max-[480px]:text-xs">Экспорт записей</p>
-                          <p className="text-xs max-[480px]:text-[10px] text-slate-500">За текущий месяц</p>
-                        </div>
-                      </div>
-                      <div className="flex gap-1 bg-slate-50 rounded-lg p-1 mb-3">
-                        <button
-                          onClick={() => setExportMasterFilter('all')}
-                          className={`flex-1 px-3 py-1.5 rounded text-xs font-semibold transition-all ${exportMasterFilter === 'all'
-                            ? 'bg-gradient-to-r from-accent-pink to-accent-purple text-white'
-                            : 'text-slate-400 hover:text-slate-600'
-                            }`}
-                        >
-                          Все
-                        </button>
-                        <button
-                          onClick={() => setExportMasterFilter('Лиза')}
-                          className={`flex-1 px-3 py-1.5 rounded text-xs font-semibold transition-all ${exportMasterFilter === 'Лиза'
-                            ? 'bg-gradient-to-r from-accent-pink to-accent-purple text-white'
-                            : 'text-slate-400 hover:text-slate-600'
-                            }`}
-                        >
-                          Лиза
-                        </button>
-                        <button
-                          onClick={() => setExportMasterFilter('Женя')}
-                          className={`flex-1 px-3 py-1.5 rounded text-xs font-semibold transition-all ${exportMasterFilter === 'Женя'
-                            ? 'bg-gradient-to-r from-accent-pink to-accent-purple text-white'
-                            : 'text-slate-400 hover:text-slate-600'
-                            }`}
-                        >
-                          Женя
-                        </button>
-                      </div>
-                      <button
-                        onClick={handleExportPDF}
-                        className="w-full px-4 py-2 rounded-xl bg-gradient-to-r from-accent-pink to-accent-purple text-white font-bold text-sm hover:scale-105 transition-transform"
-                      >
-                        Скачать PDF
-                      </button>
-                    </div>
+              {/* Analytics Content */}
+              {analyticsLoading && !analyticsData ? (
+                <div className="flex items-center justify-center py-12">
+                  <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary" />
+                </div>
+              ) : analyticsData ? (
+                (() => {
+                  const { overview, clients, topServices, monthlyRevenue, bookingsByDay, revenueByMaster, bookingsByMaster } = analyticsData;
+                  const masters = analyticsData.masters?.length ? analyticsData.masters : Object.keys(bookingsByMaster);
+                  const maxService = topServices[0]?.count || 1;
+                  const busyDay = bookingsByDay.reduce((a: any, b: any) => a.count > b.count ? a : b);
+                  const barColor = analyticsMaster !== 'all' ? (MASTER_COLORS[analyticsMaster] || DEFAULT_COLOR) : DEFAULT_COLOR;
 
-                    {/* VK Бот переключатель */}
-                    <div className="w-full p-4 max-[480px]:p-3 rounded-2xl bg-white/60 border border-slate-200/60">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className={`size-10 max-[480px]:size-9 rounded-xl flex items-center justify-center ${vkBotEnabled
-                            ? 'bg-green-100 text-green-600'
-                            : 'bg-red-100 text-red-600'
-                            }`}>
-                            <span className="material-symbols-outlined max-[480px]:text-lg">
-                              smart_toy
-                            </span>
+                  return (
+                    <div className="space-y-4">
+                      {/* Master filter */}
+                      <div className="flex gap-1.5 bg-white rounded-2xl p-1.5 w-fit mb-4">
+                        {(['all', ...masters] as MasterFilter[]).map((m: any) => (
+                          <button key={m} onClick={() => handleAnalyticsMaster(m)}
+                            className={`px-6 py-2 rounded-xl text-xs font-bold transition-all ${analyticsMaster === m
+                              ? m === 'Лиза' ? 'bg-pink-400 text-white shadow'
+                                : m === 'Женя' ? 'gradient-bg text-white shadow'
+                                  : 'gradient-bg text-white shadow'
+                              : 'text-slate-400 hover:bg-slate-50'
+                              }`}>
+                            {m === 'all' ? 'Все' : m}
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Overview cards */}
+                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div className="service-card-glass rounded-2xl p-4">
+                          <div className="size-9 rounded-xl gradient-bg text-white flex items-center justify-center mb-2">
+                            <span className="material-symbols-outlined text-base">event</span>
                           </div>
-                          <div className="text-left flex-1">
-                            <p className="font-bold text-sm max-[480px]:text-xs">VK Бот</p>
-                            <p className="text-xs max-[480px]:text-[10px] text-slate-500">
-                              {vkBotEnabled ? 'Включен' : 'Выключен'}
+                          <p className="text-2xl font-black">{overview.bookingsThisMonth}</p>
+                          <p className="text-xs text-slate-500 mt-0.5">Записей в месяце</p>
+                          <div className="mt-1">
+                            <DeltaBadge current={overview.bookingsThisMonth} prev={overview.bookingsLastMonth} />
+                          </div>
+                        </div>
+
+                        <div className="service-card-glass rounded-2xl p-4">
+                          <div className="size-9 rounded-xl bg-pink-100 text-pink-500 flex items-center justify-center mb-2">
+                            <span className="material-symbols-outlined text-base">payments</span>
+                          </div>
+                          <p className="text-xl font-black">{overview.revenueThisMonth.toLocaleString()}₽</p>
+                          <p className="text-xs text-slate-500 mt-0.5">Доход за месяц</p>
+                          <div className="mt-1">
+                            <DeltaBadge current={overview.revenueThisMonth} prev={overview.revenueLastMonth} />
+                          </div>
+                        </div>
+
+                        <div className="service-card-glass rounded-2xl p-4">
+                          <div className="size-9 rounded-xl bg-violet-100 text-violet-500 flex items-center justify-center mb-2">
+                            <span className="material-symbols-outlined text-base">today</span>
+                          </div>
+                          <p className="text-2xl font-black">{overview.todayBookings}</p>
+                          <p className="text-xs text-slate-500 mt-0.5">Сегодня</p>
+                        </div>
+
+                        <div className="service-card-glass rounded-2xl p-4">
+                          <div className="size-9 rounded-xl bg-amber-100 text-amber-500 flex items-center justify-center mb-2">
+                            <span className="material-symbols-outlined text-base">date_range</span>
+                          </div>
+                          <p className="text-2xl font-black">{overview.avgPerWeek}</p>
+                          <p className="text-xs text-slate-500 mt-0.5">В среднем/неделю</p>
+                        </div>
+                      </div>
+
+                      {/* Year summary */}
+                      <div className="service-card-glass rounded-2xl p-4 flex items-center gap-4">
+                        <div className="flex-1">
+                          <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mb-1">За год</p>
+                          <p className="text-2xl font-black text-gradient">{overview.revenueThisYear.toLocaleString()}₽</p>
+                          <p className="text-xs text-slate-400 mt-0.5">{overview.totalBookings} записей всего</p>
+                        </div>
+                        <div className="size-14 rounded-2xl gradient-bg text-white flex items-center justify-center">
+                          <span className="material-symbols-outlined text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>bar_chart</span>
+                        </div>
+                      </div>
+
+                      {/* Monthly chart & More */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="service-card-glass rounded-2xl p-4">
+                          <div className="flex items-center justify-between mb-3">
+                            <p className="font-black text-sm">Последние 6 месяцев</p>
+                            <div className="flex gap-1 bg-slate-100 rounded-xl p-1">
+                              {(['revenue', 'count'] as const).map(m => (
+                                <button key={m} onClick={() => setRevenueMode(m)}
+                                  className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all ${revenueMode === m ? 'bg-white shadow text-primary' : 'text-slate-400'}`}>
+                                  {m === 'revenue' ? '₽ Доход' : '# Записи'}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                          <Bar
+                            data={{
+                              labels: monthlyRevenue.map((m: any) => m.month),
+                              datasets: [{
+                                data: monthlyRevenue.map((m: any) => revenueMode === 'revenue' ? m.revenue : m.count),
+                                backgroundColor: barColor,
+                                borderRadius: 8,
+                              }],
+                            }}
+                            options={analyticsChartOpts}
+                          />
+                        </div>
+
+                        <div className="space-y-4">
+                          {analyticsMaster === 'all' && masters.length > 0 && (
+                            <div className="service-card-glass rounded-2xl p-4">
+                              <div className="flex items-center gap-2 mb-3">
+                                <span className="material-symbols-outlined text-primary text-lg">person</span>
+                                <p className="font-black text-sm">По мастерам (месяц)</p>
+                              </div>
+                              <div className="space-y-3">
+                                {masters.map((m: any) => {
+                                  const rev = revenueByMaster[m] || 0;
+                                  const cnt = bookingsByMaster[m] || 0;
+                                  const maxRev = Math.max(...masters.map((x: any) => revenueByMaster[x] || 0)) || 1;
+                                  return (
+                                    <div key={m}>
+                                      <div className="flex items-center justify-between mb-1.5">
+                                        <div className="flex items-center gap-2">
+                                          <div className={`size-7 rounded-lg flex items-center justify-center text-xs font-black text-white ${m === 'Лиза' ? 'bg-pink-400' : 'gradient-bg'}`}>
+                                            {m[0]}
+                                          </div>
+                                          <div>
+                                            <p className="text-sm font-bold leading-tight">{m}</p>
+                                            <p className="text-[10px] text-slate-400">{cnt} записей</p>
+                                          </div>
+                                        </div>
+                                        <p className="text-sm font-black text-gradient">{rev.toLocaleString()}₽</p>
+                                      </div>
+                                      <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                        <div
+                                          className={`h-full rounded-full transition-all ${m === 'Лиза' ? 'bg-pink-400' : 'gradient-bg'}`}
+                                          style={{ width: `${Math.round((rev / maxRev) * 100)}%` }}
+                                        />
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )}
+
+                          {analyticsMaster === 'all' && (
+                            <div className="service-card-glass rounded-2xl p-4">
+                              <div className="flex items-center gap-2 mb-3">
+                                <span className="material-symbols-outlined text-primary text-lg">group</span>
+                                <p className="font-black text-sm">Клиенты</p>
+                              </div>
+                              <div className="grid grid-cols-2 gap-3">
+                                <div className="bg-white rounded-2xl p-3 text-center">
+                                  <p className="text-2xl font-black">{clients.uniqueClients}</p>
+                                  <p className="text-[10px] text-slate-500 mt-0.5">Уникальных</p>
+                                </div>
+                                <div className="bg-white rounded-2xl p-3 text-center">
+                                  <p className="text-2xl font-black">{clients.newClients}</p>
+                                  <p className="text-[10px] text-slate-500 mt-0.5">Новых (1 визит)</p>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          <div className="service-card-glass rounded-2xl p-4">
+                            <div className="flex items-center justify-between mb-3">
+                              <div className="flex items-center gap-2">
+                                <span className="material-symbols-outlined text-primary text-lg">calendar_view_week</span>
+                                <p className="font-black text-sm">По дням недели</p>
+                              </div>
+                              <span className="text-[10px] text-slate-400">за год</span>
+                            </div>
+                            <Bar
+                              data={{
+                                labels: bookingsByDay.map((d: any) => d.name),
+                                datasets: [{
+                                  data: bookingsByDay.map((d: any) => d.count),
+                                  backgroundColor: bookingsByDay.map((d: any) =>
+                                    d.name === busyDay.name ? barColor : barColor.replace(/[\d.]+\)$/, '0.3)')
+                                  ),
+                                  borderRadius: 6,
+                                }],
+                              }}
+                              options={analyticsChartOpts}
+                            />
+                            <p className="text-[10px] text-slate-400 mt-2 text-center">
+                              Самый загруженный: <span className="font-bold text-primary">{busyDay.name}</span> ({busyDay.count} записей)
                             </p>
                           </div>
                         </div>
-                        <button
-                          onClick={toggleVkBot}
-                          disabled={vkBotLoading}
-                          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${vkBotEnabled ? 'bg-green-500' : 'bg-gray-300'
-                            } ${vkBotLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-                        >
-                          <span
-                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${vkBotEnabled ? 'translate-x-6' : 'translate-x-1'
-                              }`}
-                          />
-                        </button>
                       </div>
+
+                      {topServices.length > 0 && (
+                        <div className="service-card-glass rounded-2xl p-4">
+                          <div className="flex items-center gap-2 mb-3">
+                            <span className="material-symbols-outlined text-primary text-lg">spa</span>
+                            <p className="font-black text-sm">Популярные услуги</p>
+                            <span className="text-[10px] text-slate-400 ml-auto">за год</span>
+                          </div>
+                          <div className="space-y-3">
+                            {topServices.map((s: any, i: number) => (
+                              <div key={s.name}>
+                                <div className="flex items-center justify-between mb-1">
+                                  <div className="flex items-center gap-2">
+                                    <span className={`text-xs font-black w-4 ${i === 0 ? 'text-primary' : 'text-slate-300'}`}>{i + 1}</span>
+                                    <p className="text-xs font-semibold text-slate-700 truncate max-w-[280px] max-[480px]:max-w-[180px]">{s.name}</p>
+                                  </div>
+                                  <span className="text-xs font-black text-slate-600 ml-2 shrink-0">{s.count}</span>
+                                </div>
+                                <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                  <div
+                                    className={`h-full rounded-full transition-all ${i === 0 ? 'gradient-bg' : 'bg-slate-300'}`}
+                                    style={{ width: `${Math.round((s.count / maxService) * 100)}%` }}
+                                  />
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                </div>
-              </div>
+                  );
+                })()
+              ) : null}
+
               {/* Скачать базу данных */}
               <div className="mt-6 mb-2 flex justify-center">
                 <button
@@ -2273,8 +2580,8 @@ export default function AdminPage() {
               <div className="px-4 pt-4 pb-2">
                 <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Разделы</p>
               </div>
-              <div className="grid grid-cols-4 gap-0 px-2 pb-3">
-                {navItems.map(item => {
+              <div className="grid grid-cols-3 gap-0 px-2 pb-3">
+                {navItems.slice(4).map(item => {
                   const isActive = activeTab === item.id;
                   return (
                     <button
