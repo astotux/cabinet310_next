@@ -41,8 +41,8 @@ export async function middleware(request: NextRequest) {
     
     // Для админ-страниц требуем токен
     if (isAdminPage && !token) {
-      console.log('[Middleware] No token found, showing 404');
-      return NextResponse.rewrite(new URL('/not-found', request.url))
+      console.log('[Middleware] No token found, redirecting to /admin/secure-entry');
+      return NextResponse.redirect(new URL('/admin/secure-entry', request.url))
     }
 
     // Если токен есть, верифицируем его
@@ -50,9 +50,9 @@ export async function middleware(request: NextRequest) {
       const payload = await verifyTokenEdge(token)
       
       if (!payload && isAdminPage) {
-        // Токен невалиден для админ-страницы - удаляем cookie и показываем 404
-        console.log('[Middleware] Invalid token, showing 404');
-        const response = NextResponse.rewrite(new URL('/not-found', request.url))
+        // Токен невалиден для админ-страницы - удаляем cookie и редиректим
+        console.log('[Middleware] Invalid token, redirecting to /admin/secure-entry');
+        const response = NextResponse.redirect(new URL('/admin/secure-entry', request.url))
         response.cookies.delete('adminToken')
         return response
       }
